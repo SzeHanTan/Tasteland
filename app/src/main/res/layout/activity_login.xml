@@ -31,29 +31,58 @@
         android:id="@+id/ETLoginEmail"
         android:layout_width="315dp"
         android:layout_height="44dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="36dp"
         android:ems="10"
         android:hint="@string/email"
         android:inputType="textEmailAddress"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="289dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TVLoginTitle" />
 
     <EditText
         android:id="@+id/ETLoginPassword"
         android:layout_width="315dp"
         android:layout_height="44dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="36dp"
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="365dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ETLoginEmail" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/BtnLogin"
         android:layout_width="313dp"
         android:layout_height="55dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="60dp"
         android:text="@string/login"
-        tools:layout_editor_absoluteX="49dp"
-        tools:layout_editor_absoluteY="515dp"
-        android:background="@drawable/button_style"/>
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ETLoginPassword"
+        android:backgroundTint="@color/mediumgreen"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/forgotpassword"
+        android:textColor="@color/darkgreen"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ETLoginPassword" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="148dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/createacc"
+        android:textColor="@color/darkgreen"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BtnLogin" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
