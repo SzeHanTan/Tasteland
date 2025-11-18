@@ -3,17 +3,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/lightgreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUp">
+
+    <ImageView
+        android:id="@+id/IVBubbles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bubble"
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/TVSignUpTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:textSize="34sp"
+        android:layout_marginTop="200dp"
+        android:text="@string/signup"
+        android:textColor="@color/black"
+        android:textSize="50sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="57dp"
-        tools:layout_editor_absoluteY="178dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.185"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/IVBubbles" />
+
+    <EditText
+        android:id="@+id/ETSignUpEmail"
+        android:layout_width="314dp"
+        android:layout_height="47dp"
+        android:ems="10"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="297dp" />
+
+    <EditText
+        android:id="@+id/ETSignUpPassword"
+        android:layout_width="315dp"
+        android:layout_height="45dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="362dp" />
+
+    <Button
+        android:id="@+id/BtnSignUp"
+        android:layout_width="320dp"
+        android:layout_height="55dp"
+        android:text="@string/signup"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="438dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
