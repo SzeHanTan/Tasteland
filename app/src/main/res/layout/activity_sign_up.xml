@@ -12,11 +12,13 @@
         android:id="@+id/IVBubbles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:scaleType="fitXY"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/bubble" />
 
     <TextView
@@ -46,32 +48,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TVSignUpTitle" />
 
-    <EditText
-        android:id="@+id/ETSignUpPassword"
-        android:layout_width="315dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.458"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETSignUpEmail" />
-
     <Button
         android:id="@+id/BtnSignUp"
         android:layout_width="313dp"
         android:layout_height="55dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="176dp"
         android:backgroundTint="@color/mediumgreen"
         android:text="@string/signup"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/IVBubbles"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.448"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETSignUpPassword"
-        app:layout_constraintVertical_bias="0.064" />
+        app:layout_constraintTop_toBottomOf="@+id/TIToggle" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TIToggle"
+        android:layout_width="315dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:hint="Password"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.458"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ETSignUpEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/TISignUpPassword"
+            android:layout_width="315dp"
+            android:layout_height="44dp"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
