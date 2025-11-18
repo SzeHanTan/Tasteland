@@ -1,4 +1,4 @@
-# [Insert App Name Here] - Sustainable Food Management System
+# Tasteland - Sustainable Food Management System
 
 ## 📖 Overview
 This project is a comprehensive mobile application designed to promote sustainable eating habits and reduce food waste. It assists users in managing their food inventory, tracking expiry dates, planning shopping lists, and engaging with a community of like-minded individuals.
