@@ -46,6 +46,7 @@
         android:layout_width="315dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        app:endIconTint="@color/black"
         android:hint="Password"
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
