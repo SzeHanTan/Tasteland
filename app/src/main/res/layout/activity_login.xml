@@ -51,9 +51,9 @@
         android:id="@+id/button"
         android:layout_width="313dp"
         android:layout_height="55dp"
+        android:background="@drawable/button_style"
         android:text="@string/login"
         tools:layout_editor_absoluteX="49dp"
-        tools:layout_editor_absoluteY="515dp"
-        android:background="@drawable/button_style"/>
+        tools:layout_editor_absoluteY="515dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
