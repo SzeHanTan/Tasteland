@@ -10,9 +10,9 @@
         android:id="@+id/IVBubbles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/bubble"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bubble" />
 
     <TextView
         android:id="@+id/TVLoginTitle"
@@ -64,7 +64,7 @@
         android:backgroundTint="@color/mediumgreen"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/TVForgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
@@ -75,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ETLoginPassword" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/TVNewAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="148dp"
