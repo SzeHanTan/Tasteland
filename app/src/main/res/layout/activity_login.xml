@@ -41,17 +41,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TVLoginTitle" />
 
-    <EditText
-        android:id="@+id/ETLoginPassword"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TIToggleLogin"
         android:layout_width="315dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="36dp"
-        android:ems="10"
-        android:hint="@string/password"
-        android:inputType="textPassword"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:hint="Password"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.458"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETLoginEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/ETLoginEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/TILoginPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/BtnLogin"
@@ -62,7 +70,7 @@
         android:text="@string/login"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETLoginPassword"
+        app:layout_constraintTop_toBottomOf="@+id/TIToggleLogin"
         android:backgroundTint="@color/mediumgreen"/>
 
     <TextView
@@ -74,7 +82,7 @@
         android:text="@string/forgotpassword"
         android:textColor="@color/darkgreen"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETLoginPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/TIToggleLogin" />
 
     <TextView
         android:id="@+id/TVNewAccount"

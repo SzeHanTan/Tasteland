@@ -59,10 +59,10 @@
         app:layout_constraintBottom_toBottomOf="@+id/IVBubbles"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TIToggle" />
+        app:layout_constraintTop_toBottomOf="@+id/TIToggleSignUp" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/TIToggle"
+        android:id="@+id/TIToggleSignUp"
         android:layout_width="315dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
