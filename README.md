@@ -40,13 +40,3 @@ This project is a comprehensive mobile application designed to promote sustainab
 ### Data Management
 * **CRUD Operations:** rigorous implementation of Create, Read, Update, Delete operations across all modules.
 * **Data Integrity:** Backend validation for ownership (access control) and data formats.
-
-### Tech Stack (Tentative)
-* **Frontend:** [e.g., Android Studio / Java / Kotlin / Flutter]
-* **Backend:** [e.g., Node.js / SpringBoot / Firebase]
-* **Database:** [e.g., SQL / MongoDB]
-
-## 🚀 Getting Started
-1. Clone the repo: `git clone https://github.com/username/repo-name.git`
-2. Install dependencies...
-3. Configure environment variables...
