@@ -6,4 +6,23 @@
     <string name="password">Password</string>
     <string name="forgotpassword"><u>Forget your password?</u></string>
     <string name="createacc"><u>Create an account</u></string>
+    <string name="myfood">My Food</string>
+    <string name="previousfood">Previous ></string>
+    <string name="todayfood">Today ></string>
+    <string name="futurefood">Future ></string>
+    <string name="insights">-Insights-</string>
+    <string name="leftover">Leftover?!</string>
+    <string name="explore">Explore now</string>
+    <string name="sustainableeatinghabits">Sustainable Eating Habits</string>
+    <string name="foodstorageandpreservationtips">Food Storage and Preservation Tips</string>
+    <string name="image1">Image 1</string>
+    <string name="image2">Image 2</string>
+    <string name="image3">Image 3</string>
+    <string name="plantbasedmenu">Plant-based menu</string>
+    <string name="growvegetables">Grow your own vegetables</string>
+    <string name="foodlabels">Understanding food labels</string>
+    <string name="header_image">Header Image</string>
+    <string name="fridge_organization">Fridge Organization</string>
+    <string name="airtight_storage">Airtight Storage Techniques</string>
+    <string name="expiry_labels">Reading Expiry Labels</string>
 </resources>
