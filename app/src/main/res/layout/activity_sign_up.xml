@@ -72,7 +72,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.458"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETSignUpEmail">
+        app:layout_constraintTop_toBottomOf="@+id/ETSignUpEmail"
+        app:passwordToggleEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/TISignUpPassword"
