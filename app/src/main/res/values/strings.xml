@@ -10,4 +10,8 @@
     <string name="previousfood">Previous ></string>
     <string name="todayfood">Today ></string>
     <string name="futurefood">Future ></string>
+    <string name="typefood">Type your food....</string>
+    <string name="duedate">Due date</string>
+    <string name="reminder">Reminder at</string>
+    <string name="no">No ></string>
 </resources>
