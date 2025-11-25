@@ -7,6 +7,7 @@ appcompat = "1.7.1"
 material = "1.13.0"
 activity = "1.11.0"
 constraintlayout = "2.2.1"
+cameraCamera2Pipe = "1.6.0-alpha01"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
