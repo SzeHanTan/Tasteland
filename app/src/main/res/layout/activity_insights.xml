@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgreen"
+    tools:context=".Insights">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"> <ImageView
+        android:id="@+id/IVHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/header_image"
+        app:srcCompat="@drawable/header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/TVInsightsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:fontFamily="@font/angkor"
+            android:text="@string/insights"
+            android:textSize="40sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/IVInsights"
+            android:layout_width="350dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="108dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImageStyle"
+            app:srcCompat="@drawable/leftover" />
+
+        <TextView
+            android:id="@+id/TVInsights"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leftover"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:padding="18dp"
+            app:layout_constraintBottom_toBottomOf="@id/IVInsights"
+            app:layout_constraintStart_toStartOf="@id/IVInsights"/>
+
+        <Button
+            android:id="@+id/BtnExplore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="14dp"
+            android:text="@string/explore"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/darkgreen"
+            app:layout_constraintBottom_toBottomOf="@id/IVInsights"
+            app:layout_constraintEnd_toEndOf="@id/IVInsights"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/TVEatingHabits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sustainableeatinghabits"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:paddingVertical="5dp"
+            app:layout_constraintTop_toBottomOf="@id/IVInsights"
+            app:layout_constraintStart_toStartOf="@id/IVInsights" />
+
+        <HorizontalScrollView
+            android:id="@+id/SV1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/TVEatingHabits"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/BtnHabits1"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@null"
+                        android:src="@drawable/vegetables_menu"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/TVHabits1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/plantbasedmenu"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:padding="4dp"
+                        android:background="#66000000"
+                        android:gravity="center_vertical|start"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/BtnHabits2"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@null"
+                        android:src="@drawable/grow_vegetables"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/TVHabits2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/growvegetables"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:padding="4dp"
+                        android:background="#66000000"
+                        android:gravity="center_vertical|start"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/BtnHabits3"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@null"
+                        android:src="@drawable/foodlabels"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image3"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/TVHabits3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/foodlabels"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:padding="4dp"
+                        android:background="#66000000"
+                        android:gravity="center_vertical|start"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/TVTips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/foodstorageandpreservationtips"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:paddingVertical="5dp"
+            app:layout_constraintTop_toBottomOf="@id/SV1"
+            app:layout_constraintStart_toStartOf="@id/IVInsights" />
+
+        <HorizontalScrollView
+            android:id="@+id/SV2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/TVTips"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/BtnTips1"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@null"
+                        android:src="@drawable/fridge_organization"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/TVTips1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fridge_organization"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:padding="4dp"
+                        android:background="#66000000"
+                        android:gravity="center_vertical|start"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/BtnTips2"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@null"
+                        android:src="@drawable/airtight_storage"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/TVTips2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/airtight_storage"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:padding="4dp"
+                        android:background="#66000000"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/BtnTips3"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@null"
+                        android:src="@drawable/expiry_labels"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image3"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/TVTips3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/expiry_labels"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:padding="4dp"
+                        android:background="#66000000"
+                        android:gravity="center_vertical|start"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
