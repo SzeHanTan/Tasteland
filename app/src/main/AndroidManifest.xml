@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TastelandV1">
         <activity
+            android:name=".GroupChatList"
+            android:exported="false" />
+        <activity
             android:name=".MyFood"
             android:exported="false" />
         <activity
@@ -26,9 +29,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
 
 </manifest>
