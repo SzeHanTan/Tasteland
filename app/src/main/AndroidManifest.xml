@@ -18,12 +18,6 @@
             android:name=".SignUp"
             android:exported="false" />
         <activity
-            android:name=".MyFoodFragment"
-            android:exported="false" />
-        <activity
-            android:name=".Insights"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -36,10 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 if (itemId == R.id.nav_home) {
                     selectedFragment = new HomeFragment();
                 } else if (itemId == R.id.nav_food_list) {
-                    // Use MyFoodFragment which you just created
                     selectedFragment = new MyFoodFragment();
                 } else if (itemId == R.id.nav_insight) {
-                    //selectedFragment = new CalendarFragment(); // Create this next
+                    selectedFragment = new InsightsFragment();
                 } // ... and so on for other items
 
                 if (selectedFragment != null) {
