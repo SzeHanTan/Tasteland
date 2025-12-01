@@ -31,4 +31,9 @@
     <string name="airtight_storage">Airtight Storage Techniques</string>
     <string name="expiry_labels">Reading Expiry Labels</string>
     <string name="notification">Notifications</string>
+    <string name="home">Home</string>
+    <string name="recipes">Recipes</string>
+    <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
