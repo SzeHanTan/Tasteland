@@ -12,14 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TastelandV1">
         <activity
-            android:name=".Login"
-            android:exported="false" />
-        <activity
-            android:name=".SignUp"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".GroupChatList"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +21,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Notification"
+            android:name=".SignUp"
+            android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:exported="false"/>
+
+        <activity
+            android:name=".MainActivity"
             android:exported="false">
 
         </activity>
