@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/fragment_add_food_background_rounded"
+    android:elevation="8dp"
+    android:padding="16dp"
+    tools:context=".AddFood">
+
+    <!-- Input field for the food name -->
+    <EditText
+        android:id="@+id/ETFoodName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:hint="@string/typefood"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:padding="8dp"
+        android:textColorHint="#998F8F"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Due Date Icon -->
+    <ImageView
+        android:id="@+id/IVDueDateIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="Due Date"
+        android:src="@drawable/ic_calendar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ETFoodName" />
+
+    <!-- Due Date -->
+    <TextView
+        android:id="@+id/TVDueDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/duedate"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/IVDueDateIcon"
+        app:layout_constraintStart_toEndOf="@+id/IVDueDateIcon"
+        app:layout_constraintTop_toTopOf="@+id/IVDueDateIcon" />
+
+    <!-- Due Date Value (Clickable) -->
+    <Button
+        android:id="@+id/BtnDueDateValue"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="13/11/2025 >"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:drawableTint="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/TVDueDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/TVDueDate" />
+
+
+    <!-- Reminder Icon -->
+    <ImageView
+        android:id="@+id/IVReminderIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Reminder"
+        android:src="@drawable/ic_reminder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/IVDueDateIcon" />
+
+    <!-- Reminder Label -->
+    <TextView
+        android:id="@+id/TVReminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/reminder"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/IVReminderIcon"
+        app:layout_constraintStart_toEndOf="@+id/IVReminderIcon"
+        app:layout_constraintTop_toTopOf="@+id/IVReminderIcon" />
+
+    <!-- Reminder Value (Clickable) -->
+    <Button
+        android:id="@+id/BtnReminderValue"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:drawableTint="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/TVReminder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/TVReminder" />
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/BtnSaveFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/white"
+        android:text="@string/add"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/IVReminderIcon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

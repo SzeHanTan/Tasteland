@@ -2,11 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".MyFood">
+    tools:context=".MyFoodFragment">
 
     <ImageView
         android:id="@+id/IVHeader"
@@ -14,10 +13,10 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/header"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/header" />
 
     <TextView
         android:id="@+id/TVMyFoodTitle"
@@ -29,6 +28,7 @@
         android:background="@drawable/rounded_corner_background"
         android:gravity="center"
         android:padding="16dp"
+        android:fontFamily="@font/angkor"
         android:text="@string/myfood"
         android:textColor="@android:color/black"
         android:textSize="24sp"
@@ -38,18 +38,19 @@
         app:layout_constraintTop_toTopOf="@+id/IVHeader" />
 
     <ImageButton
-        android:id="@+id/button"
-        android:layout_width="49dp"
-        android:layout_height="47dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginBottom="532dp"
+        android:id="@+id/BtnAddFood"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/round_button_background"
         android:elevation="4dp"
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/TVMyFoodTitle"
+        app:layout_constraintEnd_toEndOf="@+id/TVMyFoodTitle"
+        app:layout_constraintTop_toTopOf="@+id/TVMyFoodTitle" />
+
 
     <Button
         android:id="@+id/BtnCheckPreviousFood"
@@ -90,5 +91,14 @@
         app:layout_constraintTop_toBottomOf="@+id/BtnCheckTodayFood"
         app:strokeWidth="0dp" />
 
+    <!-- app:layout_constraintBottom_toTopOf="@+id/bottomNavBar" -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_add_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BtnCheckFutureFood" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
