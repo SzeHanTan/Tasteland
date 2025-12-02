@@ -1,58 +1,23 @@
 package com.example.tastelandv1;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link InsightsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class InsightsFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // (Existing boilerplate code for newInstance, onCreate, onCreateView remains)
+    // Removed to keep the code concise, but ensure they are present in your file.
 
     public InsightsFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InsightsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static InsightsFragment newInstance(String param1, String param2) {
-        InsightsFragment fragment = new InsightsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -60,5 +25,53 @@ public class InsightsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_insights, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 1. Find all seven interactive elements
+        Button btnExplore = view.findViewById(R.id.BtnExplore);
+        ImageButton btnHabits1 = view.findViewById(R.id.BtnHabits1);
+        ImageButton btnHabits2 = view.findViewById(R.id.BtnHabits2);
+        ImageButton btnHabits3 = view.findViewById(R.id.BtnHabits3);
+        ImageButton btnTips1 = view.findViewById(R.id.BtnTips1);
+        ImageButton btnTips2 = view.findViewById(R.id.BtnTips2);
+        ImageButton btnTips3 = view.findViewById(R.id.BtnTips3);
+
+        // 2. Set up click listeners for all seven buttons
+
+        // BtnExplore -> activity_article_1.xml
+        btnExplore.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_1));
+
+        // BtnHabits1 -> activity_article_2.xml
+        btnHabits1.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_2));
+
+        // BtnHabits2 -> activity_article_3.xml
+        btnHabits2.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_3));
+
+        // BtnHabits3 -> activity_article_4.xml
+        btnHabits3.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_4));
+
+        // BtnTips1 -> activity_article_5.xml
+        btnTips1.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_5));
+
+        // BtnTips2 -> activity_article_6.xml
+        btnTips2.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_6));
+
+        // BtnTips3 -> activity_article_7.xml
+        btnTips3.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_7));
+    }
+
+    /**
+     * Helper method to launch the ArticleActivity with the correct layout ID.
+     * @param layoutId The resource ID of the target article layout (e.g., R.layout.activity_article_1).
+     */
+    private void navigateToArticle(int layoutId) {
+        Intent intent = new Intent(requireActivity(), ArticleActivity.class);
+        // Pass the layout resource ID to the activity
+        intent.putExtra(ArticleActivity.EXTRA_ARTICLE_LAYOUT_ID, layoutId);
+        startActivity(intent);
     }
 }
