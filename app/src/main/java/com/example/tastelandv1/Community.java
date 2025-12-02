@@ -1,4 +1,4 @@
-package com.example.tastelandv1.;
+package com.example.tastelandv1;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
