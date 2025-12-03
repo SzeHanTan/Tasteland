@@ -1,44 +1,67 @@
 package com.example.tastelandv1;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.SearchView;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupChatList extends AppCompatActivity {
+
+    private RecyclerView recyclerView;
+    private CommunityAdapter adapter;
+    private List<CommunityModel> communityList;
+    private List<CommunityModel> filteredList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_group_chat_list);
+
+        recyclerView = findViewById(R.id.recyclerViewCommunity);
         SearchView searchView = findViewById(R.id.SVCommunity);
-        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+
+        communityList = new ArrayList<>();
+        communityList.add(new CommunityModel("Anime Club", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Sports Lovers", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Gaming Club", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Programming Club", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Photography Community", R.drawable.ic_groups));
+
+        filteredList = new ArrayList<>(communityList);
+
+        adapter = new CommunityAdapter(this, filteredList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        setupSearch(searchView);
+    }
+
+    private void setupSearch(SearchView searchView) {
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // handle search submit
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // handle text change (filter a list, etc.)
-                return false;
+
+                filteredList.clear();
+
+                for (CommunityModel item : communityList) {
+                    if (item.getName().toLowerCase().contains(newText.toLowerCase())) {
+                        filteredList.add(item);
+                    }
+                }
+
+                adapter.notifyDataSetChanged();
+                return true;
             }
         });
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
-
 }

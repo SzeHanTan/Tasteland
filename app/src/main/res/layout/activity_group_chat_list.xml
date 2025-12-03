@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/IVHeader" />
 
-    <!-- KEEP your question mark image -->
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="171dp"
@@ -44,9 +44,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- ⬇⬇ THE NEW RECYCLER VIEW ⬇⬇ -->
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerCommunity"
+        android:id="@+id/recyclerViewCommunity"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"

@@ -16,52 +16,48 @@ import java.util.List;
 public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.ViewHolder> {
 
     private Context context;
-    private List<CommunityModel> communityList;
+    private List<CommunityModel> list;
 
-    public CommunityAdapter(Context context, List<CommunityModel> communityList) {
+    public CommunityAdapter(Context context, List<CommunityModel> list) {
         this.context = context;
-        this.communityList = communityList;
+        this.list = list;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_community, parent, false);
-        return new ViewHolder(view);
+        View v = LayoutInflater.from(context).inflate(R.layout.community_item, parent, false);
+        return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        CommunityModel model = communityList.get(position);
+        CommunityModel model = list.get(position);
 
         holder.name.setText(model.getName());
-        holder.icon.setImageResource(model.getImage());
+        holder.image.setImageResource(model.getImageRes());
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, Community.class);
-            intent.putExtra("community_name", model.getName());
-            intent.putExtra("community_image", model.getImage());
-            context.startActivity(intent);
+            Intent i = new Intent(context, Community.class);
+            i.putExtra("community_name", model.getName());
+            context.startActivity(i);
         });
     }
 
     @Override
     public int getItemCount() {
-        return communityList.size();
+        return list.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        ImageView icon;
+        ImageView image;
         TextView name;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            icon = itemView.findViewById(R.id.communityIcon);
-            name = itemView.findViewById(R.id.communityName);
+            image = itemView.findViewById(R.id.IVCommunityPic);
+            name = itemView.findViewById(R.id.TVCommunityName);
         }
     }
 }
