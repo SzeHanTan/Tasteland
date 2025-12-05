@@ -1,14 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lightgreen"
     tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageView
+        android:id="@+id/IVHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/header" />
 
-</FrameLayout>
+
+    <ImageButton
+        android:id="@+id/IBHomeHeaderChat"
+        android:layout_width="58dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/chat_background_header"
+        android:contentDescription="Chat"
+        android:src="@drawable/ic_chat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/IBHomeHeaderProfile"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="36dp"
+        android:background="@drawable/profile_background_header"
+        android:contentDescription="@string/profile"
+        android:src="@drawable/ic_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/IVCardMyfood"
+        android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="156dp"
+        android:layout_marginEnd="24dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/card_home"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/IVCardShoppingList"
+        android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="156dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/card_home"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ic_shopping"
+        android:layout_width="156dp"
+        android:layout_height="192dp"
+        android:src="@drawable/ic_shopping"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardShoppingList"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
+        app:layout_constraintTop_toTopOf="@+id/IVCardShoppingList"
+        app:layout_constraintVertical_bias="0.38" />
+
+    <ImageView
+        android:id="@+id/ic_food"
+        android:layout_width="140dp"
+        android:layout_height="173dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_food"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardMyfood"
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood"
+        app:layout_constraintTop_toTopOf="@+id/IBMyFoodHeaderChat"
+        app:layout_constraintVertical_bias="0.81" />
+
+    <ImageButton
+        android:id="@+id/BtnAddShopping"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:background="@android:color/transparent"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/add"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintStart_toEndOf="@+id/TVShoppingList" />
+
+    <ImageButton
+        android:id="@+id/BtnAddFoodHome"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="24dp"
+        android:background="@android:color/transparent"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/add"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/TVShoppingList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/shoppinglist"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
+        android:layout_marginStart="16dp" />
+
+
+    <TextView
+        android:id="@+id/TVMyFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/myfood"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
+        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood" />
+
+    <ImageView
+        android:id="@+id/IVCardQuote"
+        android:layout_width="123dp"
+        android:layout_height="270dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/carddsc_home"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/IVCardMyfood" />
+
+    <TextView
+        android:id="@+id/TVQuote"
+        android:layout_width="95dp"
+        android:layout_height="141dp"
+        android:text="@string/quote"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardQuote"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardQuote"
+        app:layout_constraintHorizontal_bias="0.566"
+        app:layout_constraintStart_toStartOf="@+id/IVCardQuote"
+        app:layout_constraintTop_toTopOf="@+id/IVCardQuote" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

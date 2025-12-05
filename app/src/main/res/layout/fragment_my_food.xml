@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".MyFoodFragment">
+    tools:context=".MyFoodFragment"
+    tools:layout_editor_absoluteX="3dp"
+    tools:layout_editor_absoluteY="-11dp">
 
     <ImageView
         android:id="@+id/IVHeader"
@@ -18,24 +20,49 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/header" />
 
+    <ImageButton
+        android:id="@+id/IBMyFoodHeaderChat"
+        android:layout_width="58dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/chat_background_header"
+        android:contentDescription="chat"
+        android:src="@drawable/ic_chat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/IBMyFoodHeaderProfile"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="36dp"
+        android:background="@drawable/profile_background_header"
+        android:contentDescription="@string/profile"
+        android:src="@drawable/ic_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/TVMyFoodTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="144dp"
+        android:layout_marginTop="-40dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/rounded_corner_background"
+        android:elevation="4dp"
+        android:fontFamily="@font/angkor"
         android:gravity="center"
         android:padding="16dp"
-        android:fontFamily="@font/angkor"
         android:text="@string/myfood"
         android:textColor="@android:color/black"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/IVHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/IVHeader" />
 
     <ImageButton
         android:id="@+id/BtnAddFood"

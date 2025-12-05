@@ -1,10 +1,12 @@
 package com.example.tastelandv1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton; // Make sure to import ImageButton
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,10 +34,25 @@ public class MyFoodFragment extends Fragment {
 
         // 1. Find the button using the fragment's 'view' object.
         ImageButton addFoodButton = view.findViewById(R.id.BtnAddFood);
+        ImageButton chatButton = view.findViewById(R.id.IBMyFoodHeaderChat);
+        ImageButton profileButton = view.findViewById(R.id.IBMyFoodHeaderProfile);
 
         // 2. Set the click listener on the button.
         addFoodButton.setOnClickListener(v -> {
             showAddFoodFragment();
+        });
+
+        // 1. Chat Button Navigation
+        chatButton.setOnClickListener(v -> {
+            // Create an Intent to start GroupChatList activity
+            Intent intent = new Intent(getActivity(), GroupChatList.class);
+            startActivity(intent);
+        });
+
+        // 2. Profile Button (placeholder action)
+        profileButton.setOnClickListener(v -> {
+            // TODO: Handle profile button click (e.g., navigate to ProfileFragment)
+            Toast.makeText(getActivity(), "Profile Clicked", Toast.LENGTH_SHORT).show();
         });
 
     }
