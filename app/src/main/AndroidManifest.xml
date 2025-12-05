@@ -16,7 +16,7 @@
             android:name=".Community"
             android:exported="false" />
         <activity
-            android:name=".GroupChatList"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
             android:name=".ArticleActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".GroupChatList"
             android:exported="false" />
     </application>
 
