@@ -45,7 +45,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/TVMyFoodTitle"
+        android:id="@+id/TVShoppingListTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -65,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@+id/IVHeader" />
 
     <ImageButton
-        android:id="@+id/BtnAddFood"
+        android:id="@+id/BtnAddShoppingItem"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
@@ -74,9 +74,9 @@
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="@+id/TVMyFoodTitle"
-        app:layout_constraintEnd_toEndOf="@+id/TVMyFoodTitle"
-        app:layout_constraintTop_toTopOf="@+id/TVMyFoodTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/TVShoppingListTitle"
+        app:layout_constraintEnd_toEndOf="@+id/TVShoppingListTitle"
+        app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle" />
 
 
     <Button
@@ -89,7 +89,7 @@
         android:text="@string/previousfood"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TVMyFoodTitle"
+        app:layout_constraintTop_toBottomOf="@+id/TVShoppingListTitle"
         app:strokeWidth="0dp" />
 
     <Button

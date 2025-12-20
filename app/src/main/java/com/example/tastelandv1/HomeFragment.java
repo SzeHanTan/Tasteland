@@ -1,17 +1,13 @@
 package com.example.tastelandv1;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton; // Make sure this is imported
-import android.widget.Toast; // For showing placeholder messages
-
+import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeFragment extends Fragment {
@@ -31,44 +27,31 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // --- Find views using the NEW IDs from your layout ---
-        ImageButton chatButton = view.findViewById(R.id.IBHomeHeaderChat);
-        ImageButton profileButton = view.findViewById(R.id.IBHomeHeaderProfile);
+        // --- 1. SETUP "ADD SHOPPING" BUTTON ---
         ImageButton addShoppingButton = view.findViewById(R.id.BtnAddShopping);
+        if (addShoppingButton != null) {
+            addShoppingButton.setOnClickListener(v -> {
+                // Logic from Home.java: Navigate to the ShoppingList Fragment
+                getParentFragmentManager().beginTransaction()
+                        // Ensure R.id.FCVMain matches the ID in your activity_main.xml
+                        .replace(R.id.FCVMain, new ShoppingList())
+                        .addToBackStack(null) // Allows user to press Back button to return here
+                        .commit();
+            });
+        }
+
+        // --- 2. SETUP "ADD FOOD" BUTTON ---
         ImageButton addFoodHomeButton = view.findViewById(R.id.BtnAddFoodHome);
-
-        // --- Set up the click listeners ---
-
-        // 1. Chat Button Navigation
-        chatButton.setOnClickListener(v -> {
-            // Create an Intent to start GroupChatList activity
-            Intent intent = new Intent(getActivity(), GroupChatList.class);
-            startActivity(intent);
-        });
-
-        // 2. Profile Button (placeholder action)
-        profileButton.setOnClickListener(v -> {
-            // TODO: Handle profile button click (e.g., navigate to ProfileFragment)
-            Toast.makeText(getActivity(), "Profile Clicked", Toast.LENGTH_SHORT).show();
-        });
-
-        // 3. Add Shopping Button (placeholder action)
-        addShoppingButton.setOnClickListener(v -> {
-            // TODO: Navigate to Add Shopping List screen
-            Toast.makeText(getActivity(), "Add Shopping Clicked", Toast.LENGTH_SHORT).show();
-        });
-
-        // 4. Add Food Button (placeholder action)
-        addFoodHomeButton.setOnClickListener(v -> {
-            // Get the BottomNavigationView from the hosting MainActivity
-            if (getActivity() != null) {
-                BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-                if (bottomNav != null) {
-                    // Set the selected item to be the My Food tab
-                    bottomNav.setSelectedItemId(R.id.nav_food_list);
+        if (addFoodHomeButton != null) {
+            addFoodHomeButton.setOnClickListener(v -> {
+                // Logic from HomeFragment.java: Switch Bottom Navigation Tab
+                if (getActivity() != null) {
+                    BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
+                    if (bottomNav != null) {
+                        bottomNav.setSelectedItemId(R.id.nav_food_list);
+                    }
                 }
-            }
-        });
-
+            });
+        }
     }
 }
