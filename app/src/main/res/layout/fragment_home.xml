@@ -8,41 +8,6 @@
     android:background="@color/lightgreen"
     tools:context=".HomeFragment">
 
-    <ImageView
-        android:id="@+id/IVHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/header" />
-
-
-    <ImageButton
-        android:id="@+id/IBHomeHeaderChat"
-        android:layout_width="58dp"
-        android:layout_height="57dp"
-        android:layout_marginStart="268dp"
-        android:layout_marginTop="80dp"
-        android:background="@drawable/chat_background_header"
-        android:contentDescription="Chat"
-        android:src="@drawable/ic_chat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/IBHomeHeaderProfile"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="36dp"
-        android:background="@drawable/profile_background_header"
-        android:contentDescription="@string/profile"
-        android:src="@drawable/ic_profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/IVCardMyfood"
@@ -88,7 +53,6 @@
         app:layout_constraintEnd_toEndOf="@+id/IVCardMyfood"
         app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="@+id/IVCardMyfood"
-        app:layout_constraintTop_toTopOf="@+id/IBMyFoodHeaderChat"
         app:layout_constraintVertical_bias="0.81" />
 
     <ImageButton
@@ -143,7 +107,7 @@
         android:id="@+id/IVCardQuote"
         android:layout_width="123dp"
         android:layout_height="270dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
         android:src="@drawable/carddsc_home"
         app:layout_constraintEnd_toEndOf="parent"
@@ -160,5 +124,14 @@
         app:layout_constraintHorizontal_bias="0.566"
         app:layout_constraintStart_toStartOf="@+id/IVCardQuote"
         app:layout_constraintTop_toTopOf="@+id/IVCardQuote" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView"
+        android:name="com.example.tastelandv1.ShoppingList"
+        android:layout_width="227dp"
+        android:layout_height="270dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/IVCardShoppingList"
+        tools:layout_editor_absoluteX="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

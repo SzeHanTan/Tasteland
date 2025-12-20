@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Profile"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="15dp"/>
+
+    <EditText
+        android:id="@+id/et_edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/et_edit_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Contact No"
+        android:inputType="phone"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/et_edit_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Description"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:gravity="top"
+        android:layout_marginTop="10dp"/>
+
+</LinearLayout>

@@ -33,7 +33,7 @@ public class MyFoodFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // 1. Find the button using the fragment's 'view' object.
-        ImageButton addFoodButton = view.findViewById(R.id.BtnAddFood);
+        ImageButton addFoodButton = view.findViewById(R.id.BtnAddShoppingItem);
         ImageButton chatButton = view.findViewById(R.id.IBMyFoodHeaderChat);
         ImageButton profileButton = view.findViewById(R.id.IBMyFoodHeaderProfile);
 
