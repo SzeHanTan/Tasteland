@@ -132,35 +132,7 @@ api.addItem(RetrofitClient.SUPABASE_KEY, "Bearer " + token, "return=minimal", ne
 
 ```
 
-----------
-
-## 🗃️ Database Structure (Supabase Tables)
-
-### Table: `shopping_items`
-
-_Stores the checklist items._
-
--   `id` (int8): Auto-generated ID.
-    
--   `text` (text): The name of the item.
-    
--   `is_checked` (bool): True/False status.
-    
--   `user_id` (uuid): **Linked to Auth**. Automatically filled by Supabase.
-    
-
-### Table: `profiles`
-
-_Stores user details like name and bio._
-
--   `id` (uuid): Matches the User ID from Login.
-    
--   `full_name` (text): Display name.
-    
--   `contact_no` (text): Phone number.
-    
--   `description` (text): Bio/About me.
-    
+   
 
 ----------
 
