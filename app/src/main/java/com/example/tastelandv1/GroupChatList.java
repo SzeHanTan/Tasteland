@@ -25,11 +25,16 @@ public class GroupChatList extends AppCompatActivity {
         SearchView searchView = findViewById(R.id.SVCommunity);
 
         communityList = new ArrayList<>();
-        communityList.add(new CommunityModel("Anime Club", R.drawable.ic_groups));
-        communityList.add(new CommunityModel("Sports Lovers", R.drawable.ic_groups));
-        communityList.add(new CommunityModel("Gaming Club", R.drawable.ic_groups));
-        communityList.add(new CommunityModel("Programming Club", R.drawable.ic_groups));
-        communityList.add(new CommunityModel("Photography Community", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Taste & Togetherness", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("PJ area best food!!", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Life Hacks", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Recipe for Students", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("Healthy Recipe", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("XXX Community 1", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("XXX Community 2", R.drawable.ic_groups));
+        communityList.add(new CommunityModel("XXX Community 3", R.drawable.ic_groups));
+
+
 
         filteredList = new ArrayList<>(communityList);
 
