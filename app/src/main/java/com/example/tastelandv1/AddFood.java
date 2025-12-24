@@ -188,6 +188,9 @@ public class AddFood extends Fragment {
                     public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
                         if (response.isSuccessful()) {
                             Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
+                            // Send a signal to the parent fragment to refresh
+                            getParentFragmentManager().setFragmentResult("refresh_request", new Bundle());
+                            // ----------------------
                             if (getActivity() != null) {
                                 getParentFragmentManager().popBackStack();
                             }

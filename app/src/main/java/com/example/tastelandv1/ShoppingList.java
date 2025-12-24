@@ -42,7 +42,7 @@ public class ShoppingList extends Fragment {
         // 1. Initialize List and Views
         shoppingList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.RVShoppingList);
-        ImageButton btnAdd = view.findViewById(R.id.BtnAddShoppingItem);
+        ImageButton btnAdd = view.findViewById(R.id.BtnAddFoodItem);
 
         // 2. Setup RecyclerView
         adapter = new ShoppingAdapter(shoppingList);
@@ -76,11 +76,11 @@ public class ShoppingList extends Fragment {
                     View ivHeader = view.findViewById(R.id.IVHeader);
                     if (ivHeader != null) ivHeader.setVisibility(View.GONE);
 
-                    View chatBtn = view.findViewById(R.id.IBMyFoodHeaderChat);
-                    if (chatBtn != null) chatBtn.setVisibility(View.GONE);
+                    //View chatBtn = view.findViewById(R.id.IBMyFoodHeaderChat);
+                    //if (chatBtn != null) chatBtn.setVisibility(View.GONE);
 
-                    View profileBtn = view.findViewById(R.id.IBMyFoodHeaderProfile);
-                    if (profileBtn != null) profileBtn.setVisibility(View.GONE);
+                    //View profileBtn = view.findViewById(R.id.IBMyFoodHeaderProfile);
+                    //if (profileBtn != null) profileBtn.setVisibility(View.GONE);
                 }
             }
         });

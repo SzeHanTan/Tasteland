@@ -5,67 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".MyFoodFragment"
-    tools:layout_editor_absoluteX="3dp"
-    tools:layout_editor_absoluteY="-11dp">
+    tools:context=".MyFoodFragment">
 
-    <ImageView
-        android:id="@+id/IVHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/header" />
 
-    <ImageButton
-        android:id="@+id/IBMyFoodHeaderChat"
-        android:layout_width="58dp"
-        android:layout_height="57dp"
-        android:layout_marginStart="268dp"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/chat_background_header"
-        android:contentDescription="chat"
-        android:src="@drawable/ic_chat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/IBMyFoodHeaderProfile"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="36dp"
-        android:background="@drawable/profile_background_header"
-        android:contentDescription="@string/profile"
-        android:src="@drawable/ic_profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    <!-- "My Food" White Box -->
     <TextView
         android:id="@+id/TVShoppingListTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="-40dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/rounded_corner_background"
         android:elevation="4dp"
-        android:fontFamily="@font/angkor"
         android:gravity="center"
         android:padding="16dp"
         android:text="@string/myfood"
         android:textColor="@android:color/black"
         android:textSize="24sp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IVHeader" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/BtnAddShoppingItem"
+        android:id="@+id/BtnAddFoodItem"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
@@ -78,54 +42,83 @@
         app:layout_constraintEnd_toEndOf="@+id/TVShoppingListTitle"
         app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle" />
 
+    <!-- SCROLLABLE AREA FOR LISTS -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_add_food"
+        app:layout_constraintTop_toBottomOf="@+id/TVShoppingListTitle">
 
-    <Button
-        android:id="@+id/BtnCheckPreviousFood"
-        style="?attr/materialButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/previousfood"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TVShoppingListTitle"
-        app:strokeWidth="0dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <Button
-        android:id="@+id/BtnCheckTodayFood"
-        style="?attr/materialButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:text="@string/todayfood"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BtnCheckPreviousFood"
-        app:strokeWidth="0dp" />
+            <!-- PREVIOUS SECTION -->
+            <TextView
+                android:id="@+id/TvPreviousHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/previousfood"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/black" />
 
-    <Button
-        android:id="@+id/BtnCheckFutureFood"
-        style="?attr/materialButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:text="@string/futurefood"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BtnCheckTodayFood"
-        app:strokeWidth="0dp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/RVPrevious"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_food" />
 
-    <!-- app:layout_constraintBottom_toTopOf="@+id/bottomNavBar" -->
+            <!-- TODAY SECTION -->
+            <TextView
+                android:id="@+id/TvTodayHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/todayfood"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/black" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/RVToday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_food" />
+
+            <!-- FUTURE SECTION -->
+            <TextView
+                android:id="@+id/TvFutureHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/futurefood"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/black" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/RVFuture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_food" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Fragment container for the "Add Food" panel -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_add_food"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BtnCheckFutureFood" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

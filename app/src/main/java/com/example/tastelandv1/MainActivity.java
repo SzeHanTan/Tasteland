@@ -34,8 +34,13 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(navListener);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.FCVMain,
-                    new HomeFragment()).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.FCVMain, new HomeFragment())
+                    .commit();
+
+            // 2. THIS IS THE FIX: Highlight the Home icon programmatically
+            // Replace 'nav_home' with the actual ID you used in res/menu/menu_bottom.xml
+            bottomNav.setSelectedItemId(R.id.nav_home);
         }
     }
 
@@ -76,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new MyFoodFragment();
                 } else if (itemId == R.id.nav_insight) {
                     selectedFragment = new InsightsFragment();
+                } else if (itemId == R.id.nav_profile) {
+                    selectedFragment = new Profile();
                 }
 
                 if (selectedFragment != null) {
