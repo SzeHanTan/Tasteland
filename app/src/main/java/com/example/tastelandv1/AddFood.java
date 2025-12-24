@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+
 public class AddFood extends Fragment {
 
     private EditText etFoodName;
@@ -39,7 +40,6 @@ public class AddFood extends Fragment {
     private Integer selectedReminderMinute = null;
 
     public AddFood() {
-        // Required empty public constructor
     }
 
     @Override
@@ -73,7 +73,6 @@ public class AddFood extends Fragment {
             // --- Create Calendar Constraints to disable past dates ---
             CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
-            // Sets the validator to only allow dates from today forward            constraintsBuilder.setValidator(DateValidatorPointForward.now());
             // Sets the validator to only allow dates from today forward
             constraintsBuilder.setValidator(DateValidatorPointForward.now());
 
@@ -145,51 +144,84 @@ public class AddFood extends Fragment {
     }
 
     private void saveFoodItem() {
-        // --- 1. Validate Input ---
+        // 1. Validate Input (Crucial for Data Integrity)
         String foodName = etFoodName.getText().toString().trim();
         if (foodName.isEmpty()) {
             etFoodName.setError("Food name cannot be empty");
-            return; // Stop the save process
+            return;
         }
 
         if (selectedDueDateMillis == null) {
             Toast.makeText(getContext(), "Please select a due date", Toast.LENGTH_SHORT).show();
-            return; // Stop the save process
+            return;
         }
 
-        // --- 2. Gather Data and Create FoodItem Object ---
+        // 2. Gather Data and Create FoodItem Object
+        // Get the current User ID (You should get this from your Login/Session manager)
+        String currentUserId = getCurrentUserId();
+
         Date dueDate = new Date(selectedDueDateMillis);
-        Date reminderDate = createReminderDate(); // Use the helper method we made earlier
+        Date reminderDate = createReminderDate();
 
-        FoodItem newFoodItem = new FoodItem(foodName, dueDate, reminderDate);
+        FoodItem newItem = new FoodItem(currentUserId, foodName, dueDate, reminderDate);
 
-        // --- 3. Persist Data (For now, just log it) ---
-        // This is where you would call your ViewModel to save to a database.
-        // For testing, we'll print it to the Logcat.
-        // NOTICE how every line now starts with "Log.d", NOT "androidx.camera..."
-        Log.d("AddFoodFragment", "--- New Food Item Saved ---");
-        Log.d("AddFoodFragment", "ID: " + newFoodItem.getId());
-        Log.d("AddFoodFragment", "Name: " + newFoodItem.getName());
-        Log.d("AddFoodFragment", "Due Date: " + newFoodItem.getDueDate().toString());
-        if (newFoodItem.getReminderDate() != null) {
-            Log.d("AddFoodFragment", "Reminder: " + newFoodItem.getReminderDate().toString());
-        } else {
-            Log.d("AddFoodFragment", "Reminder: Not set");
-        }
-        Log.d("AddFoodFragment", "isFinished: " + newFoodItem.isFinished());
-        Log.d("AddFoodFragment", "Created At: " + newFoodItem.getCreatedAt().toString());
-
-
-        // --- 4. Provide User Feedback and Close Fragment ---
-        Toast.makeText(getContext(), "Food item saved!", Toast.LENGTH_SHORT).show();
-
-        // This removes the fragment from the screen and returns to the previous page
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().popBackStack();
-        }
+        // 3. Send to Cloud
+        saveToSupabase(newItem);
     }
 
-    // This helper method should already be in your class from before
+    private void saveToSupabase(FoodItem item) {
+        // 1. You MUST get the actual token saved during Login
+        SessionManager session = new SessionManager(getContext());
+        String token = session.getToken();
+
+        if (token == null) {
+            Toast.makeText(getContext(), "User not logged in!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String authToken = "Bearer " + token;
+        String apiKey = RetrofitClient.SUPABASE_KEY;
+
+        RetrofitClient.getInstance().getApi().createFoodItem(authToken, apiKey, item)
+                .enqueue(new retrofit2.Callback<Void>() { // Explicitly use retrofit2
+                    @Override
+                    public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
+                            if (getActivity() != null) {
+                                getParentFragmentManager().popBackStack();
+                            }
+                        } else {
+                            try {
+                                String error = response.errorBody().string();
+                                Log.e("SupabaseError", "Code: " + response.code() + " Error: " + error);
+                            } catch (Exception e) { e.printStackTrace(); }
+
+                            Toast.makeText(getContext(), "Failed to save: " + response.code(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                        Log.e("SupabaseError", "Network Failure: " + t.getMessage());
+                        Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+
+    // Helper to get current user ID (Implementation depends on your Auth setup)
+    private String getCurrentUserId() {
+        SessionManager session = new SessionManager(getContext());
+        // This assumes your SessionManager has a getUserId() method
+        // that returns the UUID saved during login.
+        return session.getUserId();
+    }
+
+
+
+
     private Date createReminderDate() {
         if (selectedDueDateMillis == null || selectedReminderHour == null || selectedReminderMinute == null) {
             return null;

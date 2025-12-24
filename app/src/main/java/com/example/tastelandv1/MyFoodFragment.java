@@ -14,17 +14,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 
 public class MyFoodFragment extends Fragment {
 
     public MyFoodFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // This connects the XML layout to your fragment class.
         return inflater.inflate(R.layout.fragment_my_food, container, false);
     }
 
@@ -78,5 +81,36 @@ public class MyFoodFragment extends Fragment {
             fragmentTransaction.commit();
         }
     }
+
+    private void categorizeAndDisplay(List<FoodItem> items) {
+        Date today = resetTime(new Date());
+
+        List<FoodItem> previous = new ArrayList<>();
+        List<FoodItem> todayItems = new ArrayList<>();
+        List<FoodItem> future = new ArrayList<>();
+
+        for (FoodItem item : items) {
+            Date itemDate = resetTime(item.dueDate);
+            if (itemDate.before(today)) {
+                previous.add(item);
+            } else if (itemDate.equals(today)) {
+                todayItems.add(item);
+            } else {
+                future.add(item);
+            }
+        }
+        // Update your UI/Adapters here
+    }
+
+    private Date resetTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
 
 }

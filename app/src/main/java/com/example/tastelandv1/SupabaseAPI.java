@@ -1,6 +1,8 @@
 package com.example.tastelandv1;
 
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -24,6 +26,14 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Body AuthRequest request
     );
+
+    @POST("rest/v1/profiles")
+    Call<Void> createProfile(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Body Map<String, Object> profileData
+    );
+
 
     // --- DATABASE ENDPOINTS ---
 
@@ -53,5 +63,28 @@ public interface SupabaseAPI {
             @Header("Authorization") String token,
             @Query("id") String idQuery, // We need to specify WHICH row to update (eq.USER_ID)
             @Body UserProfile profile
+    );
+
+    @GET("rest/v1/food_items")
+    Call<List<FoodItem>> getFoodItems(
+            @Header("Authorization") String token,
+            @Header("apikey") String apiKey,
+            @Query("select") String select,
+            @Query("order") String order // To sort by dueDate
+    );
+
+    @PATCH("rest/v1/food_items")
+    Call<Void> updateFoodItemStatus(
+            @Header("Authorization") String token,
+            @Header("apikey") String apiKey,
+            @Query("id") String eqId,
+            @Body Map<String, Object> updates
+    );
+
+    @POST("rest/v1/food_items")
+    Call<Void> createFoodItem(
+            @Header("Authorization") String token,
+            @Header("apikey") String apiKey,
+            @Body FoodItem foodItem
     );
 }
