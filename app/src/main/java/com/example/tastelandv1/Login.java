@@ -66,20 +66,25 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
+                            // 1. Extract both the Token AND the User ID
                             String token = response.body().access_token;
+                            String userId = response.body().user.id; // Extract the UUID
 
-                            // Save token and Move to Home
+                            // 2. Save BOTH to the SessionManager
                             SessionManager session = new SessionManager(Login.this);
-                            session.saveToken(token);
+
+                            // Use the new method we added to SessionManager
+                            session.saveSession(token, userId);
 
                             Toast.makeText(Login.this, "Login Successful!", Toast.LENGTH_SHORT).show();
 
+                            // 3. Navigate to MainActivity
                             Intent intent = new Intent(Login.this, MainActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();
                         } else {
-                            // Supabase usually returns 400 for bad credentials
+                            // Handle login failure
                             Toast.makeText(Login.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -90,6 +95,7 @@ public class Login extends AppCompatActivity {
                     }
                 });
     }
+
 
     // Helper method to show the popup
     private void showCustomerServiceDialog() {
