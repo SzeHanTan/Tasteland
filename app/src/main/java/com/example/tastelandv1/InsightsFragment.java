@@ -43,25 +43,25 @@ public class InsightsFragment extends Fragment {
         // 2. Set up click listeners for all seven buttons
 
         // BtnExplore -> activity_article_1.xml
-        btnExplore.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_1));
+        btnExplore.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_1));
 
         // BtnHabits1 -> activity_article_2.xml
-        btnHabits1.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_2));
+        btnHabits1.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_2));
 
         // BtnHabits2 -> activity_article_3.xml
-        btnHabits2.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_3));
+        btnHabits2.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_3));
 
         // BtnHabits3 -> activity_article_4.xml
-        btnHabits3.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_4));
+        btnHabits3.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_4));
 
         // BtnTips1 -> activity_article_5.xml
-        btnTips1.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_5));
+        btnTips1.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_5));
 
         // BtnTips2 -> activity_article_6.xml
-        btnTips2.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_6));
+        btnTips2.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_6));
 
         // BtnTips3 -> activity_article_7.xml
-        btnTips3.setOnClickListener(v -> navigateToArticle(R.layout.activity_article_7));
+        btnTips3.setOnClickListener(v -> navigateToArticle(R.layout.fragment_article_7));
     }
 
     /**
