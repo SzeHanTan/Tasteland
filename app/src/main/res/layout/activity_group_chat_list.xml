@@ -95,7 +95,9 @@
         app:itemTextColor="@color/black"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/community_bottom_nav_menu" /> <androidx.recyclerview.widget.RecyclerView
+        app:menu="@menu/community_bottom_nav_menu" />
+
+    <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/recyclerViewCommunity"
     android:layout_width="0dp"
     android:layout_height="0dp"
