@@ -23,7 +23,7 @@ public class ArticleActivity extends AppCompatActivity {
             // Handle error case if no layout ID is passed (e.g., set an error view)
             // For now, we'll just use a placeholder if no valid ID is found.
             // You may need to create a dedicated error layout for a production app.
-            setContentView(R.layout.activity_article_1); // Fallback to article 1
+            setContentView(R.layout.fragment_article_1); // Fallback to article 1
         }
 
         // The layout is loaded, now find the back button inside the loaded layout
