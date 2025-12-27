@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7FBEF"
+    android:background="@color/lightgreen"
     tools:context=".Community">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,8 +71,8 @@
                 android:layout_marginStart="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Hi, everyone! Let's have a potluck this Saturday..."
-                android:textColor="#333333" />
+                android:text="@string/pinMessage"
+                android:textColor="@color/darkgrey" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -104,7 +104,7 @@
             android:layout_marginEnd="12dp"
             android:background="@drawable/rounded_corner_background"
             android:elevation="4dp"
-            android:hint="Type your message ..."
+            android:hint="@string/messageHint"
             android:minHeight="50dp"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
@@ -119,7 +119,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@drawable/round_button_background"
-            android:backgroundTint="#FFFFFF"
+            android:backgroundTint="@color/white"
             android:elevation="4dp"
             android:padding="15dp"
             android:scaleType="fitCenter"

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7FBEF"
+    android:background="@color/lightgreen"
     tools:context=".GroupChatList">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,7 +44,7 @@
             android:layout_marginTop="28dp"
             android:layout_marginEnd="24dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Notifications"
+            android:contentDescription="@string/notification"
             android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_notification_bell"
@@ -90,7 +90,7 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E8F1D4"
+        android:background="@color/mediumgreen"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
         app:labelVisibilityMode="labeled"

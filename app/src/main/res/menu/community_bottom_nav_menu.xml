@@ -4,16 +4,16 @@
     <item
         android:id="@+id/nav_new_team"
         android:icon="@drawable/ic_add_group"
-        android:title="New Team" />
+        android:title="New Community" />
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/home_menu"
         android:title="Home" />
 
     <item
         android:id="@+id/nav_join_team"
         android:icon="@drawable/ic_join_group"
-        android:title="Join Team" />
+        android:title="Join Community" />
 
 </menu>
