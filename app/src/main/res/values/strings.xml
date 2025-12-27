@@ -53,4 +53,10 @@
     <string name="greeting">Hi!</string>
     <string name="shoppinglist">Shopping List</string>
     <string name="quote">“When we waste less food, we feed more people and protect the Earth’s precious resources.”</string>
+    <string name= "pinMessage">Hi, everyone! Let\'s have a potluck this Saturday...</string>
+    <string name= "messageHint">Type your message ...</string>
+    <string name= "editprofile">Edit Profile</string>
+
+
+
 </resources>
