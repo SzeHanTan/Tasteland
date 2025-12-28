@@ -33,4 +33,7 @@ public class SessionManager {
     public void logout() {
         prefs.edit().clear().apply();
     }
+
+    public String getUsername() {return prefs.getString("username", "Anonymous"); // The name shown in the chat
+    }
 }

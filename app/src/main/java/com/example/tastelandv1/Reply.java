@@ -37,8 +37,7 @@ public class Reply extends AppCompatActivity {
 
         // 3. Initialize list with the original post (Green)
         threadMessages = new ArrayList<>();
-        threadMessages.add(new ChatMessage(originalSender, originalText, originalTime, 0, 0, true));
-
+        threadMessages.add(new ChatMessage(null, originalSender, originalText, originalTime, true));
         // 4. Setup RecyclerView
         RecyclerView rv = findViewById(R.id.rvChatMessages);
         adapter = new ChatAdapter(threadMessages,true);
@@ -52,8 +51,18 @@ public class Reply extends AppCompatActivity {
         btnSend.setOnClickListener(v -> {
             String text = etMessage.getText().toString().trim();
             if (!text.isEmpty()) {
+                SessionManager session = new SessionManager(this); // Initialize the manager
+                String currentUserId = session.getUserId();       // Get ID from teammate's code
+                String currentUserName = session.getUsername();
                 // Here isMainPost = false, so it appears as a Grey bubble
-                ChatMessage reply = new ChatMessage("You", text, "Just now", 0, 0, false);
+                ChatMessage reply = new ChatMessage(
+                        currentUserId,
+                        currentUserName,
+                        text,
+                        "Just now",
+                        false
+                );
+
                 threadMessages.add(reply);
                 adapter.notifyItemInserted(threadMessages.size() - 1);
                 rv.scrollToPosition(threadMessages.size() - 1);
