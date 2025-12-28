@@ -61,7 +61,7 @@
                 android:drawablePadding="4dp"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
-                android:text="Reply"
+                android:text="@string/reply"
                 android:textAllCaps="false"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"

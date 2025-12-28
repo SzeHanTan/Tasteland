@@ -96,4 +96,27 @@ public interface SupabaseAPI {
             @Query("id") String idFilter // Pass "eq." + item.id
     );
 
+    @GET("rest/v1/community_posts")
+    Call<List<ChatMessage>> getCommunityPosts(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("select") String select, // Use "*"
+            @Query("order") String order    // Use "created_at.asc"
+    );
+
+    @POST("rest/v1/community_posts")
+    Call<Void> postMessage(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Header("Prefer") String returnType,
+            @Body ChatMessage message
+    );
+    @PATCH("rest/v1/community_posts")
+    Call<Void> updateLikeCount(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter, // e.g., "eq.101"
+            @Body Map<String, Object> updateData
+    );
+
 }
