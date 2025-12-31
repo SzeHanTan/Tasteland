@@ -22,16 +22,27 @@ public class Community extends AppCompatActivity {
     private ChatAdapter adapter;
     private List<ChatMessage> messageList;
     private SupabaseAPI supabaseService;
+    private String currentGroupId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
 
-        // 1. Initialize Supabase Service
+        // 1. Get Data from Intent
+        currentGroupId = getIntent().getStringExtra("community_id");
+        String communityName = getIntent().getStringExtra("community_name");
+        String invitationCode = getIntent().getStringExtra("invitation_code");
+
+        // 2. Initialize Supabase Service
         supabaseService = RetrofitClient.getInstance().getApi();
 
-        // 2. Initialize List and Adapter first (so fetchMessages doesn't crash)
+        // 3. Initialize UI Components
+        TextView nameView = findViewById(R.id.tvCommunityName);
+        TextView codeView = findViewById(R.id.tvInvitationCode);
+        if (communityName != null) nameView.setText(communityName);
+        if (invitationCode != null) codeView.setText("[" + invitationCode + "]");
+
         messageList = new ArrayList<>();
         adapter = new ChatAdapter(messageList, false);
 
@@ -39,13 +50,8 @@ public class Community extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(adapter);
 
-        // 3. Load Real Data from Cloud
+        // 4. Load Messages for this SPECIFIC Group
         fetchMessages();
-
-        // 4. Setup Toolbar (Name and Back Button)
-        String communityName = getIntent().getStringExtra("community_name");
-        TextView nameView = findViewById(R.id.tvCommunityName);
-        if (communityName != null) nameView.setText(communityName);
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
@@ -63,21 +69,22 @@ public class Community extends AppCompatActivity {
             String text = etMessage.getText().toString().trim();
 
             if (!text.isEmpty()) {
-                SessionManager session = new SessionManager(this); // Initialize the manager
-                String currentUserId = session.getUserId();       // Retrieves the ID from memory
+                SessionManager session = new SessionManager(this);
+                String currentUserId = session.getUserId();
                 String currentUserName = session.getUsername();
 
+                // Pass Group ID to ensure the message is saved in the correct group
                 ChatMessage newMessage = new ChatMessage(
+                        currentGroupId,
                         currentUserId,
                         currentUserName,
                         text,
-                        "Just now",
-                        true
+                        "text" // Default type
                 );
 
                 String authHeader = "Bearer " + session.getToken();
 
-                supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal",newMessage)
+                supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", newMessage)
                         .enqueue(new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -85,7 +92,6 @@ public class Community extends AppCompatActivity {
                                     fetchMessages();
                                     etMessage.setText("");
                                 } else {
-                                    // This will tell you if the server rejected it (e.g., error 401 or 400)
                                     Toast.makeText(Community.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -98,14 +104,14 @@ public class Community extends AppCompatActivity {
         });
     }
 
-    // --- HELPER METHODS (Moved outside of onCreate) ---
-
     private void fetchMessages() {
+        if (currentGroupId == null) return;
+
         SessionManager session = new SessionManager(this);
         String authHeader = "Bearer " + session.getToken();
 
-        // Using teammate's query style: fetch all (*) ordered by time
-        supabaseService.getCommunityPosts(RetrofitClient.SUPABASE_KEY, authHeader, "*", "created_at.asc")
+        // Filter messages by group_id so users only see chat from THIS community
+        supabaseService.getCommunityPosts(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + currentGroupId, "*", "created_at.asc")
                 .enqueue(new Callback<List<ChatMessage>>() {
                     @Override
                     public void onResponse(Call<List<ChatMessage>> call, Response<List<ChatMessage>> response) {
@@ -114,7 +120,6 @@ public class Community extends AppCompatActivity {
                             messageList.addAll(response.body());
                             adapter.notifyDataSetChanged();
 
-                            // Optional: Scroll to the latest message
                             RecyclerView rv = findViewById(R.id.rvChatMessages);
                             if (messageList.size() > 0) {
                                 rv.scrollToPosition(messageList.size() - 1);

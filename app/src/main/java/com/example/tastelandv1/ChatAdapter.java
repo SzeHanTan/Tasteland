@@ -10,30 +10,31 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-// Change the generic type to <RecyclerView.ViewHolder> to allow multiple types
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ChatMessage> messageList;
 
-    // Ensure these names match what you use in onCreateViewHolder
     private static final int TYPE_MAIN_POST = 0;
     private static final int TYPE_REPLY = 1;
+    private static final int TYPE_RECIPE = 2;
+    private static final int TYPE_LEFTOVER = 3;
 
     private boolean isReplyPage;
 
-    // Update constructor to accept this new boolean
     public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage) {
         this.messageList = messageList;
         this.isReplyPage = isReplyPage;
     }
-    public ChatAdapter(List<ChatMessage> messageList) {
-        this.messageList = messageList;
-    }
 
     @Override
     public int getItemViewType(int position) {
-        // Use the constants defined above
-        return messageList.get(position).isMainPost() ? TYPE_MAIN_POST : TYPE_REPLY;
+        ChatMessage msg = messageList.get(position);
+        
+        // Use messageType to decide layout
+        if ("recipe".equals(msg.getMessageType())) return TYPE_RECIPE;
+        if ("leftover".equals(msg.getMessageType())) return TYPE_LEFTOVER;
+        
+        return msg.isMainPost() ? TYPE_MAIN_POST : TYPE_REPLY;
     }
 
     @Override
@@ -44,14 +45,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_MAIN_POST) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_chat_main_post, parent, false);
-            return new MainPostViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_chat_reply, parent, false);
-            return new ReplyViewHolder(view);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        
+        switch (viewType) {
+            case TYPE_RECIPE:
+                // Placeholder: replace with your actual recipe card layout
+                View recipeView = inflater.inflate(R.layout.item_chat_main_post, parent, false); 
+                return new MainPostViewHolder(recipeView);
+            case TYPE_LEFTOVER:
+                // Placeholder: replace with your actual leftover card layout
+                View leftoverView = inflater.inflate(R.layout.item_chat_main_post, parent, false);
+                return new MainPostViewHolder(leftoverView);
+            case TYPE_MAIN_POST:
+                View mainView = inflater.inflate(R.layout.item_chat_main_post, parent, false);
+                return new MainPostViewHolder(mainView);
+            default:
+                View replyView = inflater.inflate(R.layout.item_chat_reply, parent, false);
+                return new ReplyViewHolder(replyView);
         }
     }
 
@@ -62,15 +72,27 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof MainPostViewHolder) {
             MainPostViewHolder mainHolder = (MainPostViewHolder) holder;
 
-            // --- 1. REPLY BUTTON LOGIC ---
+            // Basic Text Updates
+            mainHolder.tvSender.setText(msg.getSenderName());
+            mainHolder.tvText.setText(msg.getMessageText());
+            mainHolder.tvTime.setText(msg.getTime());
+            mainHolder.tvLikes.setText(String.valueOf(msg.getLikeCount()));
+
+            // Handle special content labels if it's a recipe or leftover
+            if ("recipe".equals(msg.getMessageType())) {
+                mainHolder.tvText.setText("📖 Recipe: " + msg.getMessageText());
+            } else if ("leftover".equals(msg.getMessageType())) {
+                mainHolder.tvText.setText("🍎 Leftover: " + msg.getMessageText());
+            }
+
+            // UI logic for Like/Reply (Keep your existing logic)
             if (isReplyPage) {
-                // Hide the reply button in Pic 2
                 mainHolder.btnReply.setVisibility(View.GONE);
             } else {
-                // Show the reply button in Pic 1
                 mainHolder.btnReply.setVisibility(View.VISIBLE);
                 mainHolder.btnReply.setOnClickListener(v -> {
                     Intent intent = new Intent(v.getContext(), Reply.class);
+                    intent.putExtra("message_id", msg.getId());
                     intent.putExtra("sender_name", msg.getSenderName());
                     intent.putExtra("message_text", msg.getMessageText());
                     intent.putExtra("time", msg.getTime());
@@ -78,32 +100,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
             }
 
-            // --- 2. LIKE BUTTON LOGIC (Always shown) ---
-            mainHolder.tvLikes.setText(String.valueOf(msg.getLikeCount()));
-            if (msg.isLikedByUser()) {
-                mainHolder.layoutLikeActive.setVisibility(View.VISIBLE);
-                mainHolder.layoutLikeInactive.setVisibility(View.GONE);
-            } else {
-                mainHolder.layoutLikeActive.setVisibility(View.GONE);
-                mainHolder.layoutLikeInactive.setVisibility(View.VISIBLE);
-            }
-
-            // 1. Set text content
-            mainHolder.tvSender.setText(msg.getSenderName());
-            mainHolder.tvText.setText(msg.getMessageText());
-            mainHolder.tvTime.setText(msg.getTime());
-            mainHolder.tvLikes.setText(String.valueOf(msg.getLikeCount()));
-
-            // 2. Handle Like Toggle UI
-            if (msg.isLikedByUser()) {
-                mainHolder.layoutLikeActive.setVisibility(View.VISIBLE);
-                mainHolder.layoutLikeInactive.setVisibility(View.GONE);
-            } else {
-                mainHolder.layoutLikeActive.setVisibility(View.GONE);
-                mainHolder.layoutLikeInactive.setVisibility(View.VISIBLE);
-            }
-
-            // 3. Like Click Listeners
+            // Like logic
             View.OnClickListener likeListener = v -> {
                 boolean liked = msg.isLikedByUser();
                 msg.setLikedByUser(!liked);
@@ -113,17 +110,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mainHolder.layoutLikeActive.setOnClickListener(likeListener);
             mainHolder.layoutLikeInactive.setOnClickListener(likeListener);
 
-            // 4. Reply Click Listener
-            mainHolder.btnReply.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(), Reply.class);
-                intent.putExtra("sender_name", msg.getSenderName());
-                intent.putExtra("message_text", msg.getMessageText());
-                intent.putExtra("time", msg.getTime());
-
-                intent.putExtra("hide_like", true);
-                v.getContext().startActivity(intent);
-            });
-
         } else if (holder instanceof ReplyViewHolder) {
             ReplyViewHolder replyHolder = (ReplyViewHolder) holder;
             replyHolder.tvSender.setText(msg.getSenderName());
@@ -132,14 +118,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // --- VIEW HOLDERS ---
-
-    // ViewHolder for the Green Bubble (Main Post)
     public static class MainPostViewHolder extends RecyclerView.ViewHolder {
         TextView tvSender, tvText, tvTime, tvLikes;
         Button btnReply;
-        View layoutLikeActive;
-        View layoutLikeInactive;
+        View layoutLikeActive, layoutLikeInactive;
 
         public MainPostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -153,10 +135,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // ViewHolder for the Grey Bubble (Replies)
     public static class ReplyViewHolder extends RecyclerView.ViewHolder {
         TextView tvSender, tvText, tvTime;
-
         public ReplyViewHolder(@NonNull View itemView) {
             super(itemView);
             tvSender = itemView.findViewById(R.id.tvSenderNameReply);

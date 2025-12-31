@@ -96,12 +96,36 @@ public interface SupabaseAPI {
             @Query("id") String idFilter // Pass "eq." + item.id
     );
 
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getCommunities(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("select") String select
+    );
+
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getCommunityByCode(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("invitation_code") String codeFilter, // e.g., "eq.klangk"
+            @Query("select") String select
+    );
+
+    @POST("rest/v1/communities")
+    Call<Void> createCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Header("Prefer") String returnType,
+            @Body CommunityModel community
+    );
+
     @GET("rest/v1/community_posts")
     Call<List<ChatMessage>> getCommunityPosts(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("select") String select, // Use "*"
-            @Query("order") String order    // Use "created_at.asc"
+            @Query("group_id") String groupIdFilter, // New: filter by group
+            @Query("select") String select,         // Use "*"
+            @Query("order") String order            // Use "created_at.asc"
     );
 
     @POST("rest/v1/community_posts")
@@ -111,6 +135,7 @@ public interface SupabaseAPI {
             @Header("Prefer") String returnType,
             @Body ChatMessage message
     );
+
     @PATCH("rest/v1/community_posts")
     Call<Void> updateLikeCount(
             @Header("apikey") String apiKey,

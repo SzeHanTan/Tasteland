@@ -73,8 +73,8 @@ public class ShoppingList extends Fragment {
             public void run() {
                 if (view.getHeight() < 800) {
                     // Hide headers if the view is small
-                    View ivHeader = view.findViewById(R.id.IVHeader);
-                    if (ivHeader != null) ivHeader.setVisibility(View.GONE);
+                    //View ivHeader = view.findViewById(R.id.IVHeader);
+                    //if (ivHeader != null) ivHeader.setVisibility(View.GONE);
 
                     //View chatBtn = view.findViewById(R.id.IBMyFoodHeaderChat);
                     //if (chatBtn != null) chatBtn.setVisibility(View.GONE);
