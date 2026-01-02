@@ -1,13 +1,17 @@
 package com.example.tastelandv1;
 
 import com.google.gson.annotations.SerializedName;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ChatMessage {
 
     @SerializedName("id")
     private Integer id;
 
-    @SerializedName("group_id") // Links to the specific community
+    @SerializedName("group_id")
     private String groupId;
 
     @SerializedName("user_id")
@@ -19,17 +23,17 @@ public class ChatMessage {
     @SerializedName("message_text")
     private String messageText;
 
-    @SerializedName("message_type") // "text", "recipe", "leftover", "media"
+    @SerializedName("message_type")
     private String messageType;
 
-    @SerializedName("parent_message_id") // For replies, null if main post
+    @SerializedName("parent_message_id")
     private Integer parentMessageId;
 
     @SerializedName("is_pinned")
     private boolean isPinned;
 
-    @SerializedName("time_label")
-    private String timeLabel;
+    @SerializedName("created_at") // Real timestamp from Supabase
+    private String createdAt;
 
     @SerializedName("like_count")
     private int likeCount;
@@ -40,24 +44,41 @@ public class ChatMessage {
     @SerializedName("is_main_post")
     private boolean isMainPost;
 
-    // Transient field for local UI state
     private transient boolean isLikedByUser;
 
-    // Updated Constructor for a NEW message
     public ChatMessage(String groupId, String userId, String senderName, String messageText, String messageType) {
         this.groupId = groupId;
         this.userId = userId;
         this.senderName = senderName;
         this.messageText = messageText;
         this.messageType = messageType;
-        this.timeLabel = "Just now";
         this.isMainPost = true;
         this.isPinned = false;
         this.likeCount = 0;
         this.replyCount = 0;
     }
 
-    // --- Getters and Setters ---
+    public String getTime() {
+        if (createdAt == null) return "Just now";
+        try {
+            // Convert Supabase ISO timestamp (2023-12-28T...) to readable time
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = sdf.parse(createdAt);
+            
+            SimpleDateFormat displayFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+            displayFormat.setTimeZone(TimeZone.getDefault());
+            return displayFormat.format(date);
+        } catch (Exception e) {
+            return "Just now";
+        }
+    }
+
+    public String getTimeFull() {
+        return createdAt;
+    }
+
+    // Getters and Setters
     public Integer getId() { return id; }
     public String getGroupId() { return groupId; }
     public String getUserId() { return userId; }
@@ -66,7 +87,6 @@ public class ChatMessage {
     public String getMessageType() { return messageType; }
     public Integer getParentMessageId() { return parentMessageId; }
     public boolean isPinned() { return isPinned; }
-    public String getTime() { return timeLabel; }
     public int getLikeCount() { return likeCount; }
     public int getReplyCount() { return replyCount; }
     public boolean isMainPost() { return isMainPost; }
@@ -76,4 +96,5 @@ public class ChatMessage {
     public void setPinned(boolean pinned) { isPinned = pinned; }
     public void setLikedByUser(boolean likedByUser) { this.isLikedByUser = likedByUser; }
     public void setLikeCount(int likeCount) { this.likeCount = likeCount; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 }

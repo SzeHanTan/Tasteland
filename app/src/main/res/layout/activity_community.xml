@@ -79,6 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:visibility="gone"
         app:cardBackgroundColor="#DDE7C7"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
@@ -96,6 +97,7 @@
                 android:src="@drawable/ic_pin" />
 
             <TextView
+                android:id="@+id/tvPinnedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,8 +17,13 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -31,11 +37,26 @@ public class GroupChatList extends AppCompatActivity {
     private List<CommunityModel> communityList;
     private List<CommunityModel> filteredList;
     private SupabaseAPI supabaseService;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat_list);
+
+        session = new SessionManager(this);
+        if (session.getToken() == null) {
+            startActivity(new Intent(this, Login.class));
+            finish();
+            return;
+        }
+
+        // Header Setup
+        TextView tvDate = findViewById(R.id.tvDate);
+        TextView tvWelcome = findViewById(R.id.tvWelcome);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMMM", Locale.getDefault());
+        tvDate.setText(sdf.format(Calendar.getInstance().getTime()));
+        tvWelcome.setText("Hi, " + session.getUsername());
 
         supabaseService = RetrofitClient.getInstance().getApi();
         recyclerView = findViewById(R.id.recyclerViewCommunity);
@@ -48,61 +69,63 @@ public class GroupChatList extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Fetch real data from Supabase instead of mocking
-        fetchCommunities();
+        // Fetch ALL available communities to ensure the list is not empty
+        fetchAllCommunities();
 
         setupSearch(searchView);
 
         ImageButton btnNotification = findViewById(R.id.btnNotification);
-        btnNotification.setOnClickListener(v -> {
-            Intent intent = new Intent(GroupChatList.this, Notification.class);
-            startActivity(intent);
-        });
+        btnNotification.setOnClickListener(v -> startActivity(new Intent(GroupChatList.this, Notification.class)));
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         bottomNav.setSelectedItemId(R.id.nav_home);
-
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_new_team) {
-                showCommunityDialog(true);
-                return false;
-            } else if (id == R.id.nav_join_team) {
-                showCommunityDialog(false);
-                return false;
-            } else if (id == R.id.nav_home) {
-                return true;
-            }
-            return false;
+            if (id == R.id.nav_new_team) { showCommunityDialog(true); return false; }
+            if (id == R.id.nav_join_team) { showCommunityDialog(false); return false; }
+            return id == R.id.nav_home;
         });
     }
 
-    private void fetchCommunities() {
-        SessionManager session = new SessionManager(this);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchAllCommunities();
+    }
+
+    private void fetchAllCommunities() {
         String authHeader = "Bearer " + session.getToken();
 
+        // Pass 3 parameters to match getCommunities signature in SupabaseAPI.java:
+        // apiKey, authHeader, select (*)
         supabaseService.getCommunities(RetrofitClient.SUPABASE_KEY, authHeader, "*")
                 .enqueue(new Callback<List<CommunityModel>>() {
-                    @Override
-                    public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            communityList.clear();
-                            communityList.addAll(response.body());
-                            
-                            // Re-apply current search filter if any
-                            filteredList.clear();
-                            filteredList.addAll(communityList);
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            Toast.makeText(GroupChatList.this, "Failed to load communities", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+            @Override
+            public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    communityList.clear();
+                    communityList.addAll(response.body());
+                    filteredList.clear();
+                    filteredList.addAll(communityList);
+                    adapter.notifyDataSetChanged();
+                } else if (response.code() == 401) {
+                    handleSessionExpired();
+                } else {
+                    Log.e("Supabase", "Fetch error: " + response.code());
+                }
+            }
 
-                    @Override
-                    public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
-                        Toast.makeText(GroupChatList.this, "Network Error", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+                Toast.makeText(GroupChatList.this, "Failed to load groups", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void handleSessionExpired() {
+        session.logout();
+        startActivity(new Intent(this, Login.class));
+        finish();
     }
 
     private void setupSearch(SearchView searchView) {
@@ -113,9 +136,7 @@ public class GroupChatList extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 filteredList.clear();
                 for (CommunityModel item : communityList) {
-                    if (item.getName().toLowerCase().contains(newText.toLowerCase())) {
-                        filteredList.add(item);
-                    }
+                    if (item.getName().toLowerCase().contains(newText.toLowerCase())) filteredList.add(item);
                 }
                 adapter.notifyDataSetChanged();
                 return true;
@@ -123,117 +144,73 @@ public class GroupChatList extends AppCompatActivity {
         });
     }
 
-    private String generateInvitationCode() {
-        String chars = "abcdefghijklmnopqrstuvwxyz";
-        StringBuilder code = new StringBuilder();
-        Random rnd = new Random();
-        while (code.length() < 6) {
-            int index = (int) (rnd.nextFloat() * chars.length());
-            code.append(chars.charAt(index));
-        }
-        return code.toString();
-    }
-
     private void showCommunityDialog(boolean isNewTeam) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_team_action, null);
-
         TextView title = view.findViewById(R.id.tvDialogTitle);
         EditText input = view.findViewById(R.id.etTeamInput);
         Button confirm = view.findViewById(R.id.btnConfirm);
 
-        if (isNewTeam) {
-            title.setText("Create New Community");
-            input.setHint("Enter community name...");
-        } else {
-            title.setText("Join a Community");
-            input.setHint("Enter invitation code...");
-        }
+        title.setText(isNewTeam ? "Create New Community" : "Join a Community");
+        input.setHint(isNewTeam ? "Enter community name..." : "Enter invitation code...");
 
         builder.setView(view);
         androidx.appcompat.app.AlertDialog dialog = builder.create();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-        }
+        if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
 
         confirm.setOnClickListener(v -> {
             String value = input.getText().toString().trim().toLowerCase();
             if (!value.isEmpty()) {
-                if (isNewTeam) {
-                    createNewCommunity(value);
-                } else {
-                    joinCommunityByCode(value);
-                }
+                if (isNewTeam) createNewCommunity(value); else joinByCode(value);
                 dialog.dismiss();
-            } else {
-                input.setError("Field cannot be empty");
-            }
+            } else { input.setError("Field cannot be empty"); }
         });
         dialog.show();
     }
 
     private void createNewCommunity(String name) {
         String code = generateInvitationCode();
-        // Default image resource for new communities
-        int defaultImage = R.drawable.ic_groups; 
-        CommunityModel newComm = new CommunityModel(name, defaultImage, code);
-        
-        SessionManager session = new SessionManager(this);
+        CommunityModel newComm = new CommunityModel(name, R.drawable.ic_groups, code);
         String authHeader = "Bearer " + session.getToken();
 
-        supabaseService.createCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", newComm)
-                .enqueue(new Callback<Void>() {
+        // Updated Callback type to match Call<List<CommunityModel>>
+        supabaseService.createCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "return=representation", newComm)
+                .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful()) {
-                            fetchCommunities(); // Refresh list from server
-                            Toast.makeText(GroupChatList.this, "Community Created! Code: " + code, Toast.LENGTH_LONG).show();
+                            fetchAllCommunities();
+                            Toast.makeText(GroupChatList.this, "Community Created!", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(GroupChatList.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GroupChatList.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                         }
                     }
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Toast.makeText(GroupChatList.this, "Network Failed", Toast.LENGTH_SHORT).show();
-                    }
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) { Toast.makeText(GroupChatList.this, "Creation Failed", Toast.LENGTH_SHORT).show(); }
                 });
     }
 
-    private void joinCommunityByCode(String code) {
-        // 1. Check if user already joined this community locally
-        for (CommunityModel comm : communityList) {
-            if (comm.getInvitationCode() != null && comm.getInvitationCode().equals(code)) {
-                Toast.makeText(this, "You are already in the \"" + comm.getName() + "\" community.", Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-
-        // 2. Fetch from Supabase
-        SessionManager session = new SessionManager(this);
-        String authHeader = "Bearer " + session.getToken();
-
-        supabaseService.getCommunityByCode(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + code, "*")
+    private void joinByCode(String code) {
+        // In "See All" mode, we just check if it exists and show success
+        supabaseService.getCommunityByCode(RetrofitClient.SUPABASE_KEY, "Bearer " + session.getToken(), "eq." + code, "*")
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            CommunityModel joined = response.body().get(0);
-                            
-                            // In a real production app with membership, you would also save 
-                            // the user-community relationship here. 
-                            // For now, we just add it to the visible list.
-                            communityList.add(0, joined);
-                            filteredList.add(0, joined);
-                            adapter.notifyItemInserted(0);
-                            Toast.makeText(GroupChatList.this, "Joined " + joined.getName(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GroupChatList.this, "Community Joined!", Toast.LENGTH_SHORT).show();
+                            fetchAllCommunities();
                         } else {
                             Toast.makeText(GroupChatList.this, "Invalid Invitation Code", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    @Override
-                    public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
-                        Toast.makeText(GroupChatList.this, "Search Failed", Toast.LENGTH_SHORT).show();
-                    }
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) { Toast.makeText(GroupChatList.this, "Search failed", Toast.LENGTH_SHORT).show(); }
                 });
+    }
+
+    private String generateInvitationCode() {
+        String chars = "abcdefghijklmnopqrstuvwxyz";
+        StringBuilder code = new StringBuilder();
+        Random rnd = new Random();
+        while (code.length() < 6) code.append(chars.charAt(rnd.nextInt(chars.length())));
+        return code.toString();
     }
 }
