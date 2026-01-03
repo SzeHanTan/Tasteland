@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- This container will hold your fragments -->
-
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
@@ -49,5 +47,19 @@
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@+id/header_container"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"/>
+
+    <!-- UNIVERSAL BACK BUTTON: Absolute top layer -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/universal_back_button"
+        android:name="com.example.tastelandv1.BackButtonFragment"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:elevation="20dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_back_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

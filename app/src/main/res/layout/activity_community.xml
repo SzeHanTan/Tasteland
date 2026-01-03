@@ -17,7 +17,7 @@
         android:background="#E8F1D4"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Space for the back button -->
+        <!-- Space reserved for the back button fragment -->
         <View
             android:id="@+id/back_space"
             android:layout_width="56dp"
@@ -159,15 +159,15 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Moving the back button to the absolute front layer (last child) and adding elevation -->
+    <!-- BACK BUTTON FRAGMENT - Placed at the end to be on the top layer -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/back_button_fragment"
         android:name="com.example.tastelandv1.BackButtonFragment"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:elevation="10dp"
+        android:layout_marginTop="8dp"
+        android:elevation="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/fragment_back_button" />

@@ -7,8 +7,6 @@
     android:background="@color/lightgreen"
     tools:context=".MyFoodFragment">
 
-
-
     <!-- "My Food" White Box -->
     <TextView
         android:id="@+id/TVShoppingListTitle"
@@ -44,10 +42,11 @@
 
     <!-- SCROLLABLE AREA FOR LISTS -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/fragment_add_food"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_add_food_container"
         app:layout_constraintTop_toBottomOf="@+id/TVShoppingListTitle">
 
         <LinearLayout
@@ -112,9 +111,9 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Fragment container for the "Add Food" panel -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_add_food"
+    <!-- FrameLayout container for the "Add Food" panel -->
+    <FrameLayout
+        android:id="@+id/fragment_add_food_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

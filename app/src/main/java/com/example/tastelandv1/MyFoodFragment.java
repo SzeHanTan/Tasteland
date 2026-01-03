@@ -198,10 +198,10 @@ public class MyFoodFragment extends Fragment {
 
     private void showAddFoodFragment() {
         FragmentManager fragmentManager = getChildFragmentManager();
-        if (fragmentManager.findFragmentById(R.id.fragment_add_food) == null) {
+        if (fragmentManager.findFragmentById(R.id.fragment_add_food_container) == null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.setReorderingAllowed(true);
-            fragmentTransaction.replace(R.id.fragment_add_food, AddFood.class, null);
+            fragmentTransaction.replace(R.id.fragment_add_food_container, AddFood.class, null);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
