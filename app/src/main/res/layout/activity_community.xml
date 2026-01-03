@@ -17,15 +17,12 @@
         android:background="#E8F1D4"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnBack"
+        <!-- Space reserved for the back button fragment -->
+        <View
+            android:id="@+id/back_space"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginStart="8dp"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,9 +36,39 @@
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintTop_toTopOf="@id/btnBack" />
+            app:layout_constraintBottom_toBottomOf="@id/back_space"
+            app:layout_constraintStart_toEndOf="@id/back_space"
+            app:layout_constraintTop_toTopOf="@id/back_space" />
+
+        <LinearLayout
+            android:id="@+id/llCodeContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical"
+            android:gravity="start"
+            app:layout_constraintBottom_toBottomOf="@id/tvCommunityName"
+            app:layout_constraintStart_toEndOf="@id/tvCommunityName"
+            app:layout_constraintTop_toTopOf="@id/tvCommunityName">
+
+            <TextView
+                android:id="@+id/tvInvitationCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[code]"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCodeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invitation Code"
+                android:textColor="@color/darkgrey"
+                android:textSize="10sp" />
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.cardview.widget.CardView
@@ -49,6 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:visibility="gone"
         app:cardBackgroundColor="#DDE7C7"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
@@ -66,6 +94,7 @@
                 android:src="@drawable/ic_pin" />
 
             <TextView
+                android:id="@+id/tvPinnedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -129,5 +158,18 @@
             app:layout_constraintTop_toTopOf="@+id/etMessage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- BACK BUTTON FRAGMENT - Placed at the end to be on the top layer -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/back_button_fragment"
+        android:name="com.example.tastelandv1.BackButtonFragment"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:elevation="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_back_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

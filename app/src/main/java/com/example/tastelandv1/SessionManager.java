@@ -6,34 +6,45 @@ import android.content.SharedPreferences;
 public class SessionManager {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_TOKEN = "access_token";
-    private static final String KEY_USER_ID = "user_id"; // New key for the UUID
+    private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USERNAME = "username";
     private SharedPreferences prefs;
 
     public SessionManager(Context context) {
-        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        if (context != null) {
+            prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        }
     }
 
-    // Updated to save both the token and the unique user ID
-    public void saveSession(String token, String userId) {
+    public void saveSession(String token, String userId, String username) {
+        if (prefs == null) return;
         prefs.edit()
                 .putString(KEY_TOKEN, token)
                 .putString(KEY_USER_ID, userId)
+                .putString(KEY_USERNAME, username)
                 .apply();
     }
 
-    public String getToken() {
-        return prefs.getString(KEY_TOKEN, null);
+    public boolean isLoggedIn() {
+        if (prefs == null) return false;
+        String token = prefs.getString(KEY_TOKEN, null);
+        return token != null && !token.trim().isEmpty();
     }
 
-    // This is the method that was missing!
+    public String getToken() {
+        return prefs != null ? prefs.getString(KEY_TOKEN, null) : null;
+    }
+
     public String getUserId() {
-        return prefs.getString(KEY_USER_ID, null);
+        return prefs != null ? prefs.getString(KEY_USER_ID, null) : null;
     }
 
     public void logout() {
+        if (prefs == null) return;
         prefs.edit().clear().apply();
     }
 
-    public String getUsername() {return prefs.getString("username", "Anonymous"); // The name shown in the chat
+    public String getUsername() {
+        return prefs != null ? prefs.getString(KEY_USERNAME, "User") : "User";
     }
 }

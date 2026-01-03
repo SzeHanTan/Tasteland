@@ -1,13 +1,25 @@
 package com.example.tastelandv1;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CommunityModel {
 
+    @SerializedName("id")
+    private Integer id;
+
+    @SerializedName("name")
     private String name;
+
+    @SerializedName("image_res")
     private int imageRes;
 
-    public CommunityModel(String name, int imageRes) {
+    @SerializedName("invitation_code")
+    private String invitationCode;
+
+    public CommunityModel(String name, int imageRes, String invitationCode) {
         this.name = name;
         this.imageRes = imageRes;
+        this.invitationCode = invitationCode;
     }
 
     public String getName() {
@@ -16,5 +28,17 @@ public class CommunityModel {
 
     public int getImageRes() {
         return imageRes;
+    }
+
+    public String getInvitationCode() {
+        return invitationCode;
+    }
+
+    public void setInvitationCode(String invitationCode) {
+        this.invitationCode = invitationCode;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,6 +24,14 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // --- NEW: Skip Login if already logged in ---
+        SessionManager sessionManager = new SessionManager(this);
+        if (sessionManager.isLoggedIn()) {
+            navigateToMain();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         // 1. Initialize Views
@@ -66,25 +78,12 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            // 1. Extract both the Token AND the User ID
                             String token = response.body().access_token;
-                            String userId = response.body().user.id; // Extract the UUID
+                            String userId = response.body().user.id;
 
-                            // 2. Save BOTH to the SessionManager
-                            SessionManager session = new SessionManager(Login.this);
-
-                            // Use the new method we added to SessionManager
-                            session.saveSession(token, userId);
-
-                            Toast.makeText(Login.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-
-                            // 3. Navigate to MainActivity
-                            Intent intent = new Intent(Login.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
+                            // Now fetch the actual profile to get the full name
+                            fetchProfileAndNavigate(token, userId);
                         } else {
-                            // Handle login failure
                             Toast.makeText(Login.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -94,6 +93,46 @@ public class Login extends AppCompatActivity {
                         Toast.makeText(Login.this, "Network Error: Check your internet", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void fetchProfileAndNavigate(String token, String userId) {
+        String authHeader = "Bearer " + token;
+        RetrofitClient.getInstance().getApi().getMyProfile(RetrofitClient.SUPABASE_KEY, authHeader)
+                .enqueue(new Callback<List<UserProfile>>() {
+                    @Override
+                    public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
+                        String username = "User"; // Default fallback
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                            UserProfile profile = response.body().get(0);
+                            username = profile.getFullName();
+                            if (username == null || username.isEmpty()) {
+                                username = "New User";
+                            }
+                        }
+
+                        // Save session with actual username
+                        SessionManager session = new SessionManager(Login.this);
+                        session.saveSession(token, userId, username);
+
+                        Toast.makeText(Login.this, "Login Successful! Welcome " + username, Toast.LENGTH_SHORT).show();
+                        navigateToMain();
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<UserProfile>> call, Throwable t) {
+                        // Even if profile fetch fails, we save what we have and proceed
+                        SessionManager session = new SessionManager(Login.this);
+                        session.saveSession(token, userId, "User");
+                        navigateToMain();
+                    }
+                });
+    }
+
+    private void navigateToMain() {
+        Intent intent = new Intent(Login.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
 

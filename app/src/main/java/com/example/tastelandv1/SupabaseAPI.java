@@ -41,7 +41,7 @@ public interface SupabaseAPI {
     @GET("rest/v1/shopping_items?select=*&order=id.asc")
     Call<List<ShoppingItem>> getItems(
             @Header("apikey") String apiKey,
-            @Header("Authorization") String token // We now pass the user token here
+            @Header("Authorization") String token
     );
 
     @POST("rest/v1/shopping_items")
@@ -62,7 +62,7 @@ public interface SupabaseAPI {
     Call<Void> updateProfile(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("id") String idQuery, // We need to specify WHICH row to update (eq.USER_ID)
+            @Query("id") String idQuery,
             @Body UserProfile profile
     );
 
@@ -71,7 +71,7 @@ public interface SupabaseAPI {
             @Header("Authorization") String token,
             @Header("apikey") String apiKey,
             @Query("select") String select,
-            @Query("order") String order // To sort by dueDate
+            @Query("order") String order
     );
 
     @PATCH("rest/v1/food_items")
@@ -93,15 +93,60 @@ public interface SupabaseAPI {
     Call<Void> deleteFoodItem(
             @Header("Authorization") String token,
             @Header("apikey") String apiKey,
-            @Query("id") String idFilter // Pass "eq." + item.id
+            @Query("id") String idFilter
     );
+
+    // --- COMMUNITY & MEMBERSHIP ---
+
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getCommunities(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("select") String select
+    );
+
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getMyJoinedCommunities(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("select") String select, 
+            @Query("community_members.user_id") String userIdFilter
+    );
+
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getCommunityByCode(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("invitation_code") String codeFilter,
+            @Query("select") String select
+    );
+
+    @POST("rest/v1/communities")
+    Call<List<CommunityModel>> createCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Header("Prefer") String returnType,
+            @Body CommunityModel community
+    );
+
+    @POST("rest/v1/community_members")
+    Call<Void> joinCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Body Map<String, Object> membershipData
+    );
+
+    // --- MESSAGING ---
 
     @GET("rest/v1/community_posts")
     Call<List<ChatMessage>> getCommunityPosts(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("select") String select, // Use "*"
-            @Query("order") String order    // Use "created_at.asc"
+            @Query("group_id") String groupIdFilter,
+            @Query("parent_message_id") String parentIdFilter,
+            @Query("is_pinned") String isPinnedFilter,
+            @Query("select") String select,
+            @Query("order") String order
     );
 
     @POST("rest/v1/community_posts")
@@ -111,12 +156,45 @@ public interface SupabaseAPI {
             @Header("Prefer") String returnType,
             @Body ChatMessage message
     );
+
     @PATCH("rest/v1/community_posts")
     Call<Void> updateLikeCount(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("id") String idFilter, // e.g., "eq.101"
+            @Query("id") String idFilter,
             @Body Map<String, Object> updateData
     );
 
+    @PATCH("rest/v1/community_posts")
+    Call<Void> updatePinStatus(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter,
+            @Query("group_id") String groupFilter,
+            @Body Map<String, Object> updateData
+    );
+
+    // --- LIKE TRACKING ---
+
+    @GET("rest/v1/message_likes")
+    Call<List<Map<String, Object>>> getMyLikes(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("user_id") String userIdFilter
+    );
+
+    @POST("rest/v1/message_likes")
+    Call<Void> addLikeRecord(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Body Map<String, Object> likeData
+    );
+
+    @DELETE("rest/v1/message_likes")
+    Call<Void> removeLikeRecord(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("user_id") String userIdFilter,
+            @Query("message_id") String messageIdFilter
+    );
 }
