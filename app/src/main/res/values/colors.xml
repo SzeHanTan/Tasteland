@@ -3,8 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="lightgreen">#F1FDE1</color>
-    <color name="mediumgreen">#BAC6AC</color>
+    <color name="mediumgreen">#DBE7CC</color>
     <color name="darkgreen">#3A5716</color>
+    <color name="darkgrey">#333333</color>
     <color name="grey">#888888</color>
     <color name="lightblue">#D9D9EB</color>
 </resources>

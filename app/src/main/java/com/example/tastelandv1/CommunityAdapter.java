@@ -39,7 +39,9 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
 
         holder.itemView.setOnClickListener(v -> {
             Intent i = new Intent(context, Community.class);
+            i.putExtra("community_id", model.getId() != null ? String.valueOf(model.getId()) : null);
             i.putExtra("community_name", model.getName());
+            i.putExtra("invitation_code", model.getInvitationCode());
             context.startActivity(i);
         });
     }

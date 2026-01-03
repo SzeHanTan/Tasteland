@@ -1,24 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:background="@color/lightgreen"
+    tools:context=".Community">
 
-    <ImageView
-        android:id="@+id/communityImage"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_launcher_foreground" />
-
-    <TextView
-        android:id="@+id/communityName"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Community Name"
-        android:textSize="24sp"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center" />
+        android:minHeight="64dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp"
+        android:background="#E8F1D4"
+        app:layout_constraintTop_toTopOf="parent">
 
-</LinearLayout>
+        <!-- Space reserved for the back button fragment -->
+        <View
+            android:id="@+id/back_space"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvCommunityName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Taste &amp; Togetherness"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/back_space"
+            app:layout_constraintStart_toEndOf="@id/back_space"
+            app:layout_constraintTop_toTopOf="@id/back_space" />
+
+        <LinearLayout
+            android:id="@+id/llCodeContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical"
+            android:gravity="start"
+            app:layout_constraintBottom_toBottomOf="@id/tvCommunityName"
+            app:layout_constraintStart_toEndOf="@id/tvCommunityName"
+            app:layout_constraintTop_toTopOf="@id/tvCommunityName">
+
+            <TextView
+                android:id="@+id/tvInvitationCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[code]"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCodeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invitation Code"
+                android:textColor="@color/darkgrey"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvPinnedMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#DDE7C7"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_pin" />
+
+            <TextView
+                android:id="@+id/tvPinnedText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/pinMessage"
+                android:textColor="@color/darkgrey" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChatMessages"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutInput"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cvPinnedMessage" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutInput"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/rounded_corner_background"
+            android:elevation="4dp"
+            android:hint="@string/messageHint"
+            android:minHeight="50dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnSend"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btnSend"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_button_background"
+            android:backgroundTint="@color/white"
+            android:elevation="4dp"
+            android:padding="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_send_paperplane"
+            app:layout_constraintBottom_toBottomOf="@+id/etMessage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etMessage" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- BACK BUTTON FRAGMENT - Placed at the end to be on the top layer -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/back_button_fragment"
+        android:name="com.example.tastelandv1.BackButtonFragment"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:elevation="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_back_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

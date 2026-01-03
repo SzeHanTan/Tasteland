@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_new_team"
+        android:icon="@drawable/ic_add_group"
+        android:title="@string/new_community" />
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/home_menu"
+        android:title="@string/home" />
+
+    <item
+        android:id="@+id/nav_join_team"
+        android:icon="@drawable/ic_join_group"
+        android:title="@string/join_community" />
+
+</menu>

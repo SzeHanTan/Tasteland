@@ -12,18 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-        android:id="@+id/IVHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:contentDescription="@string/header_image"
-        app:srcCompat="@drawable/header"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
         <TextView
             android:id="@+id/TVInsightsTitle"
             android:layout_width="wrap_content"

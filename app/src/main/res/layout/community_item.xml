@@ -19,7 +19,7 @@
         android:id="@+id/TVCommunityName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Community Name"
+        android:text="@string/communityname"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/IVCommunityPic"
