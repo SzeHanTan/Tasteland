@@ -37,6 +37,7 @@ public class GroupChatList extends AppCompatActivity {
     private List<CommunityModel> filteredList;
     private SupabaseAPI supabaseService;
     private SessionManager session;
+    private TextView tvWelcome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +53,11 @@ public class GroupChatList extends AppCompatActivity {
 
         // Header Setup
         TextView tvDate = findViewById(R.id.tvDate);
-        TextView tvWelcome = findViewById(R.id.tvWelcome);
+        tvWelcome = findViewById(R.id.tvWelcome);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMMM", Locale.getDefault());
         tvDate.setText(sdf.format(Calendar.getInstance().getTime()));
+        
+        // Show current session name immediately
         tvWelcome.setText("Hi, " + session.getUsername());
 
         supabaseService = RetrofitClient.getInstance().getApi();
@@ -70,35 +73,61 @@ public class GroupChatList extends AppCompatActivity {
 
         fetchAllCommunities();
         setupSearch(searchView);
+        
+        // Refresh the user name from server
+        fetchActualUserName();
 
         ImageButton btnNotification = findViewById(R.id.btnNotification);
-        btnNotification.setOnClickListener(v -> startActivity(new Intent(GroupChatList.this, Notification.class)));
+        if (btnNotification != null) {
+            btnNotification.setOnClickListener(v -> startActivity(new Intent(GroupChatList.this, Notification.class)));
+        }
 
-        // --- MATERIAL BUTTONS (ICON ON TOP) ---
         MaterialButton fabNew = findViewById(R.id.fabNewCommunity);
         MaterialButton fabJoin = findViewById(R.id.fabJoinCommunity);
 
-        fabNew.setOnClickListener(v -> showCommunityDialog(true));
-        fabJoin.setOnClickListener(v -> showCommunityDialog(false));
+        if (fabNew != null) fabNew.setOnClickListener(v -> showCommunityDialog(true));
+        if (fabJoin != null) fabJoin.setOnClickListener(v -> showCommunityDialog(false));
 
-        // --- BOTTOM NAVIGATION ---
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            
-            // Map the menu ID to the TARGET_NAV_ID for MainActivity
-            Intent intent = new Intent(GroupChatList.this, MainActivity.class);
-            intent.putExtra("TARGET_NAV_ID", id);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            return true;
-        });
+        if (bottomNav != null) {
+            bottomNav.setOnItemSelectedListener(item -> {
+                int id = item.getItemId();
+                Intent intent = new Intent(GroupChatList.this, MainActivity.class);
+                intent.putExtra("TARGET_NAV_ID", id);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                return true;
+            });
+        }
+    }
+
+    private void fetchActualUserName() {
+        String token = session.getToken();
+        if (token == null) return;
+
+        supabaseService.getMyProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token)
+                .enqueue(new Callback<List<UserProfile>>() {
+                    @Override
+                    public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                            UserProfile profile = response.body().get(0);
+                            String name = profile.getFullName();
+                            if (name != null && !name.isEmpty()) {
+                                tvWelcome.setText("Hi, " + name);
+                                // Save to session for future use
+                                session.saveSession(session.getToken(), session.getUserId(), name);
+                            }
+                        }
+                    }
+                    @Override public void onFailure(Call<List<UserProfile>> call, Throwable t) {}
+                });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         fetchAllCommunities();
+        fetchActualUserName();
     }
 
     private void fetchAllCommunities() {
@@ -115,13 +144,9 @@ public class GroupChatList extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 } else if (response.code() == 401) {
                     handleSessionExpired();
-                } else {
-                    Log.e("Supabase", "Fetch error: " + response.code());
                 }
             }
-
-            @Override
-            public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+            @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
                 Toast.makeText(GroupChatList.this, "Failed to load groups", Toast.LENGTH_SHORT).show();
             }
         });
@@ -135,10 +160,8 @@ public class GroupChatList extends AppCompatActivity {
 
     private void setupSearch(SearchView searchView) {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) { return false; }
-            @Override
-            public boolean onQueryTextChange(String newText) {
+            @Override public boolean onQueryTextSubmit(String query) { return false; }
+            @Override public boolean onQueryTextChange(String newText) {
                 filteredList.clear();
                 for (CommunityModel item : communityList) {
                     if (item.getName().toLowerCase().contains(newText.toLowerCase())) filteredList.add(item);
@@ -176,20 +199,16 @@ public class GroupChatList extends AppCompatActivity {
     private void createNewCommunity(String name) {
         String code = generateInvitationCode();
         CommunityModel newComm = new CommunityModel(name, R.drawable.ic_groups, code);
-        String authHeader = "Bearer " + session.getToken();
-
-        supabaseService.createCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "return=representation", newComm)
+        supabaseService.createCommunity(RetrofitClient.SUPABASE_KEY, "Bearer " + session.getToken(), "return=representation", newComm)
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful()) {
                             fetchAllCommunities();
                             Toast.makeText(GroupChatList.this, "Community Created!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(GroupChatList.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                         }
                     }
-                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) { Toast.makeText(GroupChatList.this, "Creation Failed", Toast.LENGTH_SHORT).show(); }
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {}
                 });
     }
 
@@ -205,7 +224,7 @@ public class GroupChatList extends AppCompatActivity {
                             Toast.makeText(GroupChatList.this, "Invalid Invitation Code", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) { Toast.makeText(GroupChatList.this, "Search failed", Toast.LENGTH_SHORT).show(); }
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {}
                 });
     }
 

@@ -7,6 +7,7 @@ public class SessionManager {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_TOKEN = "access_token";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USERNAME = "username";
     private SharedPreferences prefs;
 
     public SessionManager(Context context) {
@@ -15,11 +16,12 @@ public class SessionManager {
         }
     }
 
-    public void saveSession(String token, String userId) {
+    public void saveSession(String token, String userId, String username) {
         if (prefs == null) return;
         prefs.edit()
                 .putString(KEY_TOKEN, token)
                 .putString(KEY_USER_ID, userId)
+                .putString(KEY_USERNAME, username)
                 .apply();
     }
 
@@ -43,6 +45,6 @@ public class SessionManager {
     }
 
     public String getUsername() {
-        return prefs != null ? prefs.getString("username", "Anonymous") : "Anonymous";
+        return prefs != null ? prefs.getString(KEY_USERNAME, "User") : "User";
     }
 }

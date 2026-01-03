@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,6 +55,10 @@ public class Header extends Fragment {
 
         supabaseService = RetrofitClient.getInstance().getApi();
 
+        // Initialize with the name from session first
+        SessionManager session = new SessionManager(getContext());
+        tvGreet.setText("Hi, " + session.getUsername());
+
         fetchUserName();
     }
 
@@ -69,32 +72,26 @@ public class Header extends Fragment {
         SessionManager session = new SessionManager(getContext());
         String token = session.getToken();
 
-        // If not logged in, just show default
-        if (token == null) {
-            tvGreet.setText("Hi, Guest");
-            return;
-        }
+        if (token == null) return;
 
         supabaseService.getMyProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token)
                 .enqueue(new Callback<List<UserProfile>>() {
                     @Override
                     public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            UserProfile user = response.body().get(0);
-
-                            String name = user.getFullName();
-                            if (name == null || name.isEmpty()) {
-                                name = "User";
+                            UserProfile profile = response.body().get(0);
+                            String name = profile.getFullName();
+                            if (name != null && !name.isEmpty()) {
+                                tvGreet.setText("Hi, " + name);
+                                // Sync back to session in case it changed
+                                session.saveSession(session.getToken(), session.getUserId(), name);
                             }
-
-                            tvGreet.setText("Hi, " + name);
-                        } else {
-                            tvGreet.setText("Hi, User");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<UserProfile>> call, Throwable t) {
+                        // Keep current text if fetch fails
                     }
                 });
     }
