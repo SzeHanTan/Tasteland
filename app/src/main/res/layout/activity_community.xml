@@ -17,15 +17,12 @@
         android:background="#E8F1D4"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnBack"
+        <!-- Space for the back button -->
+        <View
+            android:id="@+id/back_space"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginStart="8dp"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,9 +36,9 @@
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintTop_toTopOf="@id/btnBack" />
+            app:layout_constraintBottom_toBottomOf="@id/back_space"
+            app:layout_constraintStart_toEndOf="@id/back_space"
+            app:layout_constraintTop_toTopOf="@id/back_space" />
 
         <LinearLayout
             android:id="@+id/llCodeContainer"
@@ -161,5 +158,18 @@
             app:layout_constraintTop_toTopOf="@+id/etMessage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Moving the back button to the absolute front layer (last child) and adding elevation -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/back_button_fragment"
+        android:name="com.example.tastelandv1.BackButtonFragment"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:elevation="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_back_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

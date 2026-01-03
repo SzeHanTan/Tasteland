@@ -1,9 +1,11 @@
 package com.example.tastelandv1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,14 @@ public class Header extends Fragment {
 
         tvGreet = view.findViewById(R.id.TVGreet);
         tvDate = view.findViewById(R.id.TVDate);
+        ImageButton btnNotification = view.findViewById(R.id.btnNotificationHeader);
+
+        if (btnNotification != null) {
+            btnNotification.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), Notification.class);
+                startActivity(intent);
+            });
+        }
 
         setCurrentDate();
 

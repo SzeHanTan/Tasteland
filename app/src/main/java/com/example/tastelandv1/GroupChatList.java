@@ -16,14 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -69,21 +68,30 @@ public class GroupChatList extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Fetch ALL available communities to ensure the list is not empty
         fetchAllCommunities();
-
         setupSearch(searchView);
 
         ImageButton btnNotification = findViewById(R.id.btnNotification);
         btnNotification.setOnClickListener(v -> startActivity(new Intent(GroupChatList.this, Notification.class)));
 
+        // --- MATERIAL BUTTONS (ICON ON TOP) ---
+        MaterialButton fabNew = findViewById(R.id.fabNewCommunity);
+        MaterialButton fabJoin = findViewById(R.id.fabJoinCommunity);
+
+        fabNew.setOnClickListener(v -> showCommunityDialog(true));
+        fabJoin.setOnClickListener(v -> showCommunityDialog(false));
+
+        // --- BOTTOM NAVIGATION ---
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-        bottomNav.setSelectedItemId(R.id.nav_home);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_new_team) { showCommunityDialog(true); return false; }
-            if (id == R.id.nav_join_team) { showCommunityDialog(false); return false; }
-            return id == R.id.nav_home;
+            
+            // Map the menu ID to the TARGET_NAV_ID for MainActivity
+            Intent intent = new Intent(GroupChatList.this, MainActivity.class);
+            intent.putExtra("TARGET_NAV_ID", id);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            return true;
         });
     }
 
@@ -95,9 +103,6 @@ public class GroupChatList extends AppCompatActivity {
 
     private void fetchAllCommunities() {
         String authHeader = "Bearer " + session.getToken();
-
-        // Pass 3 parameters to match getCommunities signature in SupabaseAPI.java:
-        // apiKey, authHeader, select (*)
         supabaseService.getCommunities(RetrofitClient.SUPABASE_KEY, authHeader, "*")
                 .enqueue(new Callback<List<CommunityModel>>() {
             @Override
@@ -173,7 +178,6 @@ public class GroupChatList extends AppCompatActivity {
         CommunityModel newComm = new CommunityModel(name, R.drawable.ic_groups, code);
         String authHeader = "Bearer " + session.getToken();
 
-        // Updated Callback type to match Call<List<CommunityModel>>
         supabaseService.createCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "return=representation", newComm)
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
@@ -190,7 +194,6 @@ public class GroupChatList extends AppCompatActivity {
     }
 
     private void joinByCode(String code) {
-        // In "See All" mode, we just check if it exists and show success
         supabaseService.getCommunityByCode(RetrofitClient.SUPABASE_KEY, "Bearer " + session.getToken(), "eq." + code, "*")
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override

@@ -1,5 +1,6 @@
 package com.example.tastelandv1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -10,56 +11,73 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private BottomNavigationView bottomNav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // --- 0. SESSION GUARD ---
+        SessionManager sessionManager = new SessionManager(this);
+        if (!sessionManager.isLoggedIn()) {
+            redirectToLogin();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
-        // --- 1. NEW: VISIBILITY CONTROLLER ---
-        // This detects every time a fragment changes and hides/shows the header automatically
+        bottomNav = findViewById(R.id.bottom_navigation);
+
+        // --- 1. VISIBILITY CONTROLLER ---
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
             @Override
             public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
                 super.onFragmentResumed(fm, f);
-
-                // Only check visibility if the fragment is inside your Main Container (FCVMain)
                 if (f.getId() == R.id.FCVMain) {
                     updateHeaderAndProfileVisibility(f);
                 }
             }
         }, true);
 
-        // --- 2. EXISTING: NAVIGATION SETUP ---
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnItemSelectedListener(navListener);
+        // --- 2. NAVIGATION SETUP ---
+        if (bottomNav != null) {
+            bottomNav.setOnItemSelectedListener(navListener);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.FCVMain, new HomeFragment())
-                    .commit();
-
-            // 2. THIS IS THE FIX: Highlight the Home icon programmatically
-            // Replace 'nav_home' with the actual ID you used in res/menu/menu_bottom.xml
-            bottomNav.setSelectedItemId(R.id.nav_home);
+            // Check if we were directed here with a specific tab ID
+            int targetNavId = getIntent().getIntExtra("TARGET_NAV_ID", R.id.nav_home);
+            
+            if (savedInstanceState == null) {
+                bottomNav.setSelectedItemId(targetNavId);
+            }
         }
     }
 
-    // --- HELPER METHOD TO SHOW/HIDE HEADERS ---
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        int targetNavId = intent.getIntExtra("TARGET_NAV_ID", -1);
+        if (targetNavId != -1 && bottomNav != null) {
+            bottomNav.setSelectedItemId(targetNavId);
+        }
+    }
+
+    private void redirectToLogin() {
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     private void updateHeaderAndProfileVisibility(Fragment currentFragment) {
-        // Find the containers for your Header and Community Profile
-        // IMPORTANT: Ensure your activity_main.xml has these IDs!
         View headerContainer = findViewById(R.id.header_container);
         View profileContainer = findViewById(R.id.community_profile_container);
 
-        // Logic: Who gets to see the Profile buttons? (Home & MyFood)
         boolean showProfile = (currentFragment instanceof HomeFragment) ||
                 (currentFragment instanceof MyFoodFragment);
 
-        // Logic: Who gets to see the Header? (Home, MyFood, & Recipes)
-        // (Assuming you have a RecipeFragment, otherwise remove that part)
         boolean showHeader = showProfile || (currentFragment instanceof RecipeFragment);
 
-        // Apply Visibility
         if (headerContainer != null) {
             headerContainer.setVisibility(showHeader ? View.VISIBLE : View.GONE);
         }
@@ -69,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // --- EXISTING: NAVIGATION LISTENER ---
     private final BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
                 Fragment selectedFragment = null;
@@ -83,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new InsightsFragment();
                 } else if (itemId == R.id.nav_profile) {
                     selectedFragment = new Profile();
+                } else if (itemId == R.id.nav_recipe) {
+                    selectedFragment = new RecipeFragment();
                 }
 
                 if (selectedFragment != null) {

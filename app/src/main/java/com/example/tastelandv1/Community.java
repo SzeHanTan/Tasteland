@@ -54,8 +54,6 @@ public class Community extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(adapter);
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-
         // Focus: Load messages and restore user's likes
         fetchMessagesWithLikes();
         fetchPinnedMessage();
