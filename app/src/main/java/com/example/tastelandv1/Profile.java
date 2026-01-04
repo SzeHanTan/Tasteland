@@ -79,6 +79,8 @@ public class Profile extends Fragment {
         });
 
         return view;
+
+
     }
 
     // --- API: FETCH DATA ---
@@ -130,24 +132,36 @@ public class Profile extends Fragment {
         // API Call: UPDATE specific row where id = current user id
         String idFilter = "eq." + currentUserProfile.getId(); // Supabase syntax: "id=eq.123"
 
-        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile)
-                .enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
-                            // Refresh local data
-                            fetchProfileData();
-                        } else {
-                            Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
-                        }
+        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile) .enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
+
+                    // --- ADD THIS CODE ---
+                    // 1. Update Session immediately so other pages can access it fast
+                    SessionManager session = new SessionManager(getContext());
+                    session.saveSession(session.getToken(), session.getUserId(), name);
+
+                    // 2. Send "Broadcast" to tell Header to refresh
+                    Intent intent = new Intent("com.example.tastelandv1.UPDATE_HEADER");
+                    if (getActivity() != null) {
+                        getActivity().sendBroadcast(intent);
                     }
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    // 3. Refresh local profile UI
+                    fetchProfileData();
+                    // ---------------------
+                } else {
+                    Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // --- DIALOG LOGIC ---
