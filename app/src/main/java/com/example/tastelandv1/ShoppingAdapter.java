@@ -1,12 +1,10 @@
 package com.example.tastelandv1;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.TextView; // Changed from EditText to TextView
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
@@ -14,20 +12,22 @@ import java.util.List;
 public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHolder> {
 
     private List<ShoppingItem> items;
+    // We keep the listener only for the Checkbox (if you want to implement check/delete later)
+    private OnItemChangeListener listener;
 
-    public ShoppingAdapter(List<ShoppingItem> items) {
-        this.items = items;
+    public interface OnItemChangeListener {
+        void onItemChanged(ShoppingItem item);
     }
 
-    // Helper method to add a new item
-    public void addItem() {
-        items.add(new ShoppingItem());
-        notifyItemInserted(items.size() - 1);
+    public ShoppingAdapter(List<ShoppingItem> items, OnItemChangeListener listener) {
+        this.items = items;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // We can reuse your existing layout, but we will treat the EditText as a TextView
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_shopping_list, parent, false);
         return new ViewHolder(view);
@@ -37,33 +37,21 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShoppingItem item = items.get(position);
 
-        // 1. Clear previous listeners to avoid conflicts when scrolling
-        holder.checkBox.setOnCheckedChangeListener(null);
+        // 1. Set Text (We disable editing here to avoid confusion)
+        holder.tvItemText.setText(item.getText());
+        holder.tvItemText.setFocusable(false); // Make it read-only
+        holder.tvItemText.setClickable(false);
 
-        // 2. Set current values
-        holder.checkBox.setChecked(item.isChecked());
-        holder.editText.setText(item.getText());
+        holder.cbItem.setOnCheckedChangeListener(null);
+        holder.cbItem.setChecked(item.isChecked());
 
-        // 3. Re-attach CheckBox listener
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        // 2. Handle Checkbox clicks (Optional: for crossing off items)
+        holder.cbItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setChecked(isChecked);
-        });
-
-        // 4. Attach TextWatcher to save text changes
-        // We use a tag or simply re-instantiate to ensure we are updating the correct item object
-        holder.currentTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                item.setText(s.toString());
+            if (listener != null) {
+                listener.onItemChanged(item);
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        };
-        holder.editText.addTextChangedListener(holder.currentTextWatcher);
+        });
     }
 
     @Override
@@ -72,14 +60,14 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        CheckBox checkBox;
-        EditText editText;
-        TextWatcher currentTextWatcher; // Keep reference to remove it later if needed
+        CheckBox cbItem;
+        TextView tvItemText; // Changed to TextView to show it's read-only
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.cb_item);
-            editText = itemView.findViewById(R.id.et_item_text);
+            cbItem = itemView.findViewById(R.id.cb_item);
+            // We cast it to TextView so we can set text easily
+            tvItemText = itemView.findViewById(R.id.et_item_text);
         }
     }
 }
