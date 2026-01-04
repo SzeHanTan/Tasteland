@@ -42,6 +42,7 @@ public class SignUp extends AppCompatActivity {
     private void performSignUp(String email, String password) {
         AuthRequest request = new AuthRequest(email, password);
 
+        // Use a RetrofitClient helper or create Retrofit instance here like in ShoppingList
         RetrofitClient.getInstance().getApi().signUp(RetrofitClient.SUPABASE_KEY, request)
                 .enqueue(new Callback<AuthResponse>() {
                     @Override
@@ -53,13 +54,28 @@ public class SignUp extends AppCompatActivity {
                             startActivity(new Intent(SignUp.this, Login.class));
                             finish();
                         } else {
-                            Toast.makeText(SignUp.this, "Sign Up Failed", Toast.LENGTH_SHORT).show();
+                            // --- NEW: Read the error message from Supabase ---
+                            try {
+                                // Supabase sends the error details in 'errorBody()'
+                                String errorMsg = response.errorBody().string();
+                                Toast.makeText(SignUp.this, "Failed: " + errorMsg, Toast.LENGTH_LONG).show();
+
+                                // Also print to Logcat so you can read it clearly
+                                android.util.Log.e("SignUpError", "Code: " + response.code() + " Body: " + errorMsg);
+
+                            } catch (Exception e) {
+                                Toast.makeText(SignUp.this, "Sign Up Failed (Unknown Error)", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AuthResponse> call, Throwable t) {
-                        Toast.makeText(SignUp.this, "Network Error", Toast.LENGTH_SHORT).show();
+                        // 1. Print the error to the bottom "Logcat" tab in Android Studio
+                        android.util.Log.e("SIGNUP_ERROR", "Error: " + t.getMessage());
+
+                        // 2. Show the error on the screen so you can read it
+                        Toast.makeText(SignUp.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }

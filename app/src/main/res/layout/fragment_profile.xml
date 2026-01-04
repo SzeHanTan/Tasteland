@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".Profile"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,32 +12,12 @@
         android:layout_height="wrap_content"
         android:paddingBottom="80dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/ic_profile"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="130dp"
-            app:cardCornerRadius="50dp"
-            app:cardElevation="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_background"
-                android:contentDescription="Profile Picture" />
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="bottom|end"
-                android:background="#FFFFFF"
-                android:src="@android:drawable/ic_menu_edit"
-                android:padding="5dp"/>
-        </androidx.cardview.widget.CardView>
+        <View
+            android:id="@+id/spacer_view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="220dp"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_user_info"
@@ -47,16 +26,16 @@
             android:layout_marginHorizontal="20dp"
             app:cardCornerRadius="15dp"
             app:cardElevation="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/spacer_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="240dp">
+            app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="20dp"
-                android:paddingTop="30dp">
+                android:paddingTop="50dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -121,15 +100,14 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:drawablePadding="15dp"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
                     android:padding="15dp"
                     android:text="Saved recipes"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:drawableStartCompat="@android:drawable/ic_menu_save" />
+                    app:drawableStartCompat="@android:drawable/ic_menu_save"
+                    android:drawablePadding="15dp"
+                    android:gravity="center_vertical"/>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
 
@@ -139,15 +117,14 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:drawablePadding="15dp"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
                     android:padding="15dp"
                     android:text="About us"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:drawableStartCompat="@android:drawable/ic_menu_info_details" />
+                    app:drawableStartCompat="@android:drawable/ic_menu_info_details"
+                    android:drawablePadding="15dp"
+                    android:gravity="center_vertical"/>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
 
@@ -157,15 +134,14 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:drawablePadding="15dp"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
                     android:padding="15dp"
                     android:text="Invite friends"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:drawableStartCompat="@android:drawable/ic_menu_share" />
+                    app:drawableStartCompat="@android:drawable/ic_menu_share"
+                    android:drawablePadding="15dp"
+                    android:gravity="center_vertical"/>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
 
@@ -175,34 +151,60 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:drawablePadding="15dp"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
                     android:padding="15dp"
                     android:text="General FAQ"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:drawableStartCompat="@android:drawable/ic_menu_help" />
-
+                    app:drawableStartCompat="@android:drawable/ic_menu_help"
+                    android:drawablePadding="15dp"
+                    android:gravity="center_vertical"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/ic_profile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="120dp"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_background"
+                android:contentDescription="Profile Picture" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|end"
+                android:background="#FFFFFF"
+                android:src="@android:drawable/ic_menu_edit"
+                android:padding="5dp"/>
+        </androidx.cardview.widget.CardView>
+
 
         <Button
             android:id="@+id/BtnLogOut"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="280dp"
+            android:layout_marginBottom="2dp"
             android:backgroundTint="#A5D6A7"
             android:text="Log Out"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@+id/card_user_info"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/card_user_info"
             app:layout_constraintEnd_toEndOf="@+id/card_user_info"
-            app:layout_constraintVertical_bias="1.0"
-            android:layout_marginBottom="20dp"/>
+            app:layout_constraintStart_toStartOf="@+id/card_user_info"
+            app:layout_constraintTop_toBottomOf="@+id/card_user_info"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

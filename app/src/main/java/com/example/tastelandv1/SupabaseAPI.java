@@ -48,11 +48,21 @@ public interface SupabaseAPI {
             @Header("Authorization") String token
     );
 
-    @POST("rest/v1/shopping_items")
-    Call<Void> addItem(
+    // 1. UPDATE ITEM (For saving text when you click away)
+    @PATCH("rest/v1/shopping_items")
+    Call<Void> updateItem(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Header("Prefer") String returnType,
+            @Query("id") String idFilter,
+            @Body ShoppingItem item
+    );
+
+    // 2. ADD ITEM (Changed to return the list so we get the new ID)
+    @POST("rest/v1/shopping_items")
+    Call<List<ShoppingItem>> addItem(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Header("Prefer") String returnType, // We will use "return=representation"
             @Body ShoppingItem item
     );
 
