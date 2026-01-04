@@ -13,7 +13,7 @@
         android:id="@+id/IVCardMyfood"
         android:layout_width="168dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="72dp"
         android:layout_marginEnd="24dp"
         android:adjustViewBounds="true"
         android:src="@drawable/card_home"
@@ -21,57 +21,23 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/IVCardShoppingList"
-        android:layout_width="168dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="156dp"
-        android:adjustViewBounds="true"
-        android:src="@drawable/card_home"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/ic_shopping"
-        android:layout_width="156dp"
-        android:layout_height="192dp"
-        android:src="@drawable/ic_shopping"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
-        app:layout_constraintEnd_toEndOf="@+id/IVCardShoppingList"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
-        app:layout_constraintTop_toTopOf="@+id/IVCardShoppingList"
-        app:layout_constraintVertical_bias="0.38" />
-
-    <ImageView
         android:id="@+id/ic_food"
         android:layout_width="140dp"
         android:layout_height="173dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="20dp"
         android:src="@drawable/ic_food"
         app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
         app:layout_constraintEnd_toEndOf="@+id/IVCardMyfood"
         app:layout_constraintHorizontal_bias="0.571"
-        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood"
-        app:layout_constraintVertical_bias="0.81" />
+        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood" />
 
-    <ImageButton
-        android:id="@+id/BtnAddShopping"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:background="@android:color/transparent"
-        android:elevation="4dp"
-        android:padding="12dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/add"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
-        app:layout_constraintStart_toEndOf="@+id/TVShoppingList" />
 
     <ImageButton
         android:id="@+id/BtnAddFoodHome"
         android:layout_width="59dp"
         android:layout_height="56dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginBottom="4dp"
         android:background="@android:color/transparent"
         android:elevation="4dp"
         android:padding="12dp"
@@ -80,24 +46,13 @@
         app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/TVShoppingList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/shoppinglist"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
-        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
-        android:layout_marginStart="16dp" />
-
 
     <TextView
         android:id="@+id/TVMyFood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:text="@string/myfood"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
@@ -107,7 +62,7 @@
         android:id="@+id/IVCardQuote"
         android:layout_width="123dp"
         android:layout_height="270dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:src="@drawable/carddsc_home"
         app:layout_constraintEnd_toEndOf="parent"
@@ -121,17 +76,69 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/IVCardQuote"
         app:layout_constraintEnd_toEndOf="@+id/IVCardQuote"
-        app:layout_constraintHorizontal_bias="0.566"
+        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="@+id/IVCardQuote"
-        app:layout_constraintTop_toTopOf="@+id/IVCardQuote" />
+        app:layout_constraintTop_toTopOf="@+id/IVCardQuote"
+        app:layout_constraintVertical_bias="0.472" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:name="com.example.tastelandv1.ShoppingList"
         android:layout_width="227dp"
         android:layout_height="270dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintTop_toBottomOf="@+id/IVCardShoppingList"
         tools:layout_editor_absoluteX="16dp" />
+
+    <ImageView
+        android:id="@+id/IVCardShoppingList"
+        android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="72dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/card_home"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/TVShoppingList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="12dp"
+        android:text="@string/shoppinglist"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList" />
+
+
+    <ImageButton
+        android:id="@+id/BtnAddShopping"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="4dp"
+        android:background="@android:color/transparent"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/add"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintStart_toEndOf="@+id/TVShoppingList" />
+
+    <ImageView
+        android:id="@+id/ic_shopping"
+        android:layout_width="156dp"
+        android:layout_height="192dp"
+        android:src="@drawable/ic_shopping"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardShoppingList"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
+        app:layout_constraintTop_toTopOf="@+id/IVCardShoppingList"
+        app:layout_constraintVertical_bias="0.395" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
