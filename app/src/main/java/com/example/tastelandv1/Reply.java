@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,7 +45,6 @@ public class Reply extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
 
-        // 1. Get the original post data and IDs
         parentId = getIntent().getIntExtra("message_id", -1);
         groupId = getIntent().getStringExtra("group_id");
         String originalSender = getIntent().getStringExtra("sender_name");
@@ -52,7 +52,6 @@ public class Reply extends AppCompatActivity {
         String originalTime = getIntent().getStringExtra("time");
         initialLikeCount = getIntent().getIntExtra("like_count", 0);
 
-        // 2. Initialize list with the original post
         threadMessages = new ArrayList<>();
         ChatMessage originalPost = new ChatMessage(groupId, null, originalSender, originalText, "text");
         originalPost.setLikeCount(initialLikeCount);
@@ -67,16 +66,13 @@ public class Reply extends AppCompatActivity {
         }
         threadMessages.add(originalPost);
 
-        // 3. Setup RecyclerView
         RecyclerView rv = findViewById(R.id.rvChatMessages);
-        adapter = new ChatAdapter(threadMessages, true);
+        adapter = new ChatAdapter(threadMessages, true, getIntent().getStringExtra("community_name"));
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(adapter);
 
-        // 4. Fetch User's Likes and then Replies
         fetchRepliesWithLikes();
 
-        // 5. Send Button Logic (Save to Supabase)
         EditText etMessage = findViewById(R.id.etMessage);
         ImageButton btnSend = findViewById(R.id.btnSend);
 
@@ -102,6 +98,7 @@ public class Reply extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
                                 if (response.isSuccessful()) {
+                                    updateCommunityTimestamp(); // Jump group to top of list
                                     fetchRepliesWithLikes();
                                     etMessage.setText("");
                                 }
@@ -113,6 +110,20 @@ public class Reply extends AppCompatActivity {
                         });
             }
         });
+    }
+
+    private void updateCommunityTimestamp() {
+        if (groupId == null) return;
+        String authHeader = "Bearer " + new SessionManager(this).getToken();
+        Map<String, Object> update = new HashMap<>();
+        // Touching the group to trigger the 'updated_at' column in Supabase
+        update.put("id", Integer.parseInt(groupId)); 
+
+        supabaseService.updateCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + groupId, update)
+                .enqueue(new Callback<Void>() {
+                    @Override public void onResponse(Call<Void> call, Response<Void> response) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {}
+                });
     }
 
     private void fetchRepliesWithLikes() {

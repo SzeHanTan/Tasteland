@@ -11,8 +11,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.button.MaterialButton;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,7 +63,8 @@ public class Community extends AppCompatActivity {
         }
 
         messageList = new ArrayList<>();
-        adapter = new ChatAdapter(messageList, false);
+        // Fix: Pass communityName to constructor
+        adapter = new ChatAdapter(messageList, false, communityName);
 
         RecyclerView rv = findViewById(R.id.rvChatMessages);
         if (rv != null) {
@@ -81,11 +81,8 @@ public class Community extends AppCompatActivity {
             btnSend.setOnClickListener(v -> {
                 String text = etMessage != null ? etMessage.getText().toString().trim() : "";
                 if (!text.isEmpty()) {
-                    // Use the name stored in the session
                     String senderName = session.getUsername();
-                    if (senderName == null || senderName.isEmpty()) {
-                        senderName = "Member";
-                    }
+                    if (senderName == null || senderName.isEmpty()) senderName = "Member";
                     
                     ChatMessage newMessage = new ChatMessage(
                             currentGroupId,
@@ -101,6 +98,7 @@ public class Community extends AppCompatActivity {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     if (response.isSuccessful()) {
+                                        updateCommunityTimestamp(); // Update community activity timestamp
                                         fetchMessagesWithLikes();
                                         if (etMessage != null) etMessage.setText("");
                                     }
@@ -110,6 +108,20 @@ public class Community extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void updateCommunityTimestamp() {
+        String authHeader = "Bearer " + session.getToken();
+        Map<String, Object> update = new HashMap<>();
+        // Touching the record updates its 'updated_at' column in Supabase automatically
+        // if the column is set up correctly. We send an existing value like 'name' to trigger the update.
+        update.put("name", getIntent().getStringExtra("community_name")); 
+
+        supabaseService.updateCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + currentGroupId, update)
+                .enqueue(new Callback<Void>() {
+                    @Override public void onResponse(Call<Void> call, Response<Void> response) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {}
+                });
     }
 
     private void showLeaveConfirmation(String name) {

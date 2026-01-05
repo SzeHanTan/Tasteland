@@ -111,7 +111,8 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("user_id") String userIdFilter,
-            @Query("select") String select
+            @Query("select") String select,
+            @Query("order") String order
     );
 
     @GET("rest/v1/communities")
@@ -119,14 +120,16 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("id") String idsFilter, 
-            @Query("select") String select
+            @Query("select") String select,
+            @Query("order") String order
     );
 
     @GET("rest/v1/communities")
     Call<List<CommunityModel>> getCommunities(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("select") String select
+            @Query("select") String select,
+            @Query("order") String order
     );
 
     @GET("rest/v1/communities")
@@ -143,6 +146,14 @@ public interface SupabaseAPI {
             @Header("Authorization") String token,
             @Header("Prefer") String returnType,
             @Body CommunityModel community
+    );
+
+    @PATCH("rest/v1/communities")
+    Call<Void> updateCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter,
+            @Body Map<String, Object> updateData
     );
 
     @POST("rest/v1/community_members")

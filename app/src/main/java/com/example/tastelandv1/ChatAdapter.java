@@ -23,6 +23,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ChatMessage> messageList;
     private boolean isReplyPage;
+    private String communityName;
 
     private static final int TYPE_MAIN_POST = 0;
     private static final int TYPE_REPLY = 1;
@@ -30,9 +31,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_LEFTOVER = 3;
     private static final int TYPE_DATE_HEADER = 4;
 
-    public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage) {
+    public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage, String communityName) {
         this.messageList = messageList;
         this.isReplyPage = isReplyPage;
+        this.communityName = communityName;
     }
 
     @Override
@@ -98,6 +100,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 intent.putExtra("message_text", msg.getMessageText());
                 intent.putExtra("time", msg.getTimeFull());
                 intent.putExtra("like_count", msg.getLikeCount());
+                intent.putExtra("community_name", communityName);
                 v.getContext().startActivity(intent);
             });
 
@@ -118,7 +121,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             replyHolder.tvTime.setText(msg.getTime());
             replyHolder.tvLikes.setText(String.valueOf(msg.getLikeCount()));
 
-            // Enable Likes for Replies
             replyHolder.layoutLikeActive.setVisibility(msg.isLikedByUser() ? View.VISIBLE : View.GONE);
             replyHolder.layoutLikeInactive.setVisibility(msg.isLikedByUser() ? View.GONE : View.VISIBLE);
 

@@ -18,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import retrofit2.Response;
 
 public class GroupChatList extends AppCompatActivity {
 
+    private static final String TAG = "CommunityFetch";
     private RecyclerView recyclerView;
     private CommunityAdapter adapter;
     private List<CommunityModel> communityList;
@@ -43,13 +45,12 @@ public class GroupChatList extends AppCompatActivity {
         setContentView(R.layout.activity_group_chat_list);
 
         session = new SessionManager(this);
-        if (session.getToken() == null) {
+        if (!session.isLoggedIn()) {
             startActivity(new Intent(this, Login.class));
             finish();
             return;
         }
 
-        // Header Setup - Hardcoded "Community"
         tvWelcome = findViewById(R.id.tvWelcome);
         if (tvWelcome != null) tvWelcome.setText("Community");
 
@@ -76,11 +77,9 @@ public class GroupChatList extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
             bottomNav.setSelectedItemId(R.id.nav_community);
-
             bottomNav.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.nav_community) return true;
-
                 if (id == R.id.nav_home) {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("TARGET_NAV_ID", R.id.nav_home);
@@ -101,7 +100,6 @@ public class GroupChatList extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         fetchAllCommunities();
-        
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
             bottomNav.getMenu().findItem(R.id.nav_community).setChecked(true);
@@ -112,7 +110,10 @@ public class GroupChatList extends AppCompatActivity {
         String authHeader = "Bearer " + session.getToken();
         String userId = session.getUserId();
 
-        supabaseService.getMemberRecords(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "community_id")
+        if (userId == null || userId.isEmpty()) return;
+
+        // Step 1: Get community IDs for current user. 
+        supabaseService.getMemberRecords(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "community_id", null)
                 .enqueue(new Callback<List<Map<String, Object>>>() {
                     @Override
                     public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
@@ -137,7 +138,9 @@ public class GroupChatList extends AppCompatActivity {
                             handleSessionExpired();
                         }
                     }
-                    @Override public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+
+                    @Override
+                    public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
                         Toast.makeText(GroupChatList.this, "Failed to load groups", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -152,7 +155,8 @@ public class GroupChatList extends AppCompatActivity {
         }
         filter.append(")");
 
-        supabaseService.getCommunitiesByIds(RetrofitClient.SUPABASE_KEY, authHeader, filter.toString(), "*")
+        // Step 2: Fetch details. Sort by updated_at descending to show latest active groups at top.
+        supabaseService.getCommunitiesByIds(RetrofitClient.SUPABASE_KEY, authHeader, filter.toString(), "*", "updated_at.desc")
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
@@ -164,8 +168,10 @@ public class GroupChatList extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                         }
                     }
-                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
-                        Toast.makeText(GroupChatList.this, "Failed to load community info", Toast.LENGTH_SHORT).show();
+
+                    @Override
+                    public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+                        Toast.makeText(GroupChatList.this, "Network Error", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
