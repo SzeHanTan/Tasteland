@@ -18,7 +18,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +111,7 @@ public class GroupChatList extends AppCompatActivity {
 
         if (userId == null || userId.isEmpty()) return;
 
+        // Step 1: Get all IDs the user is a member of
         supabaseService.getMemberRecords(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "community_id", null)
                 .enqueue(new Callback<List<Map<String, Object>>>() {
                     @Override
@@ -145,15 +145,17 @@ public class GroupChatList extends AppCompatActivity {
                 });
     }
 
-    private void fetchCommunityDetails(List<String> ids) {
+    private void fetchCommunityDetails(List<String> joinedIds) {
         String authHeader = "Bearer " + session.getToken();
         StringBuilder filter = new StringBuilder("in.(");
-        for (int i = 0; i < ids.size(); i++) {
-            filter.append(ids.get(i));
-            if (i < ids.size() - 1) filter.append(",");
+        for (int i = 0; i < joinedIds.size(); i++) {
+            filter.append(joinedIds.get(i));
+            if (i < joinedIds.size() - 1) filter.append(",");
         }
         filter.append(")");
 
+        // Step 2: Fetch group details sorted by activity (updated_at)
+        // This handles joining, creation, main posts, and replies uniformly.
         supabaseService.getCommunitiesByIds(RetrofitClient.SUPABASE_KEY, authHeader, filter.toString(), "*", "updated_at.desc")
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
@@ -264,6 +266,8 @@ public class GroupChatList extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful() || response.code() == 409) {
+                            // Touch the community record to update updated_at so it jumps to top
+                            touchCommunity(communityId);
                             sendSystemMessage(communityId, systemMsg);
                             fetchAllCommunities();
                             Toast.makeText(GroupChatList.this, isNew ? "Community Created!" : "Community Joined!", Toast.LENGTH_SHORT).show();
@@ -272,6 +276,17 @@ public class GroupChatList extends AppCompatActivity {
                     @Override public void onFailure(Call<Void> call, Throwable t) {
                         Toast.makeText(GroupChatList.this, "Error joining group", Toast.LENGTH_SHORT).show();
                     }
+                });
+    }
+
+    private void touchCommunity(String groupId) {
+        String authHeader = "Bearer " + session.getToken();
+        Map<String, Object> update = new HashMap<>();
+        update.put("id", Integer.parseInt(groupId)); 
+        supabaseService.updateCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + groupId, update)
+                .enqueue(new Callback<Void>() {
+                    @Override public void onResponse(Call<Void> call, Response<Void> response) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {}
                 });
     }
 
