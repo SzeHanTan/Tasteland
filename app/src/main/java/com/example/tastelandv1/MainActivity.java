@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // --- 0. SESSION GUARD ---
         SessionManager sessionManager = new SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
             redirectToLogin();
@@ -32,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottom_navigation);
         universalBackButton = findViewById(R.id.universal_back_button);
 
-        // --- 1. VISIBILITY CONTROLLER ---
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
             @Override
             public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -44,13 +42,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }, true);
 
-        // --- 2. NAVIGATION SETUP ---
         if (bottomNav != null) {
-            bottomNav.setOnItemSelectedListener(navListener);
+            bottomNav.setOnItemSelectedListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.nav_home) {
+                    // Home clears the entire Activity and Fragment stack back to root
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("TARGET_NAV_ID", R.id.nav_home);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                } else {
+                    navigateToTab(id);
+                }
+                return true;
+            });
 
-            // Check if we were directed here with a specific tab ID
             int targetNavId = getIntent().getIntExtra("TARGET_NAV_ID", R.id.nav_home);
-            
             if (savedInstanceState == null) {
                 navigateToTab(targetNavId);
             }
@@ -62,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         int targetNavId = intent.getIntExtra("TARGET_NAV_ID", -1);
-        if (targetNavId != -1 && bottomNav != null) {
+        if (targetNavId != -1) {
             navigateToTab(targetNavId);
         }
     }
@@ -77,78 +84,56 @@ public class MainActivity extends AppCompatActivity {
     private void updateHeaderVisibility(Fragment currentFragment) {
         View headerContainer = findViewById(R.id.header_container);
         ImageView backgroundHeader = findViewById(R.id.imageView2);
-
         boolean isHome = currentFragment instanceof HomeFragment;
 
-        if (headerContainer != null) {
-            headerContainer.setVisibility(isHome ? View.VISIBLE : View.GONE);
-        }
-
-        if (backgroundHeader != null) {
-            backgroundHeader.setVisibility(isHome ? View.VISIBLE : View.GONE);
-        }
-
-        // --- UNIVERSAL BACK BUTTON LOGIC ---
-        if (universalBackButton != null) {
-            // Show back button on all pages EXCEPT home
-            universalBackButton.setVisibility(isHome ? View.GONE : View.VISIBLE);
-        }
+        if (headerContainer != null) headerContainer.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (backgroundHeader != null) backgroundHeader.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (universalBackButton != null) universalBackButton.setVisibility(isHome ? View.GONE : View.VISIBLE);
     }
 
-    private final BottomNavigationView.OnItemSelectedListener navListener =
-            item -> {
-                navigateToTab(item.getItemId());
-                return true;
-            };
-
     private void navigateToTab(int itemId) {
-        Fragment selectedFragment = null;
-        String tag = String.valueOf(itemId);
-
-        // Handle Community separately (New Activity)
         if (itemId == R.id.nav_community) {
-            // Visually select the item before starting activity
-            if (bottomNav != null && bottomNav.getSelectedItemId() != R.id.nav_community) {
-                bottomNav.getMenu().findItem(R.id.nav_community).setChecked(true);
-            }
-            
             Intent intent = new Intent(this, GroupChatList.class);
+            // Push Community Activity onto the stack
             startActivity(intent);
             return; 
         }
 
-        // If the same tab is already visible, do nothing
-        Fragment current = getSupportFragmentManager().findFragmentById(R.id.FCVMain);
-        if (current != null && tag.equals(current.getTag())) {
+        if (itemId == R.id.nav_home) {
+            // Reset local fragment stack
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.FCVMain, new HomeFragment(), String.valueOf(R.id.nav_home))
+                    .commit();
             return;
         }
 
-        if (itemId == R.id.nav_home) {
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            selectedFragment = new HomeFragment();
-        } else if (itemId == R.id.nav_insight) {
-            selectedFragment = new InsightsFragment();
-        } else if (itemId == R.id.nav_profile) {
-            selectedFragment = new Profile();
-        } else if (itemId == R.id.nav_recipe) {
-            selectedFragment = new RecipeFragment();
-        }
+        Fragment selectedFragment = null;
+        String tag = String.valueOf(itemId);
+
+        // Check if we are already displaying this tab
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.FCVMain);
+        if (current != null && tag.equals(current.getTag())) return;
+
+        if (itemId == R.id.nav_insight) selectedFragment = new InsightsFragment();
+        else if (itemId == R.id.nav_profile) selectedFragment = new Profile();
+        else if (itemId == R.id.nav_recipe) selectedFragment = new RecipeFragment();
 
         if (selectedFragment != null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.FCVMain, selectedFragment, tag);
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.FCVMain, selectedFragment, tag);
             
-            if (itemId != R.id.nav_home) {
-                transaction.addToBackStack(null);
+            // Only add to back stack if this isn't the first fragment in this Activity instance.
+            // This ensures the back button correctly pops fragments first, then finishes the Activity.
+            if (current != null) {
+                ft.addToBackStack(null);
             }
-            
-            transaction.commit();
+            ft.commit();
         }
     }
 
     private void syncBottomNav(Fragment fragment) {
         if (bottomNav == null) return;
-        
         int itemId = -1;
         if (fragment instanceof HomeFragment) itemId = R.id.nav_home;
         else if (fragment instanceof RecipeFragment) itemId = R.id.nav_recipe;

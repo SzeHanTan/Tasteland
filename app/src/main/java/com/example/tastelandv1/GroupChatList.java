@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,7 +56,6 @@ public class GroupChatList extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMMM", Locale.getDefault());
         tvDate.setText(sdf.format(Calendar.getInstance().getTime()));
         
-        // Show current session name immediately
         tvWelcome.setText("Hi, " + session.getUsername());
 
         supabaseService = RetrofitClient.getInstance().getApi();
@@ -73,8 +71,6 @@ public class GroupChatList extends AppCompatActivity {
 
         fetchAllCommunities();
         setupSearch(searchView);
-        
-        // Refresh the user name from server
         fetchActualUserName();
 
         ImageButton btnNotification = findViewById(R.id.btnNotification);
@@ -90,26 +86,25 @@ public class GroupChatList extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
-            // Set Community as selected by default in this activity
             bottomNav.setSelectedItemId(R.id.nav_community);
 
             bottomNav.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
-                
-                // If already on Community, do nothing
                 if (id == R.id.nav_community) return true;
 
-                Intent intent = new Intent(GroupChatList.this, MainActivity.class);
-                intent.putExtra("TARGET_NAV_ID", id);
-                intent.putExtra("FROM_COMMUNITY", true);
-                
                 if (id == R.id.nav_home) {
+                    // Home clears everything back to the root activity
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("TARGET_NAV_ID", R.id.nav_home);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                    finish();
                 } else {
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    // PUSH a new MainActivity instance onto the stack for this tab
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("TARGET_NAV_ID", id);
+                    startActivity(intent);
                 }
-                
-                startActivity(intent);
                 return true;
             });
         }
@@ -142,10 +137,9 @@ public class GroupChatList extends AppCompatActivity {
         fetchAllCommunities();
         fetchActualUserName();
         
-        // Re-sync bottom nav selection on resume
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
-            bottomNav.setSelectedItemId(R.id.nav_community);
+            bottomNav.getMenu().findItem(R.id.nav_community).setChecked(true);
         }
     }
 
