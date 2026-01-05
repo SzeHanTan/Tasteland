@@ -44,11 +44,12 @@ public class HomeFragment extends Fragment {
         ImageButton addFoodHomeButton = view.findViewById(R.id.BtnAddFoodHome);
         if (addFoodHomeButton != null) {
             addFoodHomeButton.setOnClickListener(v -> {
-                // Logic from HomeFragment.java: Switch Bottom Navigation Tab
+                // Since 'My Food' was replaced by 'Community' in the bottom navigation,
+                // we update this to switch to the Community tab.
                 if (getActivity() != null) {
                     BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
                     if (bottomNav != null) {
-                        bottomNav.setSelectedItemId(R.id.nav_food_list);
+                        bottomNav.setSelectedItemId(R.id.nav_community);
                     }
                 }
             });

@@ -90,17 +90,22 @@ public class GroupChatList extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
+            // Set Community as selected by default in this activity
+            bottomNav.setSelectedItemId(R.id.nav_community);
+
             bottomNav.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
+                
+                // If already on Community, do nothing
+                if (id == R.id.nav_community) return true;
+
                 Intent intent = new Intent(GroupChatList.this, MainActivity.class);
                 intent.putExtra("TARGET_NAV_ID", id);
                 intent.putExtra("FROM_COMMUNITY", true);
                 
                 if (id == R.id.nav_home) {
-                    // When going home, we want to clear the community activity from the stack
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 } else {
-                    // For other pages, we want to stay "above" community so Back button returns here
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 }
                 
@@ -123,7 +128,6 @@ public class GroupChatList extends AppCompatActivity {
                             String name = profile.getFullName();
                             if (name != null && !name.isEmpty()) {
                                 tvWelcome.setText("Hi, " + name);
-                                // Save to session for future use
                                 session.saveSession(session.getToken(), session.getUserId(), name);
                             }
                         }
@@ -137,6 +141,12 @@ public class GroupChatList extends AppCompatActivity {
         super.onResume();
         fetchAllCommunities();
         fetchActualUserName();
+        
+        // Re-sync bottom nav selection on resume
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_community);
+        }
     }
 
     private void fetchAllCommunities() {

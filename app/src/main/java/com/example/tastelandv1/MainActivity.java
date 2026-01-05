@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
                 super.onFragmentResumed(fm, f);
                 if (f.getId() == R.id.FCVMain) {
-                    updateHeaderAndProfileVisibility(f);
+                    updateHeaderVisibility(f);
                     syncBottomNav(f);
                 }
             }
@@ -50,10 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Check if we were directed here with a specific tab ID
             int targetNavId = getIntent().getIntExtra("TARGET_NAV_ID", R.id.nav_home);
-            boolean fromCommunity = getIntent().getBooleanExtra("FROM_COMMUNITY", false);
             
             if (savedInstanceState == null) {
-                navigateToTab(targetNavId, fromCommunity);
+                navigateToTab(targetNavId);
             }
         }
     }
@@ -63,9 +62,8 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         int targetNavId = intent.getIntExtra("TARGET_NAV_ID", -1);
-        boolean fromCommunity = intent.getBooleanExtra("FROM_COMMUNITY", false);
         if (targetNavId != -1 && bottomNav != null) {
-            navigateToTab(targetNavId, fromCommunity);
+            navigateToTab(targetNavId);
         }
     }
 
@@ -76,20 +74,14 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void updateHeaderAndProfileVisibility(Fragment currentFragment) {
+    private void updateHeaderVisibility(Fragment currentFragment) {
         View headerContainer = findViewById(R.id.header_container);
-        View profileContainer = findViewById(R.id.community_profile_container);
         ImageView backgroundHeader = findViewById(R.id.imageView2);
 
         boolean isHome = currentFragment instanceof HomeFragment;
-        
-        // Hide fragments and the background header image when not on Home
+
         if (headerContainer != null) {
             headerContainer.setVisibility(isHome ? View.VISIBLE : View.GONE);
-        }
-
-        if (profileContainer != null) {
-            profileContainer.setVisibility(isHome ? View.VISIBLE : View.GONE);
         }
 
         if (backgroundHeader != null) {
@@ -105,32 +97,35 @@ public class MainActivity extends AppCompatActivity {
 
     private final BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
-                navigateToTab(item.getItemId(), false);
+                navigateToTab(item.getItemId());
                 return true;
             };
 
-    private void navigateToTab(int itemId, boolean fromCommunity) {
+    private void navigateToTab(int itemId) {
         Fragment selectedFragment = null;
         String tag = String.valueOf(itemId);
 
-        // If coming from community, clear the internal fragment back stack 
-        // so that pressing "Back" exits the activity back to the community list.
-        if (fromCommunity) {
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        // Handle Community separately (New Activity)
+        if (itemId == R.id.nav_community) {
+            // Visually select the item before starting activity
+            if (bottomNav != null && bottomNav.getSelectedItemId() != R.id.nav_community) {
+                bottomNav.getMenu().findItem(R.id.nav_community).setChecked(true);
+            }
+            
+            Intent intent = new Intent(this, GroupChatList.class);
+            startActivity(intent);
+            return; 
         }
 
-        // If the same tab is already visible, do nothing (unless we just cleared stack)
+        // If the same tab is already visible, do nothing
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.FCVMain);
-        if (!fromCommunity && current != null && tag.equals(current.getTag())) {
+        if (current != null && tag.equals(current.getTag())) {
             return;
         }
 
         if (itemId == R.id.nav_home) {
-            // Clear entire back stack when going home
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             selectedFragment = new HomeFragment();
-        } else if (itemId == R.id.nav_food_list) {
-            selectedFragment = new MyFoodFragment();
         } else if (itemId == R.id.nav_insight) {
             selectedFragment = new InsightsFragment();
         } else if (itemId == R.id.nav_profile) {
@@ -143,8 +138,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                     .replace(R.id.FCVMain, selectedFragment, tag);
             
-            // Only add to back stack if NOT Home and NOT navigating from Community
-            if (itemId != R.id.nav_home && !fromCommunity) {
+            if (itemId != R.id.nav_home) {
                 transaction.addToBackStack(null);
             }
             
@@ -157,13 +151,11 @@ public class MainActivity extends AppCompatActivity {
         
         int itemId = -1;
         if (fragment instanceof HomeFragment) itemId = R.id.nav_home;
-        else if (fragment instanceof MyFoodFragment) itemId = R.id.nav_food_list;
         else if (fragment instanceof RecipeFragment) itemId = R.id.nav_recipe;
         else if (fragment instanceof InsightsFragment) itemId = R.id.nav_insight;
         else if (fragment instanceof Profile) itemId = R.id.nav_profile;
 
         if (itemId != -1 && bottomNav.getSelectedItemId() != itemId) {
-            // Use setChecked to avoid re-triggering the listener
             bottomNav.getMenu().findItem(itemId).setChecked(true);
         }
     }

@@ -25,18 +25,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/menu_bottom"
+        app:itemIconSize="30dp"
         app:labelVisibilityMode="unlabeled" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/header_container"
         android:name="com.example.tastelandv1.Header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/community_profile_container"
-        android:name="com.example.tastelandv1.CommunityProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"/>
