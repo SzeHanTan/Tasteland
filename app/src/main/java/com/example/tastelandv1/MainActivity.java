@@ -3,6 +3,7 @@ package com.example.tastelandv1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -78,20 +79,21 @@ public class MainActivity extends AppCompatActivity {
     private void updateHeaderAndProfileVisibility(Fragment currentFragment) {
         View headerContainer = findViewById(R.id.header_container);
         View profileContainer = findViewById(R.id.community_profile_container);
+        ImageView backgroundHeader = findViewById(R.id.imageView2);
 
         boolean isHome = currentFragment instanceof HomeFragment;
         
-        // Hide both header and profile for Recipe and My Food (MyFoodFragment)
-        // They are now only shown on the Home page.
-        boolean showProfile = isHome;
-        boolean showHeader = isHome;
-
+        // Hide fragments and the background header image when not on Home
         if (headerContainer != null) {
-            headerContainer.setVisibility(showHeader ? View.VISIBLE : View.GONE);
+            headerContainer.setVisibility(isHome ? View.VISIBLE : View.GONE);
         }
 
         if (profileContainer != null) {
-            profileContainer.setVisibility(showProfile ? View.VISIBLE : View.GONE);
+            profileContainer.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        }
+
+        if (backgroundHeader != null) {
+            backgroundHeader.setVisibility(isHome ? View.VISIBLE : View.GONE);
         }
 
         // --- UNIVERSAL BACK BUTTON LOGIC ---
