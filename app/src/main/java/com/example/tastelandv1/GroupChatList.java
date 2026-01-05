@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,11 +17,10 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -50,9 +49,9 @@ public class GroupChatList extends AppCompatActivity {
             return;
         }
 
-        // Header Setup
+        // Header Setup - Hardcoded "Community"
         tvWelcome = findViewById(R.id.tvWelcome);
-        tvWelcome.setText("Hi, " + session.getUsername());
+        if (tvWelcome != null) tvWelcome.setText("Community");
 
         supabaseService = RetrofitClient.getInstance().getApi();
         recyclerView = findViewById(R.id.recyclerViewCommunity);
@@ -67,7 +66,6 @@ public class GroupChatList extends AppCompatActivity {
 
         fetchAllCommunities();
         setupSearch(searchView);
-        fetchActualUserName();
 
         MaterialButton fabNew = findViewById(R.id.fabNewCommunity);
         MaterialButton fabJoin = findViewById(R.id.fabJoinCommunity);
@@ -99,32 +97,10 @@ public class GroupChatList extends AppCompatActivity {
         }
     }
 
-    private void fetchActualUserName() {
-        String token = session.getToken();
-        if (token == null) return;
-
-        supabaseService.getMyProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token)
-                .enqueue(new Callback<List<UserProfile>>() {
-                    @Override
-                    public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
-                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            UserProfile profile = response.body().get(0);
-                            String name = profile.getFullName();
-                            if (name != null && !name.isEmpty()) {
-                                tvWelcome.setText("Hi, " + name);
-                                session.saveSession(session.getToken(), session.getUserId(), name);
-                            }
-                        }
-                    }
-                    @Override public void onFailure(Call<List<UserProfile>> call, Throwable t) {}
-                });
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         fetchAllCommunities();
-        fetchActualUserName();
         
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
@@ -134,24 +110,80 @@ public class GroupChatList extends AppCompatActivity {
 
     private void fetchAllCommunities() {
         String authHeader = "Bearer " + session.getToken();
-        supabaseService.getCommunities(RetrofitClient.SUPABASE_KEY, authHeader, "*")
+        String userId = session.getUserId();
+
+        Log.d("CommunityFetch", "Fetching memberships for user: " + userId);
+
+        // Step 1: Get all community IDs where this user is a member
+        supabaseService.getMemberRecords(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "community_id")
+                .enqueue(new Callback<List<Map<String, Object>>>() {
+                    @Override
+                    public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<String> joinedIds = new ArrayList<>();
+                            for (Map<String, Object> record : response.body()) {
+                                Object idObj = record.get("community_id");
+                                if (idObj != null) {
+                                    // Handle numeric IDs which GSON parses as Doubles
+                                    String id = (idObj instanceof Double) ? String.valueOf(((Double) idObj).intValue()) : idObj.toString();
+                                    joinedIds.add(id);
+                                }
+                            }
+
+                            if (!joinedIds.isEmpty()) {
+                                Log.d("CommunityFetch", "Found joined IDs: " + joinedIds);
+                                fetchCommunityDetails(joinedIds);
+                            } else {
+                                Log.d("CommunityFetch", "User has not joined any communities.");
+                                communityList.clear();
+                                filteredList.clear();
+                                adapter.notifyDataSetChanged();
+                            }
+                        } else {
+                            Log.e("CommunityFetch", "Failed to fetch memberships: " + response.code());
+                            if (response.code() == 401) handleSessionExpired();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                        Log.e("CommunityFetch", "Error: " + t.getMessage());
+                        Toast.makeText(GroupChatList.this, "Failed to load groups", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void fetchCommunityDetails(List<String> ids) {
+        String authHeader = "Bearer " + session.getToken();
+        
+        // Construct filter string: in.(1,2,3)
+        StringBuilder filter = new StringBuilder("in.(");
+        for (int i = 0; i < ids.size(); i++) {
+            filter.append(ids.get(i));
+            if (i < ids.size() - 1) filter.append(",");
+        }
+        filter.append(")");
+
+        supabaseService.getCommunitiesByIds(RetrofitClient.SUPABASE_KEY, authHeader, filter.toString(), "*")
                 .enqueue(new Callback<List<CommunityModel>>() {
-            @Override
-            public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    communityList.clear();
-                    communityList.addAll(response.body());
-                    filteredList.clear();
-                    filteredList.addAll(communityList);
-                    adapter.notifyDataSetChanged();
-                } else if (response.code() == 401) {
-                    handleSessionExpired();
-                }
-            }
-            @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
-                Toast.makeText(GroupChatList.this, "Failed to load groups", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            communityList.clear();
+                            communityList.addAll(response.body());
+                            filteredList.clear();
+                            filteredList.addAll(communityList);
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Log.e("CommunityFetch", "Failed to fetch details: " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+                        Toast.makeText(GroupChatList.this, "Failed to load community info", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void handleSessionExpired() {
@@ -205,12 +237,15 @@ public class GroupChatList extends AppCompatActivity {
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
-                        if (response.isSuccessful()) {
-                            fetchAllCommunities();
-                            Toast.makeText(GroupChatList.this, "Community Created!", Toast.LENGTH_SHORT).show();
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                            // Convert Integer ID to String safely
+                            String newId = String.valueOf(response.body().get(0).getId());
+                            addUserToCommunity(newId, true);
                         }
                     }
-                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {}
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+                        Toast.makeText(GroupChatList.this, "Network error", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -220,13 +255,35 @@ public class GroupChatList extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            Toast.makeText(GroupChatList.this, "Community Joined!", Toast.LENGTH_SHORT).show();
-                            fetchAllCommunities();
+                            String communityId = String.valueOf(response.body().get(0).getId());
+                            addUserToCommunity(communityId, false);
                         } else {
                             Toast.makeText(GroupChatList.this, "Invalid Invitation Code", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {}
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+                        Toast.makeText(GroupChatList.this, "Network error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void addUserToCommunity(String communityId, boolean isNew) {
+        Map<String, Object> membership = new HashMap<>();
+        membership.put("user_id", session.getUserId());
+        membership.put("community_id", communityId);
+
+        supabaseService.joinCommunity(RetrofitClient.SUPABASE_KEY, "Bearer " + session.getToken(), membership)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful() || response.code() == 409) {
+                            fetchAllCommunities();
+                            Toast.makeText(GroupChatList.this, isNew ? "Community Created!" : "Community Joined!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(GroupChatList.this, "Error joining group", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 

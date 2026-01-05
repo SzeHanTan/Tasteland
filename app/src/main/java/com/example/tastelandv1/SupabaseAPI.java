@@ -44,7 +44,6 @@ public interface SupabaseAPI {
             @Header("Authorization") String token
     );
 
-    // 1. UPDATE ITEM (For saving text when you click away)
     @PATCH("rest/v1/shopping_items")
     Call<Void> updateItem(
             @Header("apikey") String apiKey,
@@ -53,12 +52,11 @@ public interface SupabaseAPI {
             @Body ShoppingItem item
     );
 
-    // 2. ADD ITEM (Changed to return the list so we get the new ID)
     @POST("rest/v1/shopping_items")
     Call<List<ShoppingItem>> addItem(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Header("Prefer") String returnType, // We will use "return=representation"
+            @Header("Prefer") String returnType,
             @Body ShoppingItem item
     );
 
@@ -108,19 +106,27 @@ public interface SupabaseAPI {
 
     // --- COMMUNITY & MEMBERSHIP ---
 
+    @GET("rest/v1/community_members")
+    Call<List<Map<String, Object>>> getMemberRecords(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("user_id") String userIdFilter,
+            @Query("select") String select
+    );
+
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getCommunitiesByIds(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idsFilter, // Use "in.(1,2,3)"
+            @Query("select") String select
+    );
+
     @GET("rest/v1/communities")
     Call<List<CommunityModel>> getCommunities(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("select") String select
-    );
-
-    @GET("rest/v1/communities")
-    Call<List<CommunityModel>> getMyJoinedCommunities(
-            @Header("apikey") String apiKey,
-            @Header("Authorization") String token,
-            @Query("select") String select, 
-            @Query("community_members.user_id") String userIdFilter
     );
 
     @GET("rest/v1/communities")
