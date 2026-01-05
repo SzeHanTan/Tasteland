@@ -62,6 +62,13 @@ public interface SupabaseAPI {
             @Body ShoppingItem item
     );
 
+    @DELETE("rest/v1/shopping_items")
+    Call<Void> deleteShoppingItem(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter
+    );
+
     @GET("rest/v1/profiles?select=*")
     Call<List<UserProfile>> getMyProfile(
             @Header("apikey") String apiKey,

@@ -1,10 +1,11 @@
 package com.example.tastelandv1;
 
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.TextView; // Changed from EditText to TextView
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.List;
 public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHolder> {
 
     private List<ShoppingItem> items;
-    // We keep the listener only for the Checkbox (if you want to implement check/delete later)
     private OnItemChangeListener listener;
 
     public interface OnItemChangeListener {
@@ -27,7 +27,6 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // We can reuse your existing layout, but we will treat the EditText as a TextView
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_shopping_list, parent, false);
         return new ViewHolder(view);
@@ -37,17 +36,30 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShoppingItem item = items.get(position);
 
-        // 1. Set Text (We disable editing here to avoid confusion)
         holder.tvItemText.setText(item.getText());
-        holder.tvItemText.setFocusable(false); // Make it read-only
+        holder.tvItemText.setFocusable(false);
         holder.tvItemText.setClickable(false);
 
         holder.cbItem.setOnCheckedChangeListener(null);
         holder.cbItem.setChecked(item.isChecked());
 
-        // 2. Handle Checkbox clicks (Optional: for crossing off items)
+        // Visual Strikethrough
+        if (item.isChecked()) {
+            holder.tvItemText.setPaintFlags(holder.tvItemText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.tvItemText.setPaintFlags(holder.tvItemText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
+
         holder.cbItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setChecked(isChecked);
+
+            // Visual Strikethrough update
+            if (isChecked) {
+                holder.tvItemText.setPaintFlags(holder.tvItemText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                holder.tvItemText.setPaintFlags(holder.tvItemText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            }
+
             if (listener != null) {
                 listener.onItemChanged(item);
             }
@@ -61,12 +73,11 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox cbItem;
-        TextView tvItemText; // Changed to TextView to show it's read-only
+        TextView tvItemText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cbItem = itemView.findViewById(R.id.cb_item);
-            // We cast it to TextView so we can set text easily
             tvItemText = itemView.findViewById(R.id.et_item_text);
         }
     }
