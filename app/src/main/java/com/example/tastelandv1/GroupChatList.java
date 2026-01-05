@@ -94,7 +94,16 @@ public class GroupChatList extends AppCompatActivity {
                 int id = item.getItemId();
                 Intent intent = new Intent(GroupChatList.this, MainActivity.class);
                 intent.putExtra("TARGET_NAV_ID", id);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra("FROM_COMMUNITY", true);
+                
+                if (id == R.id.nav_home) {
+                    // When going home, we want to clear the community activity from the stack
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                } else {
+                    // For other pages, we want to stay "above" community so Back button returns here
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                }
+                
                 startActivity(intent);
                 return true;
             });

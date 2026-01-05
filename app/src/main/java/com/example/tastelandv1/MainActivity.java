@@ -49,9 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
             // Check if we were directed here with a specific tab ID
             int targetNavId = getIntent().getIntExtra("TARGET_NAV_ID", R.id.nav_home);
+            boolean fromCommunity = getIntent().getBooleanExtra("FROM_COMMUNITY", false);
             
             if (savedInstanceState == null) {
-                navigateToTab(targetNavId);
+                navigateToTab(targetNavId, fromCommunity);
             }
         }
     }
@@ -61,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         int targetNavId = intent.getIntExtra("TARGET_NAV_ID", -1);
+        boolean fromCommunity = intent.getBooleanExtra("FROM_COMMUNITY", false);
         if (targetNavId != -1 && bottomNav != null) {
-            navigateToTab(targetNavId);
+            navigateToTab(targetNavId, fromCommunity);
         }
     }
 
@@ -78,8 +80,11 @@ public class MainActivity extends AppCompatActivity {
         View profileContainer = findViewById(R.id.community_profile_container);
 
         boolean isHome = currentFragment instanceof HomeFragment;
-        boolean showProfile = isHome || (currentFragment instanceof MyFoodFragment);
-        boolean showHeader = showProfile || (currentFragment instanceof RecipeFragment);
+        
+        // Hide both header and profile for Recipe and My Food (MyFoodFragment)
+        // They are now only shown on the Home page.
+        boolean showProfile = isHome;
+        boolean showHeader = isHome;
 
         if (headerContainer != null) {
             headerContainer.setVisibility(showHeader ? View.VISIBLE : View.GONE);
@@ -98,17 +103,23 @@ public class MainActivity extends AppCompatActivity {
 
     private final BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
-                navigateToTab(item.getItemId());
+                navigateToTab(item.getItemId(), false);
                 return true;
             };
 
-    private void navigateToTab(int itemId) {
+    private void navigateToTab(int itemId, boolean fromCommunity) {
         Fragment selectedFragment = null;
         String tag = String.valueOf(itemId);
 
-        // If the same tab is already visible, do nothing
+        // If coming from community, clear the internal fragment back stack 
+        // so that pressing "Back" exits the activity back to the community list.
+        if (fromCommunity) {
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        // If the same tab is already visible, do nothing (unless we just cleared stack)
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.FCVMain);
-        if (current != null && tag.equals(current.getTag())) {
+        if (!fromCommunity && current != null && tag.equals(current.getTag())) {
             return;
         }
 
@@ -130,8 +141,8 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                     .replace(R.id.FCVMain, selectedFragment, tag);
             
-            // Only add to back stack if NOT Home
-            if (itemId != R.id.nav_home) {
+            // Only add to back stack if NOT Home and NOT navigating from Community
+            if (itemId != R.id.nav_home && !fromCommunity) {
                 transaction.addToBackStack(null);
             }
             
