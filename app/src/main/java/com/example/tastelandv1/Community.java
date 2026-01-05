@@ -81,7 +81,11 @@ public class Community extends AppCompatActivity {
             btnSend.setOnClickListener(v -> {
                 String text = etMessage != null ? etMessage.getText().toString().trim() : "";
                 if (!text.isEmpty()) {
+                    // Use the name stored in the session
                     String senderName = session.getUsername();
+                    if (senderName == null || senderName.isEmpty()) {
+                        senderName = "Member";
+                    }
                     
                     ChatMessage newMessage = new ChatMessage(
                             currentGroupId,
@@ -251,7 +255,7 @@ public class Community extends AppCompatActivity {
 
     private void fetchPinnedMessage() {
         if (currentGroupId == null) return;
-        String authHeader = "Bearer " + session.getToken();
+        String authHeader = "Bearer " + new SessionManager(this).getToken();
 
         supabaseService.getCommunityPosts(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + currentGroupId, null, "eq.true", "*", "created_at.desc")
                 .enqueue(new Callback<List<ChatMessage>>() {
