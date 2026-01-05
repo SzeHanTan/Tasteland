@@ -51,11 +51,7 @@ public class GroupChatList extends AppCompatActivity {
         }
 
         // Header Setup
-        TextView tvDate = findViewById(R.id.tvDate);
         tvWelcome = findViewById(R.id.tvWelcome);
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMMM", Locale.getDefault());
-        tvDate.setText(sdf.format(Calendar.getInstance().getTime()));
-        
         tvWelcome.setText("Hi, " + session.getUsername());
 
         supabaseService = RetrofitClient.getInstance().getApi();
@@ -73,11 +69,6 @@ public class GroupChatList extends AppCompatActivity {
         setupSearch(searchView);
         fetchActualUserName();
 
-        ImageButton btnNotification = findViewById(R.id.btnNotification);
-        if (btnNotification != null) {
-            btnNotification.setOnClickListener(v -> startActivity(new Intent(GroupChatList.this, Notification.class)));
-        }
-
         MaterialButton fabNew = findViewById(R.id.fabNewCommunity);
         MaterialButton fabJoin = findViewById(R.id.fabJoinCommunity);
 
@@ -93,14 +84,12 @@ public class GroupChatList extends AppCompatActivity {
                 if (id == R.id.nav_community) return true;
 
                 if (id == R.id.nav_home) {
-                    // Home clears everything back to the root activity
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("TARGET_NAV_ID", R.id.nav_home);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                     finish();
                 } else {
-                    // PUSH a new MainActivity instance onto the stack for this tab
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("TARGET_NAV_ID", id);
                     startActivity(intent);
