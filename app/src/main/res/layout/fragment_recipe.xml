@@ -21,7 +21,7 @@
             android:background="@drawable/recipe_searchbar"
             android:elevation="10dp"
             android:gravity="top|start"
-            android:hint="@string/recipe_searchBar"
+            android:hint="@string/recipe_search_bar"
             android:paddingStart="35dp"
             android:paddingTop="7dp"
             android:textSize="14sp"

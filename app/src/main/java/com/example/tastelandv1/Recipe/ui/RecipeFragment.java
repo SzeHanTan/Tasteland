@@ -54,7 +54,7 @@ public class RecipeFragment extends Fragment {
     public RecipeFragment() {
         // Define Categories
         categories.add(new CategoryConfig("favourite", "My Favorites ❤️", Recipe::isFavorite));
-        categories.add(new CategoryConfig("trending", "Trending Now 🔥", r -> r.getTags() != null && r.getTags().contains("Trending Now")));
+        categories.add(new CategoryConfig("trending", "Trending Food 🔥", r -> "Trending Now".equalsIgnoreCase(r.getCategory())));
         categories.add(new CategoryConfig("local", "Local Food 🇲🇾", r -> "Local Food".equalsIgnoreCase(r.getCategory())));
         categories.add(new CategoryConfig("foreign", "Foreign Food 🌍", r -> "Foreign Food".equalsIgnoreCase(r.getCategory())));
     }

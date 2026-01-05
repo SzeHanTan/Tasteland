@@ -5,11 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView; // Added ImageView
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide; // Import Glide
+import com.bumptech.glide.Glide;
 import com.example.tastelandv1.R;
 import com.example.tastelandv1.Recipe.database.Recipe;
 import com.google.android.material.chip.Chip;

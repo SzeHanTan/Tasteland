@@ -65,6 +65,7 @@
     <string name= "join_community">Join Community</string>
     <string name="no_recipe_found">No Recipe Found</string>
     <string name="search">Search</string>
+    <string name="recipe_search_bar">Type your recipe ...</string>
 
 
 </resources>

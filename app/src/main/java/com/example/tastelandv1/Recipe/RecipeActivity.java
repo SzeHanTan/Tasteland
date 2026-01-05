@@ -1,5 +1,6 @@
 package com.example.tastelandv1.Recipe;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ public class RecipeActivity extends AppCompatActivity {
     private ChipGroup CGIngredients;
     private FloatingActionButton fabFavorite;
 
-    private Recipe recipe; // The data object
+    private Recipe recipe;
     private RecipeRepository repository;
 
     @Override
@@ -53,7 +54,14 @@ public class RecipeActivity extends AppCompatActivity {
 
         // 2. Get Data from Intent
         if (getIntent().hasExtra("RECIPE_OBJ")) {
-            recipe = (Recipe) getIntent().getSerializableExtra("RECIPE_OBJ");
+            // Check if Android version is Tiramisu (API 33) or newer
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                recipe = getIntent().getSerializableExtra("RECIPE_OBJ", Recipe.class);
+            } else {
+                // For older Android versions, use the old method
+                recipe = (Recipe) getIntent().getSerializableExtra("RECIPE_OBJ");
+            }
+
             setupUI();
         } else {
             Toast.makeText(this, "Error: No recipe data found", Toast.LENGTH_SHORT).show();
