@@ -5,11 +5,8 @@
     android:id="@+id/frameLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShoppingList"
-
     android:background="@color/lightgreen"
-    tools:layout_editor_absoluteX="3dp"
-    tools:layout_editor_absoluteY="-11dp">
+    tools:context=".ShoppingList">
 
     <TextView
         android:id="@+id/TVShoppingListTitle"
@@ -18,9 +15,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp"
-
         app:layout_constraintTop_toTopOf="parent"
-
         android:background="@drawable/rounded_corner_background"
         android:elevation="4dp"
         android:fontFamily="@font/angkor"
@@ -47,7 +42,21 @@
         app:layout_constraintEnd_toEndOf="@+id/TVShoppingListTitle"
         app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle" />
 
-    <!-- item_todo.xml -->
+    <ImageButton
+        android:id="@+id/BtnClearChecked"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="220dp"
+        android:background="@drawable/round_button_background"
+        android:backgroundTint="#FFCDD2"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_delete"
+        app:layout_constraintBottom_toBottomOf="@+id/TVShoppingListTitle"
+        app:layout_constraintEnd_toStartOf="@+id/BtnAddFoodItem"
+        app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle"
+        app:layout_constraintVertical_bias="0.4" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RVShoppingList"

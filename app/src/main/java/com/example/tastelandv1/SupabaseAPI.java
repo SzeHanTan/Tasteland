@@ -1,9 +1,5 @@
 package com.example.tastelandv1;
 
-import com.example.tastelandv1.Recipe.database.FavoriteEntry;
-import com.example.tastelandv1.Recipe.database.FavoriteRequest;
-import com.example.tastelandv1.Recipe.database.Recipe;
-
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +50,7 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("id") String idFilter,
-            @Body ShoppingItem item
+            @Body Map<String, Object> item
     );
 
     // 2. ADD ITEM (Changed to return the list so we get the new ID)
@@ -64,6 +60,13 @@ public interface SupabaseAPI {
             @Header("Authorization") String token,
             @Header("Prefer") String returnType, // We will use "return=representation"
             @Body ShoppingItem item
+    );
+
+    @DELETE("rest/v1/shopping_items")
+    Call<Void> deleteShoppingItem(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter
     );
 
     @GET("rest/v1/profiles?select=*")
@@ -123,7 +126,7 @@ public interface SupabaseAPI {
     Call<List<CommunityModel>> getMyJoinedCommunities(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("select") String select,
+            @Query("select") String select, 
             @Query("community_members.user_id") String userIdFilter
     );
 
@@ -210,41 +213,5 @@ public interface SupabaseAPI {
             @Header("Authorization") String token,
             @Query("user_id") String userIdFilter,
             @Query("message_id") String messageIdFilter
-    );
-
-    // --- RECIPE ENDPOINTS ---
-
-    // 1. Get All Recipes (Standard)
-    @GET("rest/v1/recipes?select=*")
-    Call<List<Recipe>> getAllRecipes(
-            @Header("apikey") String apiKey,
-            @Header("Authorization") String token
-    );
-
-    // --- FAVORITES ENDPOINTS (NEW) ---
-
-    // 2. Get My Favorites (Returns a list of IDs for the logged-in user)
-    @GET("rest/v1/favorites?select=recipe_id")
-    Call<List<FavoriteEntry>> getMyFavorites(
-            @Header("apikey") String apiKey,
-            @Header("Authorization") String token,
-            @Query("user_id") String userIdQuery // "eq.USER_UUID"
-    );
-
-    // 3. Add a Favorite (POST to favorites table)
-    @POST("rest/v1/favorites")
-    Call<Void> addFavorite(
-            @Header("apikey") String apiKey,
-            @Header("Authorization") String token,
-            @Body FavoriteRequest body // Needs a simple object with recipe_id and user_id
-    );
-
-    // 4. Remove a Favorite (DELETE from favorites table)
-    @DELETE("rest/v1/favorites")
-    Call<Void> removeFavorite(
-            @Header("apikey") String apiKey,
-            @Header("Authorization") String token,
-            @Query("user_id") String userIdQuery,   // "eq.USER_UUID"
-            @Query("recipe_id") String recipeIdQuery // "eq.123"
     );
 }

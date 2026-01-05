@@ -53,13 +53,6 @@
     <string name="greeting">Hi!</string>
     <string name="shoppinglist">Shopping List</string>
     <string name="quote">“When we waste less food, we feed more people and protect the Earth’s precious resources.”</string>
-    <string name="recipe_btn_favourite">Favourite</string>
-    <string name="recipe_btn_trendingNow">Trending Now</string>
-    <string name="recipe_btn_localFood">Local Food</string>
-    <string name="recipe_btn_foreignFood">Foreign Food</string>
-    <string name="recipe_searchBar">Type your recipe ...</string>
-    <string name="section_title">Category Name</string>
-
     <string name= "pinMessage">Hi, everyone! Let\'s have a potluck this Saturday...</string>
     <string name= "messageHint">Type your message ...</string>
     <string name= "editprofile">Edit Profile</string>
