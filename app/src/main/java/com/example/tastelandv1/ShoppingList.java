@@ -14,7 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,11 +46,9 @@ public class ShoppingList extends Fragment {
         btnClear = view.findViewById(R.id.BtnClearChecked);
 
         // 2. Setup Adapter
-        // We pass a listener that runs whenever a checkbox is clicked
         adapter = new ShoppingAdapter(shoppingList, new ShoppingAdapter.OnItemChangeListener() {
             @Override
             public void onItemChanged(ShoppingItem item) {
-                // When user clicks checkbox, update DB immediately
                 updateItemInCloud(item);
             }
         });
@@ -108,24 +109,23 @@ public class ShoppingList extends Fragment {
             return;
         }
 
-        // "return=representation" ensures we get the ID back from Supabase
         supabaseService.addItem(RetrofitClient.SUPABASE_KEY, "Bearer " + token, "return=representation", item)
                 .enqueue(new Callback<List<ShoppingItem>>() {
                     @Override
                     public void onResponse(Call<List<ShoppingItem>> call, Response<List<ShoppingItem>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             ShoppingItem createdItem = response.body().get(0);
                             shoppingList.add(createdItem);
                             adapter.notifyItemInserted(shoppingList.size() - 1);
                             recyclerView.smoothScrollToPosition(shoppingList.size() - 1);
                         } else {
-                            Toast.makeText(getContext(), "Failed to save item", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Failed to save item.", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<ShoppingItem>> call, Throwable t) {
-                        Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Network Error while adding item.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -136,14 +136,38 @@ public class ShoppingList extends Fragment {
         String token = session.getToken();
         if (token == null || item.getId() == null) return;
 
-        String idFilter = "id=eq." + item.getId();
+        // Correct filter: "eq.123"
+        String idFilter = "eq." + item.getId();
 
-        supabaseService.updateItem(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, item)
+        // Create a map with only the field to be updated
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("is_checked", item.isChecked());
+
+        supabaseService.updateItem(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updateMap)
                 .enqueue(new Callback<Void>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {}
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (!response.isSuccessful()) {
+                            // Revert on failure
+                            item.setChecked(!item.isChecked());
+                            int position = shoppingList.indexOf(item);
+                            if (position != -1) {
+                                adapter.notifyItemChanged(position);
+                            }
+                            Toast.makeText(getContext(), "Failed to update item state.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {}
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        // Revert on failure
+                        item.setChecked(!item.isChecked());
+                        int position = shoppingList.indexOf(item);
+                        if (position != -1) {
+                            adapter.notifyItemChanged(position);
+                        }
+                        Toast.makeText(getContext(), "Network Error: Failed to update item.", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -151,12 +175,19 @@ public class ShoppingList extends Fragment {
     private void deleteCheckedItems() {
         SessionManager session = new SessionManager(getContext());
         String token = session.getToken();
-        if (token == null) return;
+        if (token == null) {
+            Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         List<ShoppingItem> itemsToDelete = new ArrayList<>();
+        List<Long> idsToDelete = new ArrayList<>();
         for (ShoppingItem item : shoppingList) {
             if (item.isChecked()) {
                 itemsToDelete.add(item);
+                if (item.getId() != null) {
+                    idsToDelete.add(item.getId());
+                }
             }
         }
 
@@ -165,20 +196,33 @@ public class ShoppingList extends Fragment {
             return;
         }
 
-        for (ShoppingItem item : itemsToDelete) {
-            String idFilter = "id=eq." + item.getId();
-            supabaseService.deleteShoppingItem(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter)
-                    .enqueue(new Callback<Void>() {
-                        @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {}
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable t) {}
-                    });
+        if (idsToDelete.isEmpty()) { // Items exist only locally
+            shoppingList.removeAll(itemsToDelete);
+            adapter.notifyDataSetChanged();
+            return;
         }
 
-        shoppingList.removeAll(itemsToDelete);
-        adapter.notifyDataSetChanged();
-        Toast.makeText(getContext(), "Cleared " + itemsToDelete.size() + " items", Toast.LENGTH_SHORT).show();
+        // Correct filter: "in.(1,2,3)"
+        String idFilter = "in.(" + idsToDelete.stream().map(String::valueOf).collect(Collectors.joining(",")) + ")";
+
+        supabaseService.deleteShoppingItem(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            shoppingList.removeAll(itemsToDelete);
+                            adapter.notifyDataSetChanged(); // OK here, since multiple items are removed
+                            Toast.makeText(getContext(), "Cleared " + itemsToDelete.size() + " items", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Failed to clear items from database.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(getContext(), "Network error while clearing items.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     // --- API: Fetch List ---
@@ -197,7 +241,9 @@ public class ShoppingList extends Fragment {
                         }
                     }
                     @Override
-                    public void onFailure(Call<List<ShoppingItem>> call, Throwable t) {}
+                    public void onFailure(Call<List<ShoppingItem>> call, Throwable t) {
+                        Toast.makeText(getContext(), "Failed to fetch shopping list.", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 }

@@ -50,7 +50,7 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("id") String idFilter,
-            @Body ShoppingItem item
+            @Body Map<String, Object> item
     );
 
     // 2. ADD ITEM (Changed to return the list so we get the new ID)
