@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,62 +33,109 @@ public class Community extends AppCompatActivity {
     private List<ChatMessage> messageList;
     private SupabaseAPI supabaseService;
     private String currentGroupId;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
 
+        session = new SessionManager(this);
         currentGroupId = getIntent().getStringExtra("community_id");
         String communityName = getIntent().getStringExtra("community_name");
         String invitationCode = getIntent().getStringExtra("invitation_code");
+
+        if (currentGroupId == null) {
+            Toast.makeText(this, "Error: Community not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         supabaseService = RetrofitClient.getInstance().getApi();
 
         TextView nameView = findViewById(R.id.tvCommunityName);
         TextView codeView = findViewById(R.id.tvInvitationCode);
-        if (communityName != null) nameView.setText(communityName);
-        if (invitationCode != null) codeView.setText("[" + invitationCode + "]");
+        if (nameView != null && communityName != null) nameView.setText(communityName);
+        if (codeView != null && invitationCode != null) codeView.setText("[" + invitationCode + "]");
+
+        View btnLeave = findViewById(R.id.btnLeaveGroup);
+        if (btnLeave != null) {
+            btnLeave.setOnClickListener(v -> showLeaveConfirmation(communityName));
+        }
 
         messageList = new ArrayList<>();
         adapter = new ChatAdapter(messageList, false);
 
         RecyclerView rv = findViewById(R.id.rvChatMessages);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(adapter);
+        if (rv != null) {
+            rv.setLayoutManager(new LinearLayoutManager(this));
+            rv.setAdapter(adapter);
+        }
 
-        // Focus: Load messages and restore user's likes
         fetchMessagesWithLikes();
         fetchPinnedMessage();
 
         EditText etMessage = findViewById(R.id.etMessage);
-        findViewById(R.id.btnSend).setOnClickListener(v -> {
-            String text = etMessage.getText().toString().trim();
-            if (!text.isEmpty()) {
-                SessionManager session = new SessionManager(this);
-                String senderName = session.getUsername();
-                
-                ChatMessage newMessage = new ChatMessage(
-                        currentGroupId,
-                        session.getUserId(),
-                        senderName,
-                        text,
-                        "text"
-                );
-                
-                String authHeader = "Bearer " + session.getToken();
-                supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", newMessage)
-                        .enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (response.isSuccessful()) {
-                                    fetchMessagesWithLikes();
-                                    etMessage.setText("");
+        View btnSend = findViewById(R.id.btnSend);
+        if (btnSend != null) {
+            btnSend.setOnClickListener(v -> {
+                String text = etMessage != null ? etMessage.getText().toString().trim() : "";
+                if (!text.isEmpty()) {
+                    String senderName = session.getUsername();
+                    
+                    ChatMessage newMessage = new ChatMessage(
+                            currentGroupId,
+                            session.getUserId(),
+                            senderName,
+                            text,
+                            "text"
+                    );
+                    
+                    String authHeader = "Bearer " + session.getToken();
+                    supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", newMessage)
+                            .enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccessful()) {
+                                        fetchMessagesWithLikes();
+                                        if (etMessage != null) etMessage.setText("");
+                                    }
                                 }
-                            }
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {}
-                        });
+                                @Override public void onFailure(Call<Void> call, Throwable t) {}
+                            });
+                }
+            });
+        }
+    }
+
+    private void showLeaveConfirmation(String name) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Leave Community")
+                .setMessage("Are you sure you want to leave \"" + (name != null ? name : "this group") + "\"?")
+                .setPositiveButton("Leave", (dialog, which) -> leaveGroup())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void leaveGroup() {
+        String authHeader = "Bearer " + session.getToken();
+        String userId = session.getUserId();
+
+        supabaseService.leaveCommunity(
+                RetrofitClient.SUPABASE_KEY, 
+                authHeader, 
+                "eq." + userId, 
+                "eq." + currentGroupId
+        ).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(Community.this, "You have left the group", Toast.LENGTH_SHORT).show();
+                    finish(); 
+                }
+            }
+            @Override public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(Community.this, "Error leaving group", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -99,11 +149,9 @@ public class Community extends AppCompatActivity {
 
     private void fetchMessagesWithLikes() {
         if (currentGroupId == null) return;
-        SessionManager session = new SessionManager(this);
         String authHeader = "Bearer " + session.getToken();
         String userId = session.getUserId();
 
-        // 1. Fetch User's Likes from message_likes table
         supabaseService.getMyLikes(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId)
                 .enqueue(new Callback<List<Map<String, Object>>>() {
                     @Override
@@ -114,7 +162,6 @@ public class Community extends AppCompatActivity {
                                 Object msgIdObj = like.get("message_id");
                                 if (msgIdObj != null) {
                                     try {
-                                        // Handle potential float string conversion from JSON
                                         likedMessageIds.add(Integer.parseInt(msgIdObj.toString().split("\\.")[0]));
                                     } catch (Exception e) {
                                         Log.e("LikeParsing", "Failed to parse message_id: " + msgIdObj);
@@ -122,7 +169,6 @@ public class Community extends AppCompatActivity {
                                 }
                             }
                         }
-                        // 2. Fetch messages and pass the set of liked IDs
                         fetchMessages(likedMessageIds);
                     }
 
@@ -134,7 +180,8 @@ public class Community extends AppCompatActivity {
     }
 
     private void fetchMessages(Set<Integer> likedIds) {
-        String authHeader = "Bearer " + new SessionManager(this).getToken();
+        if (currentGroupId == null) return;
+        String authHeader = "Bearer " + session.getToken();
 
         supabaseService.getCommunityPosts(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + currentGroupId, "is.null", null, "*", "created_at.asc")
                 .enqueue(new Callback<List<ChatMessage>>() {
@@ -154,7 +201,6 @@ public class Community extends AppCompatActivity {
                                     lastDate = msgDate;
                                 }
 
-                                // Restore "liked" state based on the database record
                                 if (likedIds.contains(msg.getId())) {
                                     msg.setLikedByUser(true);
                                 }
@@ -166,7 +212,7 @@ public class Community extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                             
                             RecyclerView rv = findViewById(R.id.rvChatMessages);
-                            if (!messageList.isEmpty()) rv.scrollToPosition(messageList.size() - 1);
+                            if (rv != null && !messageList.isEmpty()) rv.scrollToPosition(messageList.size() - 1);
                         }
                     }
                     @Override
@@ -205,7 +251,7 @@ public class Community extends AppCompatActivity {
 
     private void fetchPinnedMessage() {
         if (currentGroupId == null) return;
-        String authHeader = "Bearer " + new SessionManager(this).getToken();
+        String authHeader = "Bearer " + session.getToken();
 
         supabaseService.getCommunityPosts(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + currentGroupId, null, "eq.true", "*", "created_at.desc")
                 .enqueue(new Callback<List<ChatMessage>>() {

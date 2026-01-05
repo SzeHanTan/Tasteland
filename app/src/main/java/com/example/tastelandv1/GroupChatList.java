@@ -112,9 +112,6 @@ public class GroupChatList extends AppCompatActivity {
         String authHeader = "Bearer " + session.getToken();
         String userId = session.getUserId();
 
-        Log.d("CommunityFetch", "Fetching memberships for user: " + userId);
-
-        // Step 1: Get all community IDs where this user is a member
         supabaseService.getMemberRecords(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "community_id")
                 .enqueue(new Callback<List<Map<String, Object>>>() {
                     @Override
@@ -124,30 +121,23 @@ public class GroupChatList extends AppCompatActivity {
                             for (Map<String, Object> record : response.body()) {
                                 Object idObj = record.get("community_id");
                                 if (idObj != null) {
-                                    // Handle numeric IDs which GSON parses as Doubles
                                     String id = (idObj instanceof Double) ? String.valueOf(((Double) idObj).intValue()) : idObj.toString();
                                     joinedIds.add(id);
                                 }
                             }
 
                             if (!joinedIds.isEmpty()) {
-                                Log.d("CommunityFetch", "Found joined IDs: " + joinedIds);
                                 fetchCommunityDetails(joinedIds);
                             } else {
-                                Log.d("CommunityFetch", "User has not joined any communities.");
                                 communityList.clear();
                                 filteredList.clear();
                                 adapter.notifyDataSetChanged();
                             }
-                        } else {
-                            Log.e("CommunityFetch", "Failed to fetch memberships: " + response.code());
-                            if (response.code() == 401) handleSessionExpired();
+                        } else if (response.code() == 401) {
+                            handleSessionExpired();
                         }
                     }
-
-                    @Override
-                    public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
-                        Log.e("CommunityFetch", "Error: " + t.getMessage());
+                    @Override public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
                         Toast.makeText(GroupChatList.this, "Failed to load groups", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -155,8 +145,6 @@ public class GroupChatList extends AppCompatActivity {
 
     private void fetchCommunityDetails(List<String> ids) {
         String authHeader = "Bearer " + session.getToken();
-        
-        // Construct filter string: in.(1,2,3)
         StringBuilder filter = new StringBuilder("in.(");
         for (int i = 0; i < ids.size(); i++) {
             filter.append(ids.get(i));
@@ -174,13 +162,9 @@ public class GroupChatList extends AppCompatActivity {
                             filteredList.clear();
                             filteredList.addAll(communityList);
                             adapter.notifyDataSetChanged();
-                        } else {
-                            Log.e("CommunityFetch", "Failed to fetch details: " + response.code());
                         }
                     }
-
-                    @Override
-                    public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
+                    @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
                         Toast.makeText(GroupChatList.this, "Failed to load community info", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -238,7 +222,6 @@ public class GroupChatList extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            // Convert Integer ID to String safely
                             String newId = String.valueOf(response.body().get(0).getId());
                             addUserToCommunity(newId, true);
                         }

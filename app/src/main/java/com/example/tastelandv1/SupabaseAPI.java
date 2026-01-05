@@ -118,7 +118,7 @@ public interface SupabaseAPI {
     Call<List<CommunityModel>> getCommunitiesByIds(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("id") String idsFilter, // Use "in.(1,2,3)"
+            @Query("id") String idsFilter, 
             @Query("select") String select
     );
 
@@ -150,6 +150,14 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Body Map<String, Object> membershipData
+    );
+
+    @DELETE("rest/v1/community_members")
+    Call<Void> leaveCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("user_id") String userIdFilter,
+            @Query("community_id") String communityIdFilter
     );
 
     // --- MESSAGING ---
