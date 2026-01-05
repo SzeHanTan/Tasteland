@@ -112,7 +112,6 @@ public class GroupChatList extends AppCompatActivity {
 
         if (userId == null || userId.isEmpty()) return;
 
-        // Step 1: Get community IDs for current user. 
         supabaseService.getMemberRecords(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "community_id", null)
                 .enqueue(new Callback<List<Map<String, Object>>>() {
                     @Override
@@ -155,7 +154,6 @@ public class GroupChatList extends AppCompatActivity {
         }
         filter.append(")");
 
-        // Step 2: Fetch details. Sort by updated_at descending to show latest active groups at top.
         supabaseService.getCommunitiesByIds(RetrofitClient.SUPABASE_KEY, authHeader, filter.toString(), "*", "updated_at.desc")
                 .enqueue(new Callback<List<CommunityModel>>() {
                     @Override
@@ -229,7 +227,7 @@ public class GroupChatList extends AppCompatActivity {
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             String newId = String.valueOf(response.body().get(0).getId());
-                            addUserToCommunity(newId, true);
+                            addUserToCommunity(newId, true, "You created the community");
                         }
                     }
                     @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
@@ -245,7 +243,7 @@ public class GroupChatList extends AppCompatActivity {
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             String communityId = String.valueOf(response.body().get(0).getId());
-                            addUserToCommunity(communityId, false);
+                            addUserToCommunity(communityId, false, "You joined the community");
                         } else {
                             Toast.makeText(GroupChatList.this, "Invalid Invitation Code", Toast.LENGTH_SHORT).show();
                         }
@@ -256,7 +254,7 @@ public class GroupChatList extends AppCompatActivity {
                 });
     }
 
-    private void addUserToCommunity(String communityId, boolean isNew) {
+    private void addUserToCommunity(String communityId, boolean isNew, String systemMsg) {
         Map<String, Object> membership = new HashMap<>();
         membership.put("user_id", session.getUserId());
         membership.put("community_id", communityId);
@@ -266,6 +264,7 @@ public class GroupChatList extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful() || response.code() == 409) {
+                            sendSystemMessage(communityId, systemMsg);
                             fetchAllCommunities();
                             Toast.makeText(GroupChatList.this, isNew ? "Community Created!" : "Community Joined!", Toast.LENGTH_SHORT).show();
                         }
@@ -273,6 +272,16 @@ public class GroupChatList extends AppCompatActivity {
                     @Override public void onFailure(Call<Void> call, Throwable t) {
                         Toast.makeText(GroupChatList.this, "Error joining group", Toast.LENGTH_SHORT).show();
                     }
+                });
+    }
+
+    private void sendSystemMessage(String groupId, String text) {
+        ChatMessage msg = new ChatMessage(groupId, null, "System", text, "system");
+        String authHeader = "Bearer " + session.getToken();
+        supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", msg)
+                .enqueue(new Callback<Void>() {
+                    @Override public void onResponse(Call<Void> call, Response<Void> response) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {}
                 });
     }
 

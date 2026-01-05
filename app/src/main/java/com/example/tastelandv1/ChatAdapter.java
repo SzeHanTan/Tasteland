@@ -30,6 +30,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_RECIPE = 2;
     private static final int TYPE_LEFTOVER = 3;
     private static final int TYPE_DATE_HEADER = 4;
+    private static final int TYPE_SYSTEM = 5;
 
     public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage, String communityName) {
         this.messageList = messageList;
@@ -41,6 +42,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemViewType(int position) {
         ChatMessage msg = messageList.get(position);
         if ("date_header".equals(msg.getMessageType())) return TYPE_DATE_HEADER;
+        if ("system".equals(msg.getMessageType())) return TYPE_SYSTEM;
         if ("recipe".equals(msg.getMessageType())) return TYPE_RECIPE;
         if ("leftover".equals(msg.getMessageType())) return TYPE_LEFTOVER;
         return msg.isMainPost() ? TYPE_MAIN_POST : TYPE_REPLY;
@@ -58,6 +60,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_DATE_HEADER) {
             return new DateHeaderViewHolder(inflater.inflate(R.layout.activity_notification_header_item, parent, false));
         }
+        if (viewType == TYPE_SYSTEM) {
+            return new SystemViewHolder(inflater.inflate(R.layout.item_chat_system, parent, false));
+        }
         if (viewType == TYPE_REPLY) {
             return new ReplyViewHolder(inflater.inflate(R.layout.item_chat_reply, parent, false));
         }
@@ -70,6 +75,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof DateHeaderViewHolder) {
             ((DateHeaderViewHolder) holder).tvDate.setText(msg.getMessageText());
+        } else if (holder instanceof SystemViewHolder) {
+            ((SystemViewHolder) holder).tvSystem.setText(msg.getMessageText());
         } else if (holder instanceof MainPostViewHolder) {
             MainPostViewHolder mainHolder = (MainPostViewHolder) holder;
 
@@ -232,6 +239,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public DateHeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDate = itemView.findViewById(R.id.TVNotificationHeader);
+        }
+    }
+
+    public static class SystemViewHolder extends RecyclerView.ViewHolder {
+        TextView tvSystem;
+        public SystemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvSystem = itemView.findViewById(R.id.tvSystemMessage);
         }
     }
 
