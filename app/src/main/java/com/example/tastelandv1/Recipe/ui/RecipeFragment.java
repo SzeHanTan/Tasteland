@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,38 +34,33 @@ import java.util.List;
 public class RecipeFragment extends Fragment {
 
     // --- UI Variables ---
-    private LinearLayout contentContainer; // Where we stack the grids
-    private LinearLayout buttonContainer;  // Where we put the buttons
-    private View emptyStateView;           // The "No Recipe" view
-    private NestedScrollView scrollView;   // The scrollable area (to hide when empty)
+    private LinearLayout contentContainer;
+    private LinearLayout buttonContainer;
+    private View emptyStateView;
+    private NestedScrollView scrollView;
+    private EditText searchBar; // For Search Feature
 
     private RecipeRepository repository;
 
     // --- Data Variables ---
     private List<Recipe> allRecipes = new ArrayList<>();
     private String activeTabId = "all"; // Default is Home
+    private String currentSearchQuery = ""; // Current search text
     private List<MaterialButton> tabButtons = new ArrayList<>();
 
-    // --- CONFIGURATION: Define your categories here ---
+    // --- CONFIGURATION ---
     private final List<CategoryConfig> categories = new ArrayList<>();
 
     public RecipeFragment() {
-        // 1. Favorite Category (Logic: r.isFavorite() == true)
+        // Define Categories
         categories.add(new CategoryConfig("favourite", "My Favorites ❤️", Recipe::isFavorite));
-
-        // 2. Trending Category (Logic: Check tags for 'Trending')
-        categories.add(new CategoryConfig("trending", "Trending Now 🔥", r -> r.getTags() != null && r.getTags().contains("Trending")));
-
-        // 3. Local Category (Logic: Check category string)
-        categories.add(new CategoryConfig("local", "Local Food 🇲🇾", r -> "Local".equalsIgnoreCase(r.getCategory())));
-
-        // 4. Foreign Category
-        categories.add(new CategoryConfig("foreign", "Foreign Food 🌍", r -> "Foreign".equalsIgnoreCase(r.getCategory())));
+        categories.add(new CategoryConfig("trending", "Trending Now 🔥", r -> r.getTags() != null && r.getTags().contains("Trending Now")));
+        categories.add(new CategoryConfig("local", "Local Food 🇲🇾", r -> "Local Food".equalsIgnoreCase(r.getCategory())));
+        categories.add(new CategoryConfig("foreign", "Foreign Food 🌍", r -> "Foreign Food".equalsIgnoreCase(r.getCategory())));
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_recipe, container, false);
     }
 
@@ -69,36 +68,52 @@ public class RecipeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Initialize Views (Matching IDs in your XML)
+        // Initialize Views
         contentContainer = view.findViewById(R.id.LLContentContainer);
         buttonContainer = view.findViewById(R.id.llButtonContainer);
         emptyStateView = view.findViewById(R.id.LLEmptyState);
-        scrollView = view.findViewById(R.id.NSVScrollViewContent); // ID from updated XML
+        scrollView = view.findViewById(R.id.NSVScrollViewContent);
+        searchBar = view.findViewById(R.id.ETSearchBar);
 
-        // 2. Initialize Repository
         repository = new RecipeRepository(getContext());
 
-        // 3. Setup UI
+        setupSearchListener();
         setupTabs();
         loadRecipes();
     }
 
     // ==========================================
-    //              TAB / BUTTON LOGIC
+    //              SEARCH LOGIC
+    // ==========================================
+    private void setupSearchListener() {
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentSearchQuery = s.toString().toLowerCase().trim();
+                renderContent(); // Re-render list immediately
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    // ==========================================
+    //              TAB LOGIC
     // ==========================================
     private void setupTabs() {
         buttonContainer.removeAllViews();
         tabButtons.clear();
 
-        // Add "Home" Button first
         addButton("all", "Home (All)");
 
-        // Add Category Buttons
         for (CategoryConfig cat : categories) {
             addButton(cat.id, cat.label);
         }
-
-        updateButtonStyles(); // Set initial colors
+        updateButtonStyles();
     }
 
     private void addButton(String id, String label) {
@@ -107,22 +122,19 @@ public class RecipeFragment extends Fragment {
         btn.setTag(id);
         btn.setTextSize(12f);
         btn.setAllCaps(false);
-
-        // IMPORTANT: Use your custom background drawable
         btn.setBackgroundResource(R.drawable.recipe_btn_bg);
 
-        // Layout Params for spacing (Margins)
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        params.setMargins(0, 0, 24, 0); // Spacing between buttons
+        params.setMargins(0, 0, 24, 0);
         btn.setLayoutParams(params);
 
         btn.setOnClickListener(v -> {
             activeTabId = id;
             updateButtonStyles();
-            renderContent(); // Re-draw the screen based on selection
+            renderContent();
         });
 
         buttonContainer.addView(btn);
@@ -132,16 +144,12 @@ public class RecipeFragment extends Fragment {
     private void updateButtonStyles() {
         for (MaterialButton btn : tabButtons) {
             String tag = (String) btn.getTag();
-
-            // Reset tint to ensure custom drawable shows correctly
-            btn.setBackgroundTintList(null);
+            btn.setBackgroundTintList(null); // Reset
 
             if (tag.equals(activeTabId)) {
-                // ACTIVE: Black Tint (High contrast)
                 btn.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
                 btn.setTextColor(Color.WHITE);
             } else {
-                // INACTIVE: No Tint (Shows original drawable colors)
                 btn.setTextColor(Color.BLACK);
             }
         }
@@ -157,7 +165,9 @@ public class RecipeFragment extends Fragment {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         allRecipes = recipes;
-                        renderContent(); // Draw the screen now that we have data
+                        // Log to verify data arrival
+                        Log.d("RecipeFragment", "Loaded " + recipes.size() + " recipes.");
+                        renderContent();
                     });
                 }
             }
@@ -174,34 +184,39 @@ public class RecipeFragment extends Fragment {
     }
 
     // ==========================================
-    //              RENDER LOGIC
+    //              RENDER LOGIC (THE FIX)
     // ==========================================
     private void renderContent() {
         contentContainer.removeAllViews();
         boolean anythingShown = false;
 
-        // SCENARIO A: SPECIFIC TAB SELECTED (e.g., Favorites)
+        // SCENARIO A: SPECIFIC TAB SELECTED
         if (!activeTabId.equals("all")) {
             CategoryConfig config = null;
             for(CategoryConfig c : categories) if(c.id.equals(activeTabId)) config = c;
 
             if(config != null) {
                 List<Recipe> filtered = filterRecipes(config.filter);
-
-                // Only show if data exists
                 if (!filtered.isEmpty()) {
                     inflateSection(config.label, filtered);
                     anythingShown = true;
                 }
             }
         }
-
-        // SCENARIO B: HOME VIEW (Stack Categories Up-to-Down)
+        // SCENARIO B: HOME VIEW (The Fix is Here)
         else {
+            // --- ADD THIS BLOCK ---
+            // 1. Show ALL loaded recipes first to prove data is there
+            List<Recipe> allData = filterRecipes(r -> true); // Match everything
+            if (!allData.isEmpty()) {
+                inflateSection("All Recipes", allData);
+                anythingShown = true;
+            }
+            // ----------------------
+
+            // 2. Then show your specific categories
             for (CategoryConfig cat : categories) {
                 List<Recipe> filtered = filterRecipes(cat.filter);
-
-                // If a category has recipes, show it. If empty, SKIP IT.
                 if (!filtered.isEmpty()) {
                     inflateSection(cat.label, filtered);
                     anythingShown = true;
@@ -209,35 +224,49 @@ public class RecipeFragment extends Fragment {
             }
         }
 
-        // --- HANDLE EMPTY STATE VISIBILITY ---
+        // Handle Empty State
         if (anythingShown) {
-            // Show Content, Hide Empty Message
             scrollView.setVisibility(View.VISIBLE);
             emptyStateView.setVisibility(View.GONE);
         } else {
-            // Hide Content, Show Empty Message
             scrollView.setVisibility(View.GONE);
             emptyStateView.setVisibility(View.VISIBLE);
         }
     }
 
-    // Helper: Filter list based on logic
-    private List<Recipe> filterRecipes(FilterLogic logic) {
+    // Helper: Filters by Logic AND Search Query
+    private List<Recipe> filterRecipes(FilterLogic categoryLogic) {
         List<Recipe> result = new ArrayList<>();
         for (Recipe r : allRecipes) {
-            if (logic.matches(r)) result.add(r);
+            // 1. Check Category
+            boolean matchesCategory = categoryLogic.matches(r);
+
+            // 2. Check Search (Title or Ingredients)
+            boolean matchesSearch = false;
+            if (currentSearchQuery.isEmpty()) {
+                matchesSearch = true;
+            } else {
+                if (r.getTitle() != null && r.getTitle().toLowerCase().contains(currentSearchQuery)) {
+                    matchesSearch = true;
+                }
+            }
+
+            if (matchesCategory && matchesSearch) {
+                result.add(r);
+            }
         }
         return result;
     }
 
-    // Helper: Add a "Strip" (Header + Grid) to the screen
+    // Helper: Add Section to Screen
     private void inflateSection(String title, List<Recipe> recipeList) {
-        View sectionView = getLayoutInflater().inflate(R.layout.item_category_section, contentContainer, false);
+        View sectionView = LayoutInflater.from(contentContainer.getContext())
+                .inflate(R.layout.item_category_section, contentContainer, false);
 
-        TextView tvTitle = sectionView.findViewById(R.id.TVSectionTitle);
-        RecyclerView rv = sectionView.findViewById(R.id.RVSectionGrid);
+        TextView TVSectionTitle = sectionView.findViewById(R.id.TVSectionTitle);
+        RecyclerView RV = sectionView.findViewById(R.id.RVSectionGrid);
 
-        tvTitle.setText(title);
+        TVSectionTitle.setText(title);
 
         RecipeSquareAdapter adapter = new RecipeSquareAdapter(getContext(), recipeList, new RecipeSquareAdapter.OnRecipeClickListener() {
             @Override
@@ -254,8 +283,10 @@ public class RecipeFragment extends Fragment {
         });
 
         // 2 Columns Grid
-        rv.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        rv.setAdapter(adapter);
+        RV.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        RV.setAdapter(adapter);
+
+        RV.setNestedScrollingEnabled(false);
 
         contentContainer.addView(sectionView);
     }
@@ -264,9 +295,8 @@ public class RecipeFragment extends Fragment {
         repository.updateFavoriteStatus(recipe.getId(), isFavorite, new RecipeRepository.SimpleCallback() {
             @Override
             public void onSuccess() {
-                // If viewing "Favorites" tab and user un-favorites, refresh the UI immediately
-                if(activeTabId.equals("favourite") && !isFavorite) {
-                    if(getActivity() != null) {
+                if (activeTabId.equals("favourite") && !isFavorite) {
+                    if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> renderContent());
                     }
                 }
@@ -275,7 +305,7 @@ public class RecipeFragment extends Fragment {
             @Override
             public void onError(String error) {
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "Failed to update favorite", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed: " + error, Toast.LENGTH_SHORT).show();
                 }
             }
         });

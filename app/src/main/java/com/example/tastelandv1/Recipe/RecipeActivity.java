@@ -1,6 +1,5 @@
 package com.example.tastelandv1.Recipe;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,7 +26,6 @@ public class RecipeActivity extends AppCompatActivity {
     private Recipe recipe; // The data object
     private RecipeRepository repository;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +39,7 @@ public class RecipeActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         // Handle Back Arrow Click
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         IVImage = findViewById(R.id.IVDetailImage);
         TVTitle = findViewById(R.id.TVDetailTitle);
@@ -68,7 +66,13 @@ public class RecipeActivity extends AppCompatActivity {
         TVTitle.setText(recipe.getTitle());
         TVCategory.setText(recipe.getCategory());
         TVOverview.setText(recipe.getOverview());
-        TVInstructions.setText(recipe.getInstructions());
+
+        if (recipe.getInstructions() != null) {
+            // This ensures that if Supabase sends "\\n", it becomes a real line break
+            TVInstructions.setText(recipe.getInstructions().replace("\\n", "\n"));
+        } else {
+            TVInstructions.setText("");
+        }
 
         // Image Loading (Glide)
         if (recipe.getImageUrl() != null && !recipe.getImageUrl().isEmpty()) {

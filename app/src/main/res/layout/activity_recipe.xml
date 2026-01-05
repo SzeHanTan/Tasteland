@@ -133,8 +133,11 @@
         android:layout_margin="16dp"
         android:contentDescription="Add To Favorite"
         android:src="@drawable/ic_favorite_border"
-        android:backgroundTint="@null"
+        app:backgroundTint="@android:color/transparent"
         app:layout_anchor="@id/APAppBar"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchorGravity="top|end"
+        app:tint="@null"
+        app:fabCustomSize="70dp"
+        app:maxImageSize="50dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

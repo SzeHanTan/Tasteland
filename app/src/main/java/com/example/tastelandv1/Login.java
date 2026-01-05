@@ -84,8 +84,13 @@ public class Login extends AppCompatActivity {
                             // Now fetch the actual profile to get the full name
                             fetchProfileAndNavigate(token, userId);
                         } else {
-                            Toast.makeText(Login.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
-                        }
+                            try {
+                                String errorBody = response.errorBody().string();
+                                Log.e("LOGIN_ERROR", "Code: " + response.code() + " Body: " + errorBody);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(Login.this, "Login Failed: " + response.code(), Toast.LENGTH_SHORT).show();                        }
                     }
 
                     @Override

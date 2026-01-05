@@ -13,10 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"> <!-- Horizontal Scroll Button-->
 
-        <EditText android:id="@+id/ETSearchBar"
+        <EditText
+            android:id="@+id/ETSearchBar"
             android:layout_width="286dp"
             android:layout_height="41dp"
-            android:layout_marginTop="108dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/recipe_searchbar"
             android:elevation="10dp"
             android:gravity="top|start"
@@ -27,6 +28,7 @@
             android:translationZ="6dp"
             app:backgroundTint="@null"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.44"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill,RtlSymmetry,TextFields" />
@@ -35,8 +37,9 @@
             android:id="@+id/IVSearch"
             android:layout_width="35dp"
             android:layout_height="29dp"
-            android:layout_marginLeft="1dp"
+            android:layout_marginStart="1dp"
             android:layout_marginTop="2dp"
+            android:contentDescription="@string/search"
             android:elevation="10dp"
             android:src="@drawable/ic_search"
             android:translationZ="10dp"
@@ -102,7 +105,7 @@
                 android:id="@+id/TVEmptyRecipe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No Recipe Found"
+                android:text="@string/no_recipe_found"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#888888"/>

@@ -3,11 +3,14 @@ package com.example.tastelandv1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import com.example.tastelandv1.Recipe.ui.RecipeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +33,20 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottom_navigation);
         universalBackButton = findViewById(R.id.universal_back_button);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // If there are fragments in the back stack, pop them
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    // If nothing to pop, disable this callback and let system handle the exit
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
 
         // --- 1. VISIBILITY CONTROLLER ---
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
@@ -152,15 +169,6 @@ public class MainActivity extends AppCompatActivity {
         if (itemId != -1 && bottomNav.getSelectedItemId() != itemId) {
             // Use setChecked to avoid re-triggering the listener
             bottomNav.getMenu().findItem(itemId).setChecked(true);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
         }
     }
 }
