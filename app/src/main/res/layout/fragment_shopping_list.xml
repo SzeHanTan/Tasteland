@@ -55,10 +55,8 @@
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@android:drawable/ic_menu_delete"
-        app:layout_constraintBottom_toBottomOf="@+id/TVShoppingListTitle"
         app:layout_constraintStart_toEndOf="@+id/BtnAddFoodItem"
-        app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintTop_toTopOf="@+id/BtnAddFoodItem" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RVShoppingList"
