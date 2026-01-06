@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-
     <item
         android:id="@+id/nav_recipe"
         android:icon="@drawable/recipe_menu"
@@ -18,9 +17,9 @@
         android:title="@string/home" />
 
     <item
-        android:id="@+id/nav_food_list"
-        android:icon="@drawable/list_menu"
-        android:title="@string/myfood" />
+        android:id="@+id/nav_community"
+        android:icon="@drawable/ic_join_group"
+        android:title="Community" />
 
     <item
         android:id="@+id/nav_profile"

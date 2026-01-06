@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,27 +32,30 @@ public class HomeFragment extends Fragment {
         ImageButton addShoppingButton = view.findViewById(R.id.BtnAddShopping);
         if (addShoppingButton != null) {
             addShoppingButton.setOnClickListener(v -> {
-                // Logic from Home.java: Navigate to the ShoppingList Fragment
                 getParentFragmentManager().beginTransaction()
-                        // Ensure R.id.FCVMain matches the ID in your activity_main.xml
                         .replace(R.id.FCVMain, new ShoppingList())
-                        .addToBackStack(null) // Allows user to press Back button to return here
+                        .addToBackStack(null)
                         .commit();
             });
         }
 
-        // --- 2. SETUP "ADD FOOD" BUTTON ---
+        // --- 2. SETUP "MY FOOD" NAVIGATION ---
+        // Both the image card and the plus button should lead to the My Food page
+        ImageView myFoodCard = view.findViewById(R.id.IVCardMyfood);
         ImageButton addFoodHomeButton = view.findViewById(R.id.BtnAddFoodHome);
+
+        View.OnClickListener toMyFoodListener = v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.FCVMain, new MyFoodFragment())
+                    .addToBackStack(null)
+                    .commit();
+        };
+
+        if (myFoodCard != null) {
+            myFoodCard.setOnClickListener(toMyFoodListener);
+        }
         if (addFoodHomeButton != null) {
-            addFoodHomeButton.setOnClickListener(v -> {
-                // Logic from HomeFragment.java: Switch Bottom Navigation Tab
-                if (getActivity() != null) {
-                    BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-                    if (bottomNav != null) {
-                        bottomNav.setSelectedItemId(R.id.nav_food_list);
-                    }
-                }
-            });
+            addFoodHomeButton.setOnClickListener(toMyFoodListener);
         }
     }
 }

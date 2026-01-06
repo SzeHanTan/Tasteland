@@ -48,7 +48,6 @@ public interface SupabaseAPI {
             @Header("Authorization") String token
     );
 
-    // 1. UPDATE ITEM (For saving text when you click away)
     @PATCH("rest/v1/shopping_items")
     Call<Void> updateItem(
             @Header("apikey") String apiKey,
@@ -57,12 +56,11 @@ public interface SupabaseAPI {
             @Body Map<String, Object> item
     );
 
-    // 2. ADD ITEM (Changed to return the list so we get the new ID)
     @POST("rest/v1/shopping_items")
     Call<List<ShoppingItem>> addItem(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Header("Prefer") String returnType, // We will use "return=representation"
+            @Header("Prefer") String returnType,
             @Body ShoppingItem item
     );
 
@@ -119,19 +117,30 @@ public interface SupabaseAPI {
 
     // --- COMMUNITY & MEMBERSHIP ---
 
+    @GET("rest/v1/community_members")
+    Call<List<Map<String, Object>>> getMemberRecords(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("user_id") String userIdFilter,
+            @Query("select") String select,
+            @Query("order") String order
+    );
+
+    @GET("rest/v1/communities")
+    Call<List<CommunityModel>> getCommunitiesByIds(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idsFilter, 
+            @Query("select") String select,
+            @Query("order") String order
+    );
+
     @GET("rest/v1/communities")
     Call<List<CommunityModel>> getCommunities(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("select") String select
-    );
-
-    @GET("rest/v1/communities")
-    Call<List<CommunityModel>> getMyJoinedCommunities(
-            @Header("apikey") String apiKey,
-            @Header("Authorization") String token,
-            @Query("select") String select, 
-            @Query("community_members.user_id") String userIdFilter
+            @Query("select") String select,
+            @Query("order") String order
     );
 
     @GET("rest/v1/communities")
@@ -150,11 +159,27 @@ public interface SupabaseAPI {
             @Body CommunityModel community
     );
 
+    @PATCH("rest/v1/communities")
+    Call<Void> updateCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter,
+            @Body Map<String, Object> updateData
+    );
+
     @POST("rest/v1/community_members")
     Call<Void> joinCommunity(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Body Map<String, Object> membershipData
+    );
+
+    @DELETE("rest/v1/community_members")
+    Call<Void> leaveCommunity(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("user_id") String userIdFilter,
+            @Query("community_id") String communityIdFilter
     );
 
     // --- MESSAGING ---
@@ -254,4 +279,23 @@ public interface SupabaseAPI {
             @Query("user_id") String userIdQuery,   // "eq.USER_UUID"
             @Query("recipe_id") String recipeIdQuery // "eq.123"
     );
+
+    @GET("rest/v1/notification") // Matches your 'notification' table
+    Call<List<NotificationItem>> getNotifications(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("select") String select,       // Added for standard Supabase query
+            @Query("user_id") String userIdFilter, // e.g. "eq.UUID"
+            @Query("order") String order          // e.g. "created_at.desc"
+    );
+
+    @PATCH("rest/v1/notification")
+    Call<Void> updateNotificationStatus(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String notificationIdFilter,
+            @Body Map<String, Object> updates
+    );
+
+
 }

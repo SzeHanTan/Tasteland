@@ -4,13 +4,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -60,14 +67,43 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
 
             // Fade out read notifications
-            ((NotificationViewHolder) holder).itemView.setAlpha(n.isRead() ? 0.6f : 1.0f);
+            holder.itemView.setAlpha(n.isRead() ? 0.6f : 1.0f);
 
-            // Optional click to mark as read
             holder.itemView.setOnClickListener(v -> {
-                n.setRead(true);
-                notifyItemChanged(position);
+                if (!n.isRead()) {
+                    markAsRead(n, position, holder.itemView);
+                }
             });
         }
+    }
+
+    /**
+     * Updates the notification status to 'is_read = true' in Supabase.
+     */
+    private void markAsRead(NotificationItem n, int position, View itemView) {
+        SessionManager session = new SessionManager(itemView.getContext()); // cite: DB_GUIDE.md
+        String token = "Bearer " + session.getToken(); // cite: DB_GUIDE.md
+        String apiKey = RetrofitClient.SUPABASE_KEY;
+
+        Map<String, Object> update = new HashMap<>();
+        update.put("is_read", true); // cite: NotificationItem.java
+
+        SupabaseAPI api = RetrofitClient.getInstance().getApi();
+        api.updateNotificationStatus(apiKey, token, "eq." + n.getNotificationId(), update)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            n.setRead(true); // cite: NotificationItem.java
+                            notifyItemChanged(position); // cite: NotificationAdapter.java
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(itemView.getContext(), "Failed to update status", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
