@@ -95,7 +95,8 @@ public class Login extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<AuthResponse> call, Throwable t) {
-                        Toast.makeText(Login.this, "Network Error: Check your internet", Toast.LENGTH_SHORT).show();
+                        Log.e("LoginDebug", "Login failed. Real Error: " + t.getMessage());
+//                        Toast.makeText(Login.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
