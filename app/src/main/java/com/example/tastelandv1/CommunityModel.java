@@ -16,6 +16,9 @@ public class CommunityModel {
     @SerializedName("invitation_code")
     private String invitationCode;
 
+    @SerializedName("updated_at")
+    private String updatedAt;
+
     public CommunityModel(String name, int imageRes, String invitationCode) {
         this.name = name;
         this.imageRes = imageRes;
@@ -40,5 +43,9 @@ public class CommunityModel {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 }

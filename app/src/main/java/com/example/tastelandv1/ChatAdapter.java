@@ -23,22 +23,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ChatMessage> messageList;
     private boolean isReplyPage;
+    private String communityName;
 
     private static final int TYPE_MAIN_POST = 0;
     private static final int TYPE_REPLY = 1;
     private static final int TYPE_RECIPE = 2;
     private static final int TYPE_LEFTOVER = 3;
     private static final int TYPE_DATE_HEADER = 4;
+    private static final int TYPE_SYSTEM = 5;
 
-    public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage) {
+    public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage, String communityName) {
         this.messageList = messageList;
         this.isReplyPage = isReplyPage;
+        this.communityName = communityName;
     }
 
     @Override
     public int getItemViewType(int position) {
         ChatMessage msg = messageList.get(position);
         if ("date_header".equals(msg.getMessageType())) return TYPE_DATE_HEADER;
+        if ("system".equals(msg.getMessageType())) return TYPE_SYSTEM;
         if ("recipe".equals(msg.getMessageType())) return TYPE_RECIPE;
         if ("leftover".equals(msg.getMessageType())) return TYPE_LEFTOVER;
         return msg.isMainPost() ? TYPE_MAIN_POST : TYPE_REPLY;
@@ -56,6 +60,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_DATE_HEADER) {
             return new DateHeaderViewHolder(inflater.inflate(R.layout.activity_notification_header_item, parent, false));
         }
+        if (viewType == TYPE_SYSTEM) {
+            return new SystemViewHolder(inflater.inflate(R.layout.item_chat_system, parent, false));
+        }
         if (viewType == TYPE_REPLY) {
             return new ReplyViewHolder(inflater.inflate(R.layout.item_chat_reply, parent, false));
         }
@@ -68,6 +75,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof DateHeaderViewHolder) {
             ((DateHeaderViewHolder) holder).tvDate.setText(msg.getMessageText());
+        } else if (holder instanceof SystemViewHolder) {
+            ((SystemViewHolder) holder).tvSystem.setText(msg.getMessageText());
         } else if (holder instanceof MainPostViewHolder) {
             MainPostViewHolder mainHolder = (MainPostViewHolder) holder;
 
@@ -98,6 +107,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 intent.putExtra("message_text", msg.getMessageText());
                 intent.putExtra("time", msg.getTimeFull());
                 intent.putExtra("like_count", msg.getLikeCount());
+                intent.putExtra("community_name", communityName);
                 v.getContext().startActivity(intent);
             });
 
@@ -118,7 +128,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             replyHolder.tvTime.setText(msg.getTime());
             replyHolder.tvLikes.setText(String.valueOf(msg.getLikeCount()));
 
-            // Enable Likes for Replies
             replyHolder.layoutLikeActive.setVisibility(msg.isLikedByUser() ? View.VISIBLE : View.GONE);
             replyHolder.layoutLikeInactive.setVisibility(msg.isLikedByUser() ? View.GONE : View.VISIBLE);
 
@@ -230,6 +239,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public DateHeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDate = itemView.findViewById(R.id.TVNotificationHeader);
+        }
+    }
+
+    public static class SystemViewHolder extends RecyclerView.ViewHolder {
+        TextView tvSystem;
+        public SystemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvSystem = itemView.findViewById(R.id.tvSystemMessage);
         }
     }
 
