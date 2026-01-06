@@ -49,7 +49,7 @@ public interface SupabaseAPI {
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("id") String idFilter,
-            @Body ShoppingItem item
+            @Body Map<String, Object> item
     );
 
     @POST("rest/v1/shopping_items")
@@ -58,6 +58,13 @@ public interface SupabaseAPI {
             @Header("Authorization") String token,
             @Header("Prefer") String returnType,
             @Body ShoppingItem item
+    );
+
+    @DELETE("rest/v1/shopping_items")
+    Call<Void> deleteShoppingItem(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String idFilter
     );
 
     @GET("rest/v1/profiles?select=*")
