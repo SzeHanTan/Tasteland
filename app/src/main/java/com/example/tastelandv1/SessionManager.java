@@ -28,7 +28,7 @@ public class SessionManager {
     public boolean isLoggedIn() {
         if (prefs == null) return false;
         String token = prefs.getString(KEY_TOKEN, null);
-        return token != null && !token.trim().isEmpty();
+        return token != null && !token.trim().isEmpty() && !token.equals("null");
     }
 
     public String getToken() {
