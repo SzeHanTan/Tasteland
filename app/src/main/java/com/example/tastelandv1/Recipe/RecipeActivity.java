@@ -6,10 +6,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tastelandv1.R;
 import com.example.tastelandv1.Recipe.database.Recipe;
 import com.example.tastelandv1.Recipe.database.RecipeRepository;
@@ -40,7 +42,21 @@ public class RecipeActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         // Handle Back Arrow Click
-        toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        toolbar.setNavigationOnClickListener(v ->
+                getOnBackPressedDispatcher().onBackPressed()
+        );
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Match MainActivity: check if there are fragments to pop
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    finish();
+                }
+            }
+        });
 
         IVImage = findViewById(R.id.IVDetailImage);
         TVTitle = findViewById(R.id.TVDetailTitle);
@@ -62,7 +78,7 @@ public class RecipeActivity extends AppCompatActivity {
                 recipe = (Recipe) getIntent().getSerializableExtra("RECIPE_OBJ");
             }
 
-            setupUI();
+            if (recipe != null) setupUI();
         } else {
             Toast.makeText(this, "Error: No recipe data found", Toast.LENGTH_SHORT).show();
             finish();
@@ -86,7 +102,10 @@ public class RecipeActivity extends AppCompatActivity {
         if (recipe.getImageUrl() != null && !recipe.getImageUrl().isEmpty()) {
             Glide.with(this)
                     .load(recipe.getImageUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache original & resized versions
+                    .thumbnail(0.1f) // Display 10% quality instantly while loading full image
                     .placeholder(R.color.black)
+                    .error(R.color.black)
                     .into(IVImage);
         }
 
