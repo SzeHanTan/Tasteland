@@ -1,4 +1,4 @@
-package com.example.tastelandv1;
+package com.example.tastelandv1.Food.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tastelandv1.Food.database.FoodItem;
+import com.example.tastelandv1.R;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

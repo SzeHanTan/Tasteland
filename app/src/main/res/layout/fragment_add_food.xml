@@ -10,7 +10,7 @@
     android:background="@drawable/fragment_add_food_background_rounded"
     android:elevation="8dp"
     android:padding="16dp"
-    tools:context=".AddFood">
+    tools:context=".Food.database.AddFood">
 
     <!-- Input field for the food name -->
     <EditText

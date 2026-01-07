@@ -1,5 +1,6 @@
 package com.example.tastelandv1;
 
+import com.example.tastelandv1.Food.database.FoodItem;
 import com.example.tastelandv1.Recipe.database.FavoriteEntry;
 import com.example.tastelandv1.Recipe.database.FavoriteRequest;
 import com.example.tastelandv1.Recipe.database.Recipe;

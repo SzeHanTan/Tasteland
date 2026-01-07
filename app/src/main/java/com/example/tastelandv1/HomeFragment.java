@@ -9,7 +9,12 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import com.example.tastelandv1.Food.ui.MyFoodFragment;
+import com.example.tastelandv1.Recipe.database.Recipe;
+import com.example.tastelandv1.Recipe.database.RecipeRepository;
+
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -27,6 +32,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        RecipeRepository repository = new RecipeRepository(requireContext());
+        repository.getAllRecipes(new RecipeRepository.RecipeCallback() {
+            @Override
+            public void onSuccess(List<Recipe> recipes) {
+            }
+            @Override
+            public void onError(String error) { }
+        });
 
         // --- 1. SETUP "ADD SHOPPING" BUTTON ---
         ImageButton addShoppingButton = view.findViewById(R.id.BtnAddShopping);

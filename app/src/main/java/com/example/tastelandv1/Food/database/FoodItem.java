@@ -1,4 +1,4 @@
-package com.example.tastelandv1;
+package com.example.tastelandv1.Food.database;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
