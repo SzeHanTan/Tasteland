@@ -17,6 +17,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TastelandV1">
 
+        <receiver
+            android:name=".ReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".Community.Reply"
