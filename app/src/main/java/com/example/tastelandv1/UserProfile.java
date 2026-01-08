@@ -7,6 +7,9 @@ public class UserProfile {
     @SerializedName("id")
     private String id;
 
+    @SerializedName("email")
+    private String email;
+
     @SerializedName("full_name")
     private String fullName;
 
@@ -26,6 +29,7 @@ public class UserProfile {
     // Getters
     public String getId() { return id; }
     public String getFullName() { return fullName; }
+    public String getEmail() { return email; }
     public String getContactNo() { return contactNo; }
     public String getDescription() { return description; }
 }

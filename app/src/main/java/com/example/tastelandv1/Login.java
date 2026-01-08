@@ -1,16 +1,17 @@
 package com.example.tastelandv1;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tastelandv1.Backend.RetrofitClient;
+import com.example.tastelandv1.Backend.SessionManager;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // --- NEW: Skip Login if already logged in ---
+        // Skip Login if already logged in
         SessionManager sessionManager = new SessionManager(this);
         if (sessionManager.isLoggedIn()) {
             navigateToMain();
@@ -48,9 +49,7 @@ public class Login extends AppCompatActivity {
         });
 
         // 3. "Forgot Password" Logic - Shows Customer Service Dialog
-        tvForgotPassword.setOnClickListener(v -> {
-            showCustomerServiceDialog();
-        });
+        tvForgotPassword.setOnClickListener(v -> showCustomerServiceDialog());
 
         // 4. Login Button Logic
         btnLogin.setOnClickListener(v -> {
@@ -73,36 +72,44 @@ public class Login extends AppCompatActivity {
     private void performLogin(String email, String password) {
         AuthRequest request = new AuthRequest(email, password);
 
-        RetrofitClient.getInstance().getApi().login(RetrofitClient.SUPABASE_KEY, request)
-                .enqueue(new Callback<AuthResponse>() {
+        RetrofitClient.getInstance(this).getApi().login(RetrofitClient.SUPABASE_KEY, request)
+                .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             String token = response.body().access_token;
+                            // UPDATED: Get the Refresh Token
+                            String refreshToken = response.body().refresh_token;
                             String userId = response.body().user.id;
 
-                            // Now fetch the actual profile to get the full name
-                            fetchProfileAndNavigate(token, userId);
+                            // Pass refresh token to the next step
+                            fetchProfileAndNavigate(token, refreshToken, userId);
                         } else {
                             try {
-                                String errorBody = response.errorBody().string();
-                                Log.e("LOGIN_ERROR", "Code: " + response.code() + " Body: " + errorBody);
+                                if (response.errorBody() != null) {
+                                    String errorBody = response.errorBody().string();
+                                    Log.e("LOGIN_ERROR", "Code: " + response.code() + " Body: " + errorBody);
+                                } else {
+                                    Log.e("LOGIN_ERROR", "Code: " + response.code() + " (Error body is null)");
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            Toast.makeText(Login.this, "Login Failed: " + response.code(), Toast.LENGTH_SHORT).show();                        }
+                            Toast.makeText(Login.this, "Login Failed: " + response.code(), Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<AuthResponse> call, Throwable t) {
-                        Toast.makeText(Login.this, "Network Error: Check your internet", Toast.LENGTH_SHORT).show();
+                        Log.e("LoginDebug", "Login failed. Real Error: " + t.getMessage());
+                        Toast.makeText(Login.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void fetchProfileAndNavigate(String token, String userId) {
+    private void fetchProfileAndNavigate(String token, String refreshToken, String userId) {
         String authHeader = "Bearer " + token;
-        RetrofitClient.getInstance().getApi().getMyProfile(RetrofitClient.SUPABASE_KEY, authHeader)
+        RetrofitClient.getInstance(this).getApi().getMyProfile(RetrofitClient.SUPABASE_KEY, authHeader)
                 .enqueue(new Callback<List<UserProfile>>() {
                     @Override
                     public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
@@ -115,9 +122,9 @@ public class Login extends AppCompatActivity {
                             }
                         }
 
-                        // Save session with actual username
+                        // Save Session WITH Refresh Token
                         SessionManager session = new SessionManager(Login.this);
-                        session.saveSession(token, userId, username);
+                        session.saveSession(token, refreshToken, userId, username);
 
                         Toast.makeText(Login.this, "Login Successful! Welcome " + username, Toast.LENGTH_SHORT).show();
                         navigateToMain();
@@ -125,9 +132,9 @@ public class Login extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<UserProfile>> call, Throwable t) {
-                        // Even if profile fetch fails, we save what we have and proceed
+                        // Even on failure, save the Refresh Token
                         SessionManager session = new SessionManager(Login.this);
-                        session.saveSession(token, userId, "User");
+                        session.saveSession(token, refreshToken, userId, "User");
                         navigateToMain();
                     }
                 });
@@ -140,7 +147,6 @@ public class Login extends AppCompatActivity {
         finish();
     }
 
-
     // Helper method to show the popup
     private void showCustomerServiceDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -148,12 +154,7 @@ public class Login extends AppCompatActivity {
         builder.setMessage("Please contact our customer service to reset your password.\n\nEmail: support@tasteland.com\nPhone: +60 12-345 6789");
 
         // Add an "OK" button that just closes the dialog
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
 
         // Show the dialog
         builder.create().show();

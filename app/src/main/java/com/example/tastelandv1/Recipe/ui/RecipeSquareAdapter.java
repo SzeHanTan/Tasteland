@@ -48,7 +48,8 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
             Glide.with(context)
                     .load(recipe.getImageUrl())
                     .placeholder(R.drawable.ic_launcher_background) // Show this while loading
-                    .error(R.drawable.ic_launcher_background)       // Show this if URL fails
+                    .error(R.drawable.ic_launcher_background)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                     .into(holder.IVBackground);
         }
 

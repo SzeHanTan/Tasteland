@@ -1,7 +1,6 @@
 package com.example.tastelandv1;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+
+import com.example.tastelandv1.Backend.RetrofitClient;
+import com.example.tastelandv1.Backend.SessionManager;
+import com.example.tastelandv1.Backend.SupabaseAPI;
 
 import java.util.List;
 
@@ -51,7 +54,7 @@ public class Profile extends Fragment {
         BtnEditProfile = view.findViewById(R.id.BtnEditProfile);
 
         // Initialize API
-        supabaseService = RetrofitClient.getInstance().getApi();
+        supabaseService = RetrofitClient.getInstance(getContext()).getApi();
 
         // 1. LOAD DATA ON STARTUP
         fetchProfileData();
@@ -82,6 +85,8 @@ public class Profile extends Fragment {
         });
 
         return view;
+
+
     }
 
     // --- API: FETCH DATA ---
@@ -100,7 +105,7 @@ public class Profile extends Fragment {
                     updateUI(currentUserProfile);
                 } else {
                     // Profile might not exist yet (first time login)
-                    TVUserName.setText("Name: (Tap 'Edit Profile' to set)");
+                    TVUserName.setText("Name: (Tap picture to edit)");
                 }
             }
 
@@ -139,18 +144,20 @@ public class Profile extends Fragment {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
 
-                    // Update Session immediately
+                    // --- ADD THIS CODE ---
+                    // 1. Update Session immediately so other pages can access it fast
                     SessionManager session = new SessionManager(getContext());
-                    session.saveSession(session.getToken(), session.getUserId(), name);
+                    session.saveSession(session.getToken(), session.getRefreshToken(), session.getUserId(), name);
 
-                    // Send "Broadcast" to tell Header to refresh
+                    // 2. Send "Broadcast" to tell Header to refresh
                     Intent intent = new Intent("com.example.tastelandv1.UPDATE_HEADER");
                     if (getActivity() != null) {
                         getActivity().sendBroadcast(intent);
                     }
 
-                    // Refresh local profile UI
+                    // 3. Refresh local profile UI
                     fetchProfileData();
+                    // ---------------------
                 } else {
                     Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
                 }

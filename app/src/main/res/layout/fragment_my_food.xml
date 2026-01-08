@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".MyFoodFragment">
+    tools:context=".Food.ui.MyFoodFragment">
 
+    <!-- "My Food" White Box -->
     <TextView
         android:id="@+id/TVMyFoodTitle"
         android:layout_width="0dp"
@@ -41,6 +42,7 @@
         app:layout_constraintEnd_toEndOf="@+id/TVMyFoodTitle"
         app:layout_constraintTop_toTopOf="@+id/TVMyFoodTitle" />
 
+    <!-- SCROLLABLE AREA FOR LISTS -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
@@ -55,6 +57,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- PREVIOUS SECTION -->
             <TextView
                 android:id="@+id/TvPreviousHeader"
                 android:layout_width="wrap_content"
@@ -72,6 +75,7 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_food" />
 
+            <!-- TODAY SECTION -->
             <TextView
                 android:id="@+id/TvTodayHeader"
                 android:layout_width="wrap_content"
@@ -90,6 +94,7 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_food" />
 
+            <!-- FUTURE SECTION -->
             <TextView
                 android:id="@+id/TvFutureHeader"
                 android:layout_width="wrap_content"
@@ -111,10 +116,22 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- FrameLayout container for the "Add Food" panel -->
     <FrameLayout
         android:id="@+id/fragment_add_food_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/PGMyFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:elevation="10dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
