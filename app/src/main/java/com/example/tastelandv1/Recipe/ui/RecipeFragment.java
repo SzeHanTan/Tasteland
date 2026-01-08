@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,8 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RecipeFragment extends Fragment {
 
@@ -38,9 +41,9 @@ public class RecipeFragment extends Fragment {
     private LinearLayout buttonContainer;
     private View emptyStateView;
     private NestedScrollView scrollView;
-    private EditText searchBar; // For Search Feature
-
+    private EditText searchBar;
     private RecipeRepository repository;
+    private ProgressBar progressBar;
 
     // --- Data Variables ---
     private List<Recipe> allRecipes = new ArrayList<>();
@@ -50,6 +53,7 @@ public class RecipeFragment extends Fragment {
 
     // --- CONFIGURATION ---
     private final List<CategoryConfig> categories = new ArrayList<>();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public RecipeFragment() {
         // Define Categories
@@ -74,6 +78,7 @@ public class RecipeFragment extends Fragment {
         emptyStateView = view.findViewById(R.id.LLEmptyState);
         scrollView = view.findViewById(R.id.NSVScrollViewContent);
         searchBar = view.findViewById(R.id.ETSearchBar);
+        progressBar = view.findViewById(R.id.PGRecipe);
 
         repository = new RecipeRepository(getContext());
 
@@ -159,13 +164,14 @@ public class RecipeFragment extends Fragment {
     //              DATA LOADING
     // ==========================================
     private void loadRecipes() {
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         repository.getAllRecipes(new RecipeRepository.RecipeCallback() {
             @Override
             public void onSuccess(List<Recipe> recipes) {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
+                        if (progressBar != null) progressBar.setVisibility(View.GONE);
                         allRecipes = recipes;
-                        // Log to verify data arrival
                         Log.d("RecipeFragment", "Loaded " + recipes.size() + " recipes.");
                         renderContent();
                     });
@@ -175,8 +181,10 @@ public class RecipeFragment extends Fragment {
             @Override
             public void onError(String error) {
                 if (getActivity() != null) {
-                    getActivity().runOnUiThread(() ->
-                            Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show()
+                    getActivity().runOnUiThread(() -> {
+                        if (progressBar != null) progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+                            }
                     );
                 }
             }
@@ -187,51 +195,78 @@ public class RecipeFragment extends Fragment {
     //              RENDER LOGIC (THE FIX)
     // ==========================================
     private void renderContent() {
-        contentContainer.removeAllViews();
-        boolean anythingShown = false;
+        if (getActivity() == null) return;
 
-        // SCENARIO A: SPECIFIC TAB SELECTED
-        if (!activeTabId.equals("all")) {
-            CategoryConfig config = null;
-            for(CategoryConfig c : categories) if(c.id.equals(activeTabId)) config = c;
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
 
-            if(config != null) {
-                List<Recipe> filtered = filterRecipes(config.filter);
-                if (!filtered.isEmpty()) {
-                    inflateSection(config.label, filtered);
-                    anythingShown = true;
+        // 1. Run Filtering Calculation in Background Thread
+        executor.execute(() -> {
+
+            // List of views to be added (calculated in bg)
+            final List<SectionData> sectionsToRender = new ArrayList<>();
+            boolean anythingFound = false;
+
+            // SCENARIO A: SPECIFIC TAB
+            if (!activeTabId.equals("all")) {
+                CategoryConfig config = null;
+                for(CategoryConfig c : categories) if(c.id.equals(activeTabId)) config = c;
+
+                if(config != null) {
+                    List<Recipe> filtered = filterRecipes(config.filter);
+                    if (!filtered.isEmpty()) {
+                        sectionsToRender.add(new SectionData(config.label, filtered));
+                        anythingFound = true;
+                    }
                 }
             }
-        }
-        // SCENARIO B: HOME VIEW (The Fix is Here)
-        else {
-            // --- ADD THIS BLOCK ---
-            // 1. Show ALL loaded recipes first to prove data is there
-            List<Recipe> allData = filterRecipes(r -> true); // Match everything
-            if (!allData.isEmpty()) {
-                inflateSection("All Recipes", allData);
-                anythingShown = true;
-            }
-            // ----------------------
+            // SCENARIO B: HOME VIEW
+            else {
+                List<Recipe> allData = filterRecipes(r -> true);
+                if (!allData.isEmpty()) {
+                    sectionsToRender.add(new SectionData("All Recipes", allData));
+                    anythingFound = true;
+                }
 
-            // 2. Then show your specific categories
-            for (CategoryConfig cat : categories) {
-                List<Recipe> filtered = filterRecipes(cat.filter);
-                if (!filtered.isEmpty()) {
-                    inflateSection(cat.label, filtered);
-                    anythingShown = true;
+                for (CategoryConfig cat : categories) {
+                    List<Recipe> filtered = filterRecipes(cat.filter);
+                    if (!filtered.isEmpty()) {
+                        sectionsToRender.add(new SectionData(cat.label, filtered));
+                        anythingFound = true;
+                    }
                 }
             }
-        }
 
-        // Handle Empty State
-        if (anythingShown) {
-            scrollView.setVisibility(View.VISIBLE);
-            emptyStateView.setVisibility(View.GONE);
-        } else {
-            scrollView.setVisibility(View.GONE);
-            emptyStateView.setVisibility(View.VISIBLE);
-        }
+            final boolean showEmpty = !anythingFound;
+
+            // 2. Update UI on Main Thread
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+
+                    // Clear only when ready to replace
+                    contentContainer.removeAllViews();
+
+                    if (showEmpty) {
+                        scrollView.setVisibility(View.GONE);
+                        emptyStateView.setVisibility(View.VISIBLE);
+                    } else {
+                        scrollView.setVisibility(View.VISIBLE);
+                        emptyStateView.setVisibility(View.GONE);
+
+                        // Inflate views
+                        for (SectionData section : sectionsToRender) {
+                            inflateSection(section.title, section.recipes);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private static class SectionData {
+        String title;
+        List<Recipe> recipes;
+        SectionData(String t, List<Recipe> r) { title = t; recipes = r; }
     }
 
     // Helper: Filters by Logic AND Search Query
@@ -309,6 +344,14 @@ public class RecipeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (repository != null) {
+            loadRecipes();
+        }
     }
 
     // ==========================================

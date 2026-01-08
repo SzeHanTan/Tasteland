@@ -2,10 +2,14 @@ package com.example.tastelandv1;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tastelandv1.Backend.RetrofitClient;
+import com.example.tastelandv1.Backend.SessionManager;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.HashMap;
@@ -42,60 +46,59 @@ public class SignUp extends AppCompatActivity {
     private void performSignUp(String email, String password) {
         AuthRequest request = new AuthRequest(email, password);
 
-        // Use a RetrofitClient helper or create Retrofit instance here like in ShoppingList
-        RetrofitClient.getInstance().getApi().signUp(RetrofitClient.SUPABASE_KEY, request)
+
+        RetrofitClient.getInstance(this).getApi().signUp(RetrofitClient.SUPABASE_KEY, request)
                 .enqueue(new Callback<AuthResponse>() {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                        if (response.isSuccessful()) {
-                            // The trigger handled the profile!
-                            // You can go straight to Login.
-                            Toast.makeText(SignUp.this, "Sign Up Successful!", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(SignUp.this, Login.class));
-                            finish();
+                        if (response.isSuccessful() && response.body() != null) {
+                            String token = response.body().access_token;
+                            String refreshToken = response.body().refresh_token; // Get Refresh Token
+                            String userId = response.body().user.id;
+
+                            // Initialize SessionManager with tokens
+                            SessionManager session = new SessionManager(SignUp.this);
+                            session.saveSession(token, refreshToken, userId, "New User");
+
+                            createProfileEntry(token, userId, email);
+                            Toast.makeText(SignUp.this, "Sign Up Successful!", Toast.LENGTH_SHORT).show();
                         } else {
-                            // --- NEW: Read the error message from Supabase ---
+                            // Log the error body to see exactly what Supabase said
                             try {
-                                // Supabase sends the error details in 'errorBody()'
-                                String errorMsg = response.errorBody().string();
-                                Toast.makeText(SignUp.this, "Failed: " + errorMsg, Toast.LENGTH_LONG).show();
-
-                                // Also print to Logcat so you can read it clearly
-                                android.util.Log.e("SignUpError", "Code: " + response.code() + " Body: " + errorMsg);
-
-                            } catch (Exception e) {
-                                Toast.makeText(SignUp.this, "Sign Up Failed (Unknown Error)", Toast.LENGTH_SHORT).show();
-                            }
+                                if (response.errorBody() != null) {
+                                    Log.e("SignUpError", response.errorBody().string());
+                                }
+                            } catch (Exception e) { e.printStackTrace(); }
+                            Toast.makeText(SignUp.this, "Sign Up Failed: " + response.code(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AuthResponse> call, Throwable t) {
-                        // 1. Print the error to the bottom "Logcat" tab in Android Studio
-                        android.util.Log.e("SIGNUP_ERROR", "Error: " + t.getMessage());
-
-                        // 2. Show the error on the screen so you can read it
-                        Toast.makeText(SignUp.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUp.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void createProfileEntry(String userId, String token) {
+    private void createProfileEntry(String token, String userId, String email) {
         // Prepare the data matching your SQL schema
         Map<String, Object> profileData = new HashMap<>();
         profileData.put("id", userId);
-        profileData.put("full_name", "New User"); // Default value
+        profileData.put("full_name", "New User");
+        profileData.put("email", email);// Default value
 
-        RetrofitClient.getInstance().getApi().createProfile(RetrofitClient.SUPABASE_KEY, token, profileData)
+        String authHeader = "Bearer " + token;
+
+        RetrofitClient.getInstance(this).getApi().createProfile(RetrofitClient.SUPABASE_KEY, token, profileData)
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(SignUp.this, "Account & Profile Created! Please Login.", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(SignUp.this, Login.class));
-                            finish();
+                            Toast.makeText(SignUp.this, "Account Created!", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(SignUp.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
                         } else {
-                            // CORRECTED LOGGING CALL
                             android.util.Log.e("ProfileError", "Code: " + response.code());
                             Toast.makeText(SignUp.this, "Failed to initialize profile", Toast.LENGTH_SHORT).show();
                         }
