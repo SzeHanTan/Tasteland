@@ -37,7 +37,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
         CommunityModel model = list.get(position);
 
         holder.name.setText(model.getName());
-        holder.image.setImageResource(model.getImageRes());
+        // Use a single, consistent icon for all groups
+        holder.image.setImageResource(R.drawable.ic_groups);
 
         holder.itemView.setOnClickListener(v -> {
             Intent i = new Intent(context, Community.class);
