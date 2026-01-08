@@ -10,7 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp">
 
         <ImageView
             android:id="@+id/IVBubbles"
@@ -46,7 +47,7 @@
             android:hint="@string/email"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TVLoginTitle">
+            app:layout_constraintTop_toBottomOf="@id/TVLoginTitle">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ETLoginEmail"
@@ -83,21 +84,20 @@
             android:layout_height="55dp"
             android:layout_marginStart="44dp"
             android:layout_marginEnd="44dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="24dp"
             android:text="@string/login"
             android:textSize="24sp"
             android:textColor="@color/darkgreen"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TIToggleLogin"
+            app:layout_constraintTop_toBottomOf="@id/TIToggleLogin"
             android:backgroundTint="@color/mediumgreen"/>
 
         <TextView
             android:id="@+id/TVForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:minHeight="48dp"
             android:gravity="center_vertical"
             android:text="@string/forgotpassword"
@@ -105,15 +105,13 @@
             android:focusable="true"
             android:clickable="true"
             android:background="?attr/selectableItemBackground"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TIToggleLogin" />
+            app:layout_constraintStart_toStartOf="@+id/BtnLogin"
+            app:layout_constraintTop_toBottomOf="@+id/BtnLogin" />
 
         <TextView
             android:id="@+id/TVNewAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
             android:minHeight="48dp"
             android:gravity="center_vertical"
             android:text="@string/createacc"
@@ -121,10 +119,8 @@
             android:focusable="true"
             android:clickable="true"
             android:background="?attr/selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/BtnLogin" />
+            app:layout_constraintTop_toTopOf="@+id/TVForgotPassword"
+            app:layout_constraintEnd_toEndOf="@+id/TIToggleLogin" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
