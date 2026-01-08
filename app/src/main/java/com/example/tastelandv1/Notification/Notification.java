@@ -121,27 +121,26 @@ public class Notification extends AppCompatActivity {
                 .enqueue(new Callback<List<NotificationItem>>() {
                     @Override
                     public void onResponse(Call<List<NotificationItem>> call, Response<List<NotificationItem>> response) {
-                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                        // --- PASTE THE DEBUG CODE HERE ---
+                        if (response.isSuccessful() && response.body() != null) {
+                            Log.d("NOTIF_DEBUG", "Items found in DB: " + response.body().size());
+
                             List<NotificationItem> list = response.body();
-                            NotificationItem newest = list.get(0);
+                            if (!list.isEmpty()) {
+                                NotificationItem newest = list.get(0);
+                                String newestId = newest.getNotificationId();
 
-                            String newestId = newest.getNotificationId();
-                            String title = newest.getTitle();
-                            String message = newest.getMessage();
-                            long relatedId = newest.getRelatedId();
-
-                            // 1. Initial run: save the ID
-                            if (lastSeenNotificationId.isEmpty()) {
-                                lastSeenNotificationId = newestId;
-
+                                if (lastSeenNotificationId.isEmpty()) {
+                                    lastSeenNotificationId = newestId;
+                                } else if (!newestId.equals(lastSeenNotificationId)) {
+                                    lastSeenNotificationId = newestId;
+                                    showStatusBarNotification(newest.getTitle(), newest.getMessage(), newest.getRelatedId());
+                                }
                             }
-                            // 2. New message detection: compare and trigger pop-up
-                            else if (!newestId.equals(lastSeenNotificationId)) {
-                                lastSeenNotificationId = newestId;
-                                showStatusBarNotification(title, message, relatedId);
-                            }
-
                             updateUI(list);
+                        } else {
+                            // This will tell us if it's a Permission (403) or Auth (401) issue
+                            Log.e("NOTIF_DEBUG", "Server Error Code: " + response.code());
                         }
                     }
 
@@ -152,7 +151,7 @@ public class Notification extends AppCompatActivity {
                 });
     }
 
-    private void showStatusBarNotification(String title, String message, long relatedId) {
+    private void showStatusBarNotification(String title, String message, String relatedId) {
         String channelId = "community_alerts";
         android.app.NotificationManager notificationManager =
                 (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);

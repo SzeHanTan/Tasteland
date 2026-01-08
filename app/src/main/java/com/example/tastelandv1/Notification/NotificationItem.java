@@ -31,10 +31,10 @@ public class NotificationItem {
     private Date updatedAt;
 
     @SerializedName("related_id") // This matches the new bigint column in Supabase
-    private long relatedId;
+    private String relatedId;
 
     public NotificationItem(String notificationId, String userId, String type, String title,
-                            String message, boolean isRead, Date scheduledAt, Date createdAt, Date updatedAt, long relatedId) {
+                            String message, boolean isRead, Date scheduledAt, Date createdAt, Date updatedAt, String relatedId) {
         this.notificationId = notificationId;
         this.userId = userId;
         this.type = type;
@@ -47,7 +47,7 @@ public class NotificationItem {
         this.relatedId = relatedId;
     }
 
-    public long getRelatedId() {
+    public String getRelatedId() {
         return relatedId;
     }
     public String getNotificationId() { return notificationId; }
