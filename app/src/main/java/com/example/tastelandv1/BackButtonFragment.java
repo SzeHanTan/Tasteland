@@ -27,7 +27,7 @@ public class BackButtonFragment extends Fragment {
         ImageButton btnBack = view.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
             if (getActivity() != null) {
-                getActivity().onBackPressed();
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
     }

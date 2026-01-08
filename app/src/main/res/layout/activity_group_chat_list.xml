@@ -6,61 +6,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".GroupChatList">
+    tools:context=".Community.GroupChatList">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerContainer"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_width="0dp"
+        android:layout_height="130dp"
         android:background="@drawable/header"
+        android:layout_marginStart="-50dp"
+        android:layout_marginEnd="-50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="115dp"
             android:layout_marginTop="60dp"
-            tools:text="Hi, Username"
+            android:text="Community"
             android:textColor="@android:color/black"
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thu, 13 November"
-            android:textColor="#444444"
-            app:layout_constraintStart_toStartOf="@+id/tvWelcome"
-            app:layout_constraintTop_toBottomOf="@+id/tvWelcome" />
-
-        <ImageButton
-            android:id="@+id/btnNotification"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="24dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/notification"
-            android:padding="8dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_notification_bell"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/ivIllustration"
             android:layout_width="113dp"
             android:layout_height="84dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="94dp"
             android:src="@drawable/questionmark"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnNotification"
-            app:layout_constraintTop_toBottomOf="@id/btnNotification"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.347" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -91,8 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/mediumgreen"
-        app:itemIconTint="@color/black"
-        app:itemTextColor="@color/black"
+        app:itemIconSize="30dp"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_bottom" />
@@ -167,7 +147,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="48dp"
         android:elevation="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

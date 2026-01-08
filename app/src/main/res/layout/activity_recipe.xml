@@ -35,9 +35,17 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/TBToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="56dp"
+                android:padding="0dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="5dp"
+                app:contentInsetStart="0dp"
+                app:contentInsetStartWithNavigation="0dp"
                 app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_arrow_back" /> </com.google.android.material.appbar.CollapsingToolbarLayout>
+                app:navigationIcon="@drawable/ic_back_arrow" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -133,8 +141,11 @@
         android:layout_margin="16dp"
         android:contentDescription="Add To Favorite"
         android:src="@drawable/ic_favorite_border"
-        android:backgroundTint="@null"
+        app:backgroundTint="@android:color/transparent"
         app:layout_anchor="@id/APAppBar"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchorGravity="top|end"
+        app:tint="@null"
+        app:fabCustomSize="70dp"
+        app:maxImageSize="50dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

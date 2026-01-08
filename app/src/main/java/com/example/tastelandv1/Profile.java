@@ -1,7 +1,6 @@
 package com.example.tastelandv1;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+
+import com.example.tastelandv1.Backend.RetrofitClient;
+import com.example.tastelandv1.Backend.SessionManager;
+import com.example.tastelandv1.Backend.SupabaseAPI;
 
 import java.util.List;
 
@@ -32,7 +35,7 @@ public class Profile extends Fragment {
     private CardView ICProfile;
 
     // Data Variables
-    private UserProfile currentUserProfile; // We store the loaded profile here
+    private UserProfile currentUserProfile;
     private SupabaseAPI supabaseService;
 
     @Nullable
@@ -52,7 +55,7 @@ public class Profile extends Fragment {
         BtnLogOut = view.findViewById(R.id.BtnLogOut);
 
         // Initialize API
-        supabaseService = RetrofitClient.getInstance().getApi();
+        supabaseService = RetrofitClient.getInstance(getContext()).getApi();
 
         // 1. LOAD DATA ON STARTUP
         fetchProfileData();
@@ -94,7 +97,7 @@ public class Profile extends Fragment {
             @Override
             public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    // We found the user's profile!
+                    // UserProfile found
                     currentUserProfile = response.body().get(0);
                     updateUI(currentUserProfile);
                 } else {
@@ -126,22 +129,20 @@ public class Profile extends Fragment {
             return;
         }
 
-        // Create object with new data
         UserProfile updatedProfile = new UserProfile(name, contact, desc);
 
         // API Call: UPDATE specific row where id = current user id
-        String idFilter = "eq." + currentUserProfile.getId(); // Supabase syntax: "id=eq.123"
+        String idFilter = "eq." + currentUserProfile.getId();
 
-        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile) .enqueue(new Callback<Void>() {
+        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
 
-                    // --- ADD THIS CODE ---
-                    // 1. Update Session immediately so other pages can access it fast
+                    // 1. Update Session immediately
                     SessionManager session = new SessionManager(getContext());
-                    session.saveSession(session.getToken(), session.getUserId(), name);
+                    session.saveSession(session.getToken(), session.getRefreshToken(), session.getUserId(), name);
 
                     // 2. Send "Broadcast" to tell Header to refresh
                     Intent intent = new Intent("com.example.tastelandv1.UPDATE_HEADER");
@@ -151,7 +152,6 @@ public class Profile extends Fragment {
 
                     // 3. Refresh local profile UI
                     fetchProfileData();
-                    // ---------------------
                 } else {
                     Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
                 }

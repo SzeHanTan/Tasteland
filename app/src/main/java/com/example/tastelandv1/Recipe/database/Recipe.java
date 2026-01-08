@@ -2,7 +2,6 @@ package com.example.tastelandv1.Recipe.database;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 public class Recipe implements Serializable {
@@ -28,12 +27,13 @@ public class Recipe implements Serializable {
     private List<String> tags;
 
     @SerializedName("created_at") // Maps JSON 'created_at' to Java 'createdAt'
-    private Date createdAt;
+    private String createdAt;
 
     @SerializedName("updated_at")
-    private Date updatedAt;
+    private String updatedAt;
 
-    private boolean isFavorite;
+    @SerializedName("is_favorite")
+    private Boolean isFavorite;
 
     @SerializedName("image_url")
     private String imageUrl;
@@ -64,15 +64,20 @@ public class Recipe implements Serializable {
     public List<String> getTags() { return tags; }
     public void setTags(List<String> tags) { this.tags = tags; }
 
-    public Date getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
-    public Date getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
 
-    public boolean isFavorite() { return isFavorite; }
-    public void setFavorite(boolean favorite) { isFavorite = favorite; }
 
+    public Boolean isFavorite() {
+        return isFavorite != null ? isFavorite : false;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
+    }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

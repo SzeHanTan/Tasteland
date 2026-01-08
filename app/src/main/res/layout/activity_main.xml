@@ -25,6 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/menu_bottom"
+        app:itemIconSize="30dp"
         app:labelVisibilityMode="unlabeled" />
 
     <androidx.fragment.app.FragmentContainerView
@@ -35,17 +36,9 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/community_profile_container"
-        android:name="com.example.tastelandv1.CommunityProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/FCVMain"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintTop_toBottomOf="@+id/header_container" />
 

@@ -5,11 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView; // Added ImageView
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide; // Import Glide
+import com.bumptech.glide.Glide;
 import com.example.tastelandv1.R;
 import com.example.tastelandv1.Recipe.database.Recipe;
 import com.google.android.material.chip.Chip;
@@ -48,7 +48,8 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
             Glide.with(context)
                     .load(recipe.getImageUrl())
                     .placeholder(R.drawable.ic_launcher_background) // Show this while loading
-                    .error(R.drawable.ic_launcher_background)       // Show this if URL fails
+                    .error(R.drawable.ic_launcher_background)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                     .into(holder.IVBackground);
         }
 
@@ -69,34 +70,38 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
         // 4. Ingredients Chips
         holder.chipGroupIngredients.removeAllViews();
         List<String> ingredients = recipe.getIngredients();
-        int maxChips = 2; // Reduced to 2 because chips take space on image
+
+        int maxVisible = 1; // because chips take space on image
 
         if(ingredients != null) {
-            for (int i = 0; i < Math.min(ingredients.size(), maxChips); i++) {
-                Chip chip = new Chip(context);
-                chip.setText(ingredients.get(i));
-
-                // Styling the chip for the image background
-                chip.setChipBackgroundColorResource(android.R.color.transparent); // or use R.color.white with alpha
-                chip.setChipStrokeColorResource(android.R.color.transparent);
-                chip.setEnsureMinTouchTargetSize(false);
-                chip.setTextSize(10f);
-
-                // IMPORTANT: Apply the chip background drawable you requested
-                chip.setBackgroundResource(R.drawable.chip_background);
-
-                holder.chipGroupIngredients.addView(chip);
+            for (int i = 0; i < Math.min(ingredients.size(), maxVisible); i++) {
+                addChip(holder.chipGroupIngredients, ingredients.get(i));
             }
 
-            if (ingredients.size() > maxChips) {
-                holder.TVMoreIngredients.setText("+" + (ingredients.size() - maxChips));
-                holder.TVMoreIngredients.setVisibility(View.VISIBLE);
-            } else {
-                holder.TVMoreIngredients.setVisibility(View.GONE);
+            if (ingredients.size() > maxVisible) {
+                int remaining = ingredients.size() - maxVisible;
+                addChip(holder.chipGroupIngredients, "+" + remaining);
             }
         }
 
         holder.itemView.setOnClickListener(v -> listener.onRecipeClick(recipe));
+    }
+
+    private void addChip(ChipGroup parent, String text) {
+        Chip chip = new Chip(context);
+        chip.setText(text);
+
+        // Style adjustments for transparency on image
+        chip.setChipBackgroundColorResource(android.R.color.transparent);
+        chip.setChipStrokeColorResource(android.R.color.transparent);
+        chip.setEnsureMinTouchTargetSize(false);
+        chip.setTextSize(9f);
+        chip.setTextColor(android.graphics.Color.BLACK);
+
+        // Using your background drawable
+        chip.setBackgroundResource(R.drawable.chip_background);
+
+        parent.addView(chip);
     }
 
     @Override
@@ -115,7 +120,6 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
             TVFoodName = itemView.findViewById(R.id.TVFoodName);
             BtnFavorite = itemView.findViewById(R.id.BtnFavorite);
             chipGroupIngredients = itemView.findViewById(R.id.chipGroupIngredients);
-            TVMoreIngredients = itemView.findViewById(R.id.TVMoreIngredients);
         }
     }
 }

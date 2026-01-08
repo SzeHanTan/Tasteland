@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    tools:context=".Community">
+    tools:context=".Community.Community">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
@@ -29,27 +29,31 @@
 
         <TextView
             android:id="@+id/tvCommunityName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="Taste &amp; Togetherness"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="@id/back_space"
             app:layout_constraintStart_toEndOf="@id/back_space"
+            app:layout_constraintEnd_toStartOf="@id/llCodeContainer"
             app:layout_constraintTop_toTopOf="@id/back_space" />
 
         <LinearLayout
             android:id="@+id/llCodeContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical"
             android:gravity="start"
-            app:layout_constraintBottom_toBottomOf="@id/tvCommunityName"
-            app:layout_constraintStart_toEndOf="@id/tvCommunityName"
-            app:layout_constraintTop_toTopOf="@id/tvCommunityName">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnLeaveGroup"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/tvInvitationCode"
@@ -57,17 +61,30 @@
                 android:layout_height="wrap_content"
                 android:text="[code]"
                 android:textColor="@color/darkgrey"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvCodeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Invitation Code"
+                android:text="Invite Code"
                 android:textColor="@color/darkgrey"
-                android:textSize="10sp" />
+                android:textSize="8sp" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnLeaveGroup"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_leave_group"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
