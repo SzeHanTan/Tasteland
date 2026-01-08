@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="220dp"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:importantForAccessibility="no" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_user_info"
@@ -28,7 +29,10 @@
             app:cardElevation="4dp"
             app:layout_constraintTop_toBottomOf="@+id/spacer_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            android:focusable="true"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,10 +45,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Username"
+                    android:text="User Profile"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:accessibilityHeading="true" />
 
                 <TextView
                     android:id="@+id/TVUserName"
@@ -66,7 +71,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="10dp"
-                    android:background="#E0E0E0" />
+                    android:background="#E0E0E0"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:id="@+id/TVDescription"
@@ -107,9 +113,10 @@
                     android:textStyle="bold"
                     app:drawableStartCompat="@android:drawable/ic_menu_save"
                     android:drawablePadding="15dp"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:focusable="true"/>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:importantForAccessibility="no"/>
 
                 <TextView
                     android:id="@+id/BtnAboutUs"
@@ -124,9 +131,10 @@
                     android:textStyle="bold"
                     app:drawableStartCompat="@android:drawable/ic_menu_info_details"
                     android:drawablePadding="15dp"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:focusable="true"/>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:importantForAccessibility="no"/>
 
                 <TextView
                     android:id="@+id/BtnInviteFriends"
@@ -141,9 +149,10 @@
                     android:textStyle="bold"
                     app:drawableStartCompat="@android:drawable/ic_menu_share"
                     android:drawablePadding="15dp"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:focusable="true"/>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:importantForAccessibility="no"/>
 
                 <TextView
                     android:id="@+id/BtnGeneralFAQ"
@@ -158,7 +167,8 @@
                     android:textStyle="bold"
                     app:drawableStartCompat="@android:drawable/ic_menu_help"
                     android:drawablePadding="15dp"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:focusable="true"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -186,7 +196,8 @@
                 android:layout_gravity="bottom|end"
                 android:background="#FFFFFF"
                 android:src="@android:drawable/ic_menu_edit"
-                android:padding="5dp"/>
+                android:padding="5dp"
+                android:contentDescription="Edit Profile Picture" />
         </androidx.cardview.widget.CardView>
 
 

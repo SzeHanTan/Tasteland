@@ -5,7 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <!-- Title -->
     <TextView
@@ -50,6 +53,7 @@
         android:layout_height="1dp"
         android:background="@color/mediumgreen"
         android:layout_marginTop="12dp"
+        android:importantForAccessibility="no"
         app:layout_constraintTop_toBottomOf="@+id/TVNotificationMessage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

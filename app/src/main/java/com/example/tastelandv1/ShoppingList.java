@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -75,7 +76,22 @@ public class ShoppingList extends Fragment {
 
         final EditText input = new EditText(getContext());
         input.setHint("Type item name (e.g. Milk)");
-        builder.setView(input);
+        
+        // Wrap EditText in a FrameLayout for padding
+        FrameLayout container = new FrameLayout(getContext());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        
+        // Convert dp to pixels for standard dialog padding (24dp is standard)
+        int paddingPx = (int) (24 * getResources().getDisplayMetrics().density);
+        params.leftMargin = paddingPx;
+        params.rightMargin = paddingPx;
+        input.setLayoutParams(params);
+        container.addView(input);
+        
+        builder.setView(container);
 
         builder.setPositiveButton("Add", (dialog, which) -> {
             String itemText = input.getText().toString().trim();

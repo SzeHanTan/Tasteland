@@ -3,12 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <CheckBox
         android:id="@+id/CBFinished"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="Mark as finished"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,6 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="@+id/TVFoodName"
         app:layout_constraintEnd_toEndOf="@+id/TVFoodName"
         app:layout_constraintStart_toStartOf="@+id/TVFoodName" />
