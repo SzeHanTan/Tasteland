@@ -34,14 +34,14 @@
             tools:layout_editor_absoluteY="0dp" />
 
         <ImageButton
-            android:id="@+id/BtnFavorite"
+            android:id="@+id/BtnFavourite"
             android:layout_width="32dp"
             android:layout_height="33dp"
             android:layout_margin="8dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_favorite_border"
+            android:src="@drawable/ic_favourite_border"
             android:scaleType="fitCenter"
-            android:contentDescription="Add to Favorite"
+            android:contentDescription="Add to Favourite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

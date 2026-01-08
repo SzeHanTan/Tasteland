@@ -32,8 +32,8 @@ public class Recipe implements Serializable {
     @SerializedName("updated_at")
     private String updatedAt;
 
-    @SerializedName("is_favorite")
-    private Boolean isFavorite;
+    @SerializedName("is_favourite")
+    private Boolean isFavourite;
 
     @SerializedName("image_url")
     private String imageUrl;
@@ -71,12 +71,12 @@ public class Recipe implements Serializable {
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
 
 
-    public Boolean isFavorite() {
-        return isFavorite != null ? isFavorite : false;
+    public Boolean isFavourite() {
+        return isFavourite != null ? isFavourite : false;
     }
 
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
+    public void setFavourite(Boolean favourite) {
+        isFavourite = favourite;
     }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }

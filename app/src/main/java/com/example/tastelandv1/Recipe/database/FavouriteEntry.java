@@ -2,7 +2,7 @@ package com.example.tastelandv1.Recipe.database;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FavoriteEntry {
+public class FavouriteEntry {
     @SerializedName("recipe_id")
     private int recipeId;
 
@@ -12,7 +12,7 @@ public class FavoriteEntry {
     }
 
     // Constructor for sending data (if needed)
-    public FavoriteEntry(int recipeId) {
+    public FavouriteEntry(int recipeId) {
         this.recipeId = recipeId;
     }
 }
