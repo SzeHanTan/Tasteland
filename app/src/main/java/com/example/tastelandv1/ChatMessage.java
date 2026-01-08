@@ -12,7 +12,7 @@ public class ChatMessage {
     private Integer id;
 
     @SerializedName("group_id")
-    private String groupId;
+    private long groupId;
 
     @SerializedName("user_id")
     private String userId;
@@ -46,7 +46,7 @@ public class ChatMessage {
 
     private transient boolean isLikedByUser;
 
-    public ChatMessage(String groupId, String userId, String senderName, String messageText, String messageType) {
+    public ChatMessage(long groupId, String userId, String senderName, String messageText, String messageType) {
         this.groupId = groupId;
         this.userId = userId;
         this.senderName = senderName;
@@ -57,6 +57,13 @@ public class ChatMessage {
         this.likeCount = 0;
         this.replyCount = 0;
     }
+
+    public ChatMessage(long groupId, String messageText, String messageType) {
+        this.groupId = groupId;
+        this.messageText = messageText;
+        this.messageType = messageType;
+    }
+
 
     public String getTime() {
         if (createdAt == null) return "Just now";
@@ -73,14 +80,16 @@ public class ChatMessage {
             return "Just now";
         }
     }
-
+    public void setIsMainPost(boolean isMainPost) {
+        this.isMainPost = isMainPost;
+    }
     public String getTimeFull() {
         return createdAt;
     }
 
     // Getters and Setters
     public Integer getId() { return id; }
-    public String getGroupId() { return groupId; }
+    public long getGroupId() { return groupId; }
     public String getUserId() { return userId; }
     public String getSenderName() { return senderName; }
     public String getMessageText() { return messageText; }

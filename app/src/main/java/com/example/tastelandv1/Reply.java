@@ -32,7 +32,7 @@ public class Reply extends AppCompatActivity {
     private List<ChatMessage> threadMessages;
     private SupabaseAPI supabaseService;
     private int parentId;
-    private String groupId;
+    private long groupId;
     private int initialLikeCount;
 
     @Override
@@ -46,7 +46,7 @@ public class Reply extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         parentId = getIntent().getIntExtra("message_id", -1);
-        groupId = getIntent().getStringExtra("group_id");
+        this.groupId = getIntent().getLongExtra("group_id", -1L);
         String originalSender = getIntent().getStringExtra("sender_name");
         String originalText = getIntent().getStringExtra("message_text");
         String originalTime = getIntent().getStringExtra("time");
@@ -80,17 +80,18 @@ public class Reply extends AppCompatActivity {
             String text = etMessage.getText().toString().trim();
             if (!text.isEmpty()) {
                 SessionManager session = new SessionManager(this);
-                String currentUserId = session.getUserId();
-                String currentUserName = session.getUsername();
+//                String currentUserId = session.getUserId();
+//                String currentUserName = session.getUsername();
 
                 ChatMessage reply = new ChatMessage(
                         groupId,
-                        currentUserId,
-                        currentUserName,
+                        session.getUserId(),
+                        session.getUsername(),
                         text,
                         "text"
                 );
                 reply.setParentMessageId(parentId);
+//                reply.setIsMainPost(false);
                 
                 String authHeader = "Bearer " + session.getToken();
                 supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", reply)
@@ -113,11 +114,11 @@ public class Reply extends AppCompatActivity {
     }
 
     private void updateCommunityTimestamp() {
-        if (groupId == null) return;
+        if (groupId == 0) return;
         String authHeader = "Bearer " + new SessionManager(this).getToken();
         Map<String, Object> update = new HashMap<>();
         // Touching the group to trigger the 'updated_at' column in Supabase
-        update.put("id", Integer.parseInt(groupId)); 
+        update.put("id", groupId);
 
         supabaseService.updateCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + groupId, update)
                 .enqueue(new Callback<Void>() {

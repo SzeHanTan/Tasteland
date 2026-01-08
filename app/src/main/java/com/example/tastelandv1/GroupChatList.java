@@ -290,13 +290,17 @@ public class GroupChatList extends AppCompatActivity {
                 });
     }
 
-    private void sendSystemMessage(String groupId, String text) {
+    private void sendSystemMessage(String groupIdStr, String text) {
+        long groupId = Long.parseLong(groupIdStr);
         ChatMessage msg = new ChatMessage(groupId, null, "System", text, "system");
         String authHeader = "Bearer " + session.getToken();
         supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", msg)
                 .enqueue(new Callback<Void>() {
                     @Override public void onResponse(Call<Void> call, Response<Void> response) {}
-                    @Override public void onFailure(Call<Void> call, Throwable t) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e(TAG, "Failed to send system message: " + t.getMessage());
+                        Toast.makeText(GroupChatList.this, "Error sending system message", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 

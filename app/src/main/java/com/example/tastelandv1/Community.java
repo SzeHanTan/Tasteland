@@ -33,6 +33,8 @@ public class Community extends AppCompatActivity {
     private SupabaseAPI supabaseService;
     private String currentGroupId;
     private SessionManager session;
+    private android.os.Handler realtimeHandler = new android.os.Handler();
+    private Runnable realtimeRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,20 +81,42 @@ public class Community extends AppCompatActivity {
         View btnSend = findViewById(R.id.btnSend);
         if (btnSend != null) {
             btnSend.setOnClickListener(v -> {
-                String text = etMessage != null ? etMessage.getText().toString().trim() : "";
+//                String text = etMessage != null ? etMessage.getText().toString().trim() : "";
+                String text = etMessage.getText().toString().trim();
                 if (!text.isEmpty()) {
+                    /*testing*/
+                    Log.d("SupabaseDebug", "Raw currentGroupId from Intent: " + currentGroupId);
+                    if (currentGroupId == null || currentGroupId.trim().isEmpty() || currentGroupId.equals("null")) {
+                        Toast.makeText(this, "CRITICAL ERROR: Group ID is missing!", Toast.LENGTH_LONG).show();
+                        Log.e("SupabaseDebug", "The group_id is NULL or empty. Cannot send message.");
+                        return; // Stop the code here so it doesn't try to send
+                    }
+                    long groupIdLong;
+                    try {
+                        // 2. Try to parse it to a number
+                        groupIdLong = Long.parseLong(currentGroupId);
+                        Log.d("SupabaseDebug", "Parsed Group ID as Long: " + groupIdLong);
+                    } catch (NumberFormatException e) {
+                        Log.e("SupabaseDebug", "Failed to parse currentGroupId into a number: " + currentGroupId);
+                        Toast.makeText(this, "Error: Group ID must be a number", Toast.LENGTH_SHORT).show();
+                        return; // Stop the code if parsing fails
+                    }
+                    /*testing*/
                     String senderName = session.getUsername();
                     if (senderName == null || senderName.isEmpty()) senderName = "Member";
-                    
+//                    long groupIdLong = Long.parseLong(currentGroupId);
                     ChatMessage newMessage = new ChatMessage(
-                            currentGroupId,
+                            groupIdLong,
                             session.getUserId(),
                             senderName,
                             text,
                             "text"
                     );
-                    
+                    newMessage.setIsMainPost(true);
                     String authHeader = "Bearer " + session.getToken();
+                    Log.d("SupabaseDebug", "Attempting to send: " + text);
+                    Log.d("SupabaseDebug", "Group ID: " + groupIdLong);
+                    Log.d("SupabaseDebug", "User ID: " + session.getUserId());
                     supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", newMessage)
                             .enqueue(new Callback<Void>() {
                                 @Override
@@ -101,14 +125,61 @@ public class Community extends AppCompatActivity {
                                         updateCommunityTimestamp(); // Update community activity timestamp
                                         fetchMessagesWithLikes();
                                         if (etMessage != null) etMessage.setText("");
+                                    }else {
+                                        // Log the error to see why it's failing
+                                        try {
+                                            String errorBody = response.errorBody().string();
+                                            Log.e("SupabaseDebug", "FAILED! Code: " + response.code());
+                                            Log.e("SupabaseDebug", "Database Error Message: " + errorBody);
+                                            Toast.makeText(Community.this, "Error: " + response.code(), Toast.LENGTH_LONG).show();
+                                        } catch (Exception e) {
+                                            Log.e("SupabaseDebug", "Could not parse error body", e);
+                                        }
                                     }
                                 }
-                                @Override public void onFailure(Call<Void> call, Throwable t) {}
+                                @Override public void onFailure(Call<Void> call, Throwable t) {
+                                    Log.e("SupabaseDebug", "NETWORK FAILURE: " + t.getMessage());
+                                    Toast.makeText(Community.this, "Network error", Toast.LENGTH_SHORT).show();
+                                }
                             });
                 }
             });
         }
     }
+
+    private void startInstantRefresh() {
+        realtimeRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Fetch messages every 2 seconds for an "instant" feel
+                fetchMessagesWithLikes();
+                realtimeHandler.postDelayed(this, 2000);
+            }
+        };
+        realtimeHandler.postDelayed(realtimeRunnable, 2000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 1. Start the instant refresh timer
+        startInstantRefresh();
+
+        // 2. Initial manual fetch for immediate data
+        fetchMessagesWithLikes();
+        fetchPinnedMessage();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // CRITICAL: Stop the timer when the user leaves to save battery and data
+        if (realtimeHandler != null && realtimeRunnable != null) {
+            realtimeHandler.removeCallbacks(realtimeRunnable);
+        }
+    }
+
+
 
     private void updateCommunityTimestamp() {
         String authHeader = "Bearer " + session.getToken();
@@ -154,13 +225,6 @@ public class Community extends AppCompatActivity {
                 Toast.makeText(Community.this, "Error leaving group", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        fetchMessagesWithLikes();
-        fetchPinnedMessage();
     }
 
     private void fetchMessagesWithLikes() {
@@ -209,10 +273,11 @@ public class Community extends AppCompatActivity {
                             String lastDate = "";
 
                             for (ChatMessage msg : rawMessages) {
-                                String msgDate = getDateLabel(msg.getTimeFull()); 
-                                
+                                String msgDate = getDateLabel(msg.getTimeFull());
+
                                 if (!msgDate.equals(lastDate)) {
-                                    ChatMessage header = new ChatMessage(currentGroupId, null, null, msgDate, "date_header");
+                                    long gId = Long.parseLong(currentGroupId);
+                                    ChatMessage header = new ChatMessage(gId, msgDate, "date_header");
                                     groupedMessages.add(header);
                                     lastDate = msgDate;
                                 }

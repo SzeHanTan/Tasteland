@@ -279,4 +279,23 @@ public interface SupabaseAPI {
             @Query("user_id") String userIdQuery,   // "eq.USER_UUID"
             @Query("recipe_id") String recipeIdQuery // "eq.123"
     );
+
+    @GET("rest/v1/notification") // Matches your 'notification' table
+    Call<List<NotificationItem>> getNotifications(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("select") String select,       // Added for standard Supabase query
+            @Query("user_id") String userIdFilter, // e.g. "eq.UUID"
+            @Query("order") String order          // e.g. "created_at.desc"
+    );
+
+    @PATCH("rest/v1/notification")
+    Call<Void> updateNotificationStatus(
+            @Header("apikey") String apiKey,
+            @Header("Authorization") String token,
+            @Query("id") String notificationIdFilter,
+            @Body Map<String, Object> updates
+    );
+
+
 }
