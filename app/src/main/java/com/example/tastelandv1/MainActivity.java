@@ -11,6 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.tastelandv1.Backend.SessionManager;
+import com.example.tastelandv1.Community.GroupChatList;
+import com.example.tastelandv1.Insights.ui.InsightsFragment;
 import com.example.tastelandv1.Recipe.ui.RecipeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

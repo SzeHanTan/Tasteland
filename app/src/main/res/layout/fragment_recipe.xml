@@ -13,11 +13,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"> <!-- Horizontal Scroll Button-->
 
+        <TextView
+            android:id="@+id/TVRecipeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:fontFamily="@font/angkor"
+            android:text="@string/recipe"
+            android:textSize="40sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <EditText
             android:id="@+id/ETSearchBar"
             android:layout_width="286dp"
             android:layout_height="41dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="110dp"
             android:background="@drawable/recipe_searchbar"
             android:elevation="10dp"
             android:gravity="top|start"
@@ -111,6 +123,17 @@
                 android:textColor="#888888"/>
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/PGRecipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:elevation="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,6 +6,9 @@ public class AuthResponse {
     @SerializedName("access_token")
     public String access_token;
 
+    @SerializedName("refresh_token")
+    public String refresh_token;
+
     @SerializedName("user")
     public User user; // This is the 'user' symbol that was missing
 
