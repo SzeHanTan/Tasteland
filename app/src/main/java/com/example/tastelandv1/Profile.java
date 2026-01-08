@@ -28,8 +28,7 @@ public class Profile extends Fragment {
     // UI Variables
     private TextView TVUserName, TVContactNo, TVDescription;
     private TextView BtnSavedRecipes, BtnAboutUs, BtnInviteFriends, BtnGeneralFAQ;
-    private Button BtnLogOut;
-    private CardView ICProfile;
+    private Button BtnLogOut, BtnEditProfile;
 
     // Data Variables
     private UserProfile currentUserProfile; // We store the loaded profile here
@@ -41,7 +40,6 @@ public class Profile extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Initialize Views
-        ICProfile = view.findViewById(R.id.ic_profile);
         TVUserName = view.findViewById(R.id.TVUserName);
         TVContactNo = view.findViewById(R.id.TVContactNo);
         TVDescription = view.findViewById(R.id.TVDescription);
@@ -50,6 +48,7 @@ public class Profile extends Fragment {
         BtnInviteFriends = view.findViewById(R.id.BtnInviteFriends);
         BtnGeneralFAQ = view.findViewById(R.id.BtnGeneralFAQ);
         BtnLogOut = view.findViewById(R.id.BtnLogOut);
+        BtnEditProfile = view.findViewById(R.id.BtnEditProfile);
 
         // Initialize API
         supabaseService = RetrofitClient.getInstance().getApi();
@@ -57,7 +56,11 @@ public class Profile extends Fragment {
         // 1. LOAD DATA ON STARTUP
         fetchProfileData();
 
-        ICProfile.setOnClickListener(v -> showEditProfileDialog());
+        // Set click listener on the new Edit Profile button instead of the avatar
+        if (BtnEditProfile != null) {
+            BtnEditProfile.setOnClickListener(v -> showEditProfileDialog());
+        }
+
         BtnAboutUs.setOnClickListener(v -> showInfoDialog("About Us", "We are a group of students passionate about cooking!"));
         BtnInviteFriends.setOnClickListener(v -> showInfoDialog("Invite Friends", "Share code: COOK123"));
         BtnGeneralFAQ.setOnClickListener(v -> showInfoDialog("General FAQ", "Q: Is it free?\nA: Yes!"));
@@ -79,8 +82,6 @@ public class Profile extends Fragment {
         });
 
         return view;
-
-
     }
 
     // --- API: FETCH DATA ---
@@ -99,7 +100,7 @@ public class Profile extends Fragment {
                     updateUI(currentUserProfile);
                 } else {
                     // Profile might not exist yet (first time login)
-                    TVUserName.setText("Name: (Tap picture to edit)");
+                    TVUserName.setText("Name: (Tap 'Edit Profile' to set)");
                 }
             }
 
@@ -138,20 +139,18 @@ public class Profile extends Fragment {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
 
-                    // --- ADD THIS CODE ---
-                    // 1. Update Session immediately so other pages can access it fast
+                    // Update Session immediately
                     SessionManager session = new SessionManager(getContext());
                     session.saveSession(session.getToken(), session.getUserId(), name);
 
-                    // 2. Send "Broadcast" to tell Header to refresh
+                    // Send "Broadcast" to tell Header to refresh
                     Intent intent = new Intent("com.example.tastelandv1.UPDATE_HEADER");
                     if (getActivity() != null) {
                         getActivity().sendBroadcast(intent);
                     }
 
-                    // 3. Refresh local profile UI
+                    // Refresh local profile UI
                     fetchProfileData();
-                    // ---------------------
                 } else {
                     Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
                 }
