@@ -81,5 +81,18 @@
     <string name="ingredients">Ingredients</string>
     <string name="add_to_favourite">Add To Favourite</string>
     <string name="recipe_image_description">Image of the recipe</string>
+    <string name="back">Back</string>
+    <string name="send">Send</string>
+    <string name="type_your_message">Type your message ...</string>
+    <string name="replies">Replies</string>
+    <string name="signup_button_description">Create a new account</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="full_name">Full Name</string>
+    <string name="contact_number">Contact Number</string>
+    <string name="bio_description">Bio / Description</string>
+    <string name="due_date">Due Date</string>
+    <string name="reminder_icon_description">Reminder</string>
+    <string name="illustration_for_the_article">Illustration for the article</string>
+    <string name="back_button_description">Back</string>
 
 </resources>
