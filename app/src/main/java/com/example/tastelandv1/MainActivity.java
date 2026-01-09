@@ -113,6 +113,22 @@ public class MainActivity extends AppCompatActivity {
         if (universalBackButton != null) universalBackButton.setVisibility(isHome ? View.GONE : View.VISIBLE);
     }
 
+    public void navigateToRecipesWithCategory(String categoryId) {
+        // This switches to the Recipe tab but with a specific initial tab
+        RecipeFragment selectedFragment = RecipeFragment.newInstance(categoryId);
+        String tag = String.valueOf(R.id.nav_recipe);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.FCVMain, selectedFragment, tag);
+        ft.addToBackStack(null);
+        ft.commit();
+
+        // Also sync bottom nav selection
+        if (bottomNav != null) {
+            bottomNav.getMenu().findItem(R.id.nav_recipe).setChecked(true);
+        }
+    }
+
     private void navigateToTab(int itemId) {
         if (itemId == R.id.nav_community) {
             Intent intent = new Intent(this, GroupChatList.class);

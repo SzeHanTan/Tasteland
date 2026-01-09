@@ -67,7 +67,9 @@ public class Profile extends Fragment {
 
         // Saved Recipes Navigation
         BtnSavedRecipes.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Navigate to Saved Recipes...", Toast.LENGTH_SHORT).show();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).navigateToRecipesWithCategory("favourite");
+            }
         });
 
         // Logout Logic
