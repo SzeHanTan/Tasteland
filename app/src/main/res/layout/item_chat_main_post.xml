@@ -101,7 +101,6 @@
                 android:background="@drawable/rounded_corner_background"
                 android:backgroundTint="#4F583D"
                 android:gravity="center"
-                android:importantForAccessibility="no"
                 android:orientation="horizontal"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
