@@ -76,6 +76,10 @@
     <string name="join_community_text">Join Community</string>
     <string name="new_community_text">New Community</string>
     <string name="community">Community</string>
-
+    <string name="overview">Overview</string>
+    <string name="instructions">Instructions</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="add_to_favourite">Add To Favourite</string>
+    <string name="recipe_image_description">Image of the recipe</string>
 
 </resources>

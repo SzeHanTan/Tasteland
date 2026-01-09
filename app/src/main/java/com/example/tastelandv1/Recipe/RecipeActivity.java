@@ -88,6 +88,7 @@ public class RecipeActivity extends AppCompatActivity {
     private void setupUI() {
         // Text Fields
         TVTitle.setText(recipe.getTitle());
+        IVImage.setContentDescription(recipe.getTitle());
         TVCategory.setText(recipe.getCategory());
         TVOverview.setText(recipe.getOverview());
 
