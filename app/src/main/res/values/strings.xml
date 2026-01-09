@@ -67,6 +67,11 @@
     <string name="search">Search</string>
     <string name="recipe_search_bar">Type your recipe ...</string>
     <string name="recipe">-Recipe-</string>
+    <string name="code">[code]</string>
+    <string name="invite_code">Invite Code</string>
+    <string name="leave_group">Leave group</string>
+    <string name="send_message">Send message</string>
+    <string name="pinned_message">Pinned Message</string>
 
 
 </resources>
