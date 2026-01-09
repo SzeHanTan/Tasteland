@@ -38,7 +38,7 @@
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_add"
-        android:contentDescription="Add new food item"
+        android:contentDescription="@string/add_new_food_item"
         app:layout_constraintBottom_toBottomOf="@+id/TVMyFoodTitle"
         app:layout_constraintEnd_toEndOf="@+id/TVMyFoodTitle"
         app:layout_constraintTop_toTopOf="@+id/TVMyFoodTitle" />

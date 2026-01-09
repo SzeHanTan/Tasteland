@@ -94,5 +94,24 @@
     <string name="reminder_icon_description">Reminder</string>
     <string name="illustration_for_the_article">Illustration for the article</string>
     <string name="back_button_description">Back</string>
+    <string name="date">Date</string>
+    <string name="add_item_to_shopping_list">Add item to shopping list</string>
+    <string name="add_item_to_my_food">Add item to my food</string>
+    <string name="add_new_food_item">Add new food item</string>
+    <string name="user_profile">User Profile</string>
+    <string name="name_john_doe">Name: John Doe</string>
+    <string name="contact_no_012_3456789">Contact no.: 012-3456789</string>
+    <string name="i_m_a_housewife_who_enjoys_cooking_delicious_food_feel_free_to_drop_by">I\'m a housewife who enjoys cooking delicious food. Feel free to drop by!</string>
+    <string name="saved_recipes">Saved recipes</string>
+    <string name="about_us">About us</string>
+    <string name="invite_friends">Invite friends</string>
+    <string name="general_faq">General FAQ</string>
+    <string name="avatar_picture">Avatar Picture</string>
+    <string name="log_out">Log Out</string>
+    <string name="add_new_item">Add new item</string>
+    <string name="clear_checked_items">Clear checked items</string>
+    <string name="pin_the_message">pin the message</string>
+    <string name="unlike_the_message">unlike the message</string>
+    <string name="like_the_message">like the message</string>
 
 </resources>

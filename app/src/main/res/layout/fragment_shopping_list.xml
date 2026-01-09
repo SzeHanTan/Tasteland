@@ -40,7 +40,7 @@
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_add"
-        android:contentDescription="Add new item"
+        android:contentDescription="@string/add_new_item"
         app:layout_constraintBottom_toBottomOf="@+id/TVShoppingListTitle"
         app:layout_constraintEnd_toEndOf="@+id/TVShoppingListTitle"
         app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle" />
@@ -56,7 +56,7 @@
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@android:drawable/ic_menu_delete"
-        android:contentDescription="Clear checked items"
+        android:contentDescription="@string/clear_checked_items"
         app:layout_constraintStart_toEndOf="@+id/BtnAddFoodItem"
         app:layout_constraintTop_toTopOf="@+id/BtnAddFoodItem" />
 
