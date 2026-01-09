@@ -5,14 +5,19 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingVertical="8dp"
-    android:paddingHorizontal="16dp">
+    android:paddingHorizontal="16dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <CheckBox
         android:id="@+id/cb_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:buttonTint="@android:color/black" />
+        android:buttonTint="@android:color/black"
+        android:contentDescription="Mark item as purchased" />
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -24,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint=""
+            android:hint="Type item name"
             android:inputType="textCapSentences"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
@@ -32,7 +37,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@android:color/black" />
+            android:background="@android:color/black"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
 </LinearLayout>

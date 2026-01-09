@@ -9,19 +9,21 @@
 
     <!-- "My Food" White Box -->
     <TextView
-        android:id="@+id/TVShoppingListTitle"
+        android:id="@+id/TVMyFoodTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        android:accessibilityHeading="true"
         android:background="@drawable/rounded_corner_background"
         android:elevation="4dp"
+        android:fontFamily="@font/angkor"
         android:gravity="center"
         android:padding="16dp"
         android:text="@string/myfood"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        android:layout_marginTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,9 +38,10 @@
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="@+id/TVShoppingListTitle"
-        app:layout_constraintEnd_toEndOf="@+id/TVShoppingListTitle"
-        app:layout_constraintTop_toTopOf="@+id/TVShoppingListTitle" />
+        android:contentDescription="Add new food item"
+        app:layout_constraintBottom_toBottomOf="@+id/TVMyFoodTitle"
+        app:layout_constraintEnd_toEndOf="@+id/TVMyFoodTitle"
+        app:layout_constraintTop_toTopOf="@+id/TVMyFoodTitle" />
 
     <!-- SCROLLABLE AREA FOR LISTS -->
     <androidx.core.widget.NestedScrollView
@@ -47,7 +50,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@+id/fragment_add_food_container"
-        app:layout_constraintTop_toBottomOf="@+id/TVShoppingListTitle">
+        app:layout_constraintTop_toBottomOf="@+id/TVMyFoodTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +66,8 @@
                 android:text="@string/previousfood"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:accessibilityHeading="true" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RVPrevious"
@@ -81,7 +85,8 @@
                 android:text="@string/todayfood"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:accessibilityHeading="true" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RVToday"
@@ -99,7 +104,8 @@
                 android:text="@string/futurefood"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:accessibilityHeading="true" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RVFuture"

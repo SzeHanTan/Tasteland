@@ -6,132 +6,142 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
+    android:paddingBottom="80dp"
     tools:context=".HomeFragment">
 
+    <!-- Top Section: Horizontal Chain for Cards -->
+    <ImageView
+        android:id="@+id/IVCardShoppingList"
+        android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/card_home"
+        android:importantForAccessibility="no"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/IVCardMyfood"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/imageView3"
+        app:layout_constraintVertical_chainStyle="spread" />
 
     <ImageView
         android:id="@+id/IVCardMyfood"
         android:layout_width="168dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="24dp"
         android:adjustViewBounds="true"
         android:src="@drawable/card_home"
+        android:importantForAccessibility="no"
+        app:layout_constraintStart_toEndOf="@+id/IVCardShoppingList"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/IVCardShoppingList"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList" />
 
-
+    <!-- Shopping Card Internal Items -->
     <ImageView
-        android:id="@+id/ic_food"
+        android:id="@+id/ic_shopping"
         android:layout_width="140dp"
-        android:layout_height="173dp"
-        android:layout_marginBottom="40dp"
-        android:src="@drawable/ic_food"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
-        app:layout_constraintEnd_toEndOf="@+id/IVCardMyfood"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood" />
-
-    <ImageButton
-        android:id="@+id/BtnAddFoodHome"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="27dp"
-        android:layout_marginBottom="4dp"
-        android:background="@android:color/transparent"
-        android:elevation="4dp"
-        android:padding="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/add"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <TextView
-        android:id="@+id/TVMyFood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginBottom="24dp"
-        android:text="@string/myfood"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@+id/TVShoppingList"
-        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood" />
-
-    <TextView
-        android:id="@+id/TVQuote"
-        android:layout_width="294dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="@string/quote"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
-
-    <ImageView
-        android:id="@+id/IVCardShoppingList"
-        android:layout_width="168dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="40dp"
-        android:adjustViewBounds="true"
-        android:src="@drawable/card_home"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        android:layout_height="140dp"
+        android:src="@drawable/ic_shopping"
+        android:importantForAccessibility="no"
+        app:layout_constraintTop_toTopOf="@+id/IVCardShoppingList"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardShoppingList"
+        android:layout_marginBottom="20dp"/>
 
     <TextView
         android:id="@+id/TVShoppingList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="20dp"
         android:text="@string/shoppinglist"
         android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
-        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList" />
+        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
+        app:layout_constraintEnd_toStartOf="@+id/BtnAddShopping"
+        app:layout_constraintHorizontal_chainStyle="packed" />
 
     <ImageButton
         android:id="@+id/BtnAddShopping"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="4dp"
-        android:background="@android:color/transparent"
-        android:elevation="4dp"
-        android:padding="10dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="fitCenter"
         android:src="@drawable/add"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
-        app:layout_constraintStart_toEndOf="@+id/TVShoppingList" />
+        android:contentDescription="Add item to shopping list"
+        app:layout_constraintTop_toTopOf="@+id/TVShoppingList"
+        app:layout_constraintBottom_toBottomOf="@+id/TVShoppingList"
+        app:layout_constraintStart_toEndOf="@+id/TVShoppingList"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardShoppingList" />
 
+    <!-- My Food Card Internal Items -->
     <ImageView
-        android:id="@+id/ic_shopping"
-        android:layout_width="156dp"
-        android:layout_height="192dp"
-        android:src="@drawable/ic_shopping"
-        app:layout_constraintBottom_toBottomOf="@+id/IVCardShoppingList"
-        app:layout_constraintEnd_toEndOf="@+id/IVCardShoppingList"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/IVCardShoppingList"
-        app:layout_constraintTop_toTopOf="@+id/IVCardShoppingList"
-        app:layout_constraintVertical_bias="0.0" />
+        android:id="@+id/ic_food"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:src="@drawable/ic_food"
+        android:importantForAccessibility="no"
+        app:layout_constraintTop_toTopOf="@+id/IVCardMyfood"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
+        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardMyfood"
+        android:layout_marginBottom="20dp"/>
 
+    <TextView
+        android:id="@+id/TVMyFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myfood"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/IVCardMyfood"
+        app:layout_constraintStart_toStartOf="@+id/IVCardMyfood"
+        app:layout_constraintEnd_toStartOf="@+id/BtnAddFoodHome"
+        app:layout_constraintHorizontal_chainStyle="packed" />
+
+    <ImageButton
+        android:id="@+id/BtnAddFoodHome"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="fitCenter"
+        android:src="@drawable/add"
+        android:contentDescription="Add item to my food"
+        app:layout_constraintTop_toTopOf="@+id/TVMyFood"
+        app:layout_constraintBottom_toBottomOf="@+id/TVMyFood"
+        app:layout_constraintStart_toEndOf="@+id/TVMyFood"
+        app:layout_constraintEnd_toEndOf="@+id/IVCardMyfood" />
+
+    <!-- Middle Section: Distributed Image -->
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="368dp"
-        android:layout_height="202dp"
-        android:layout_marginTop="35dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/food_waste_reduction"
         android:alpha="0.75"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:importantForAccessibility="no"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/IVCardShoppingList"
+        app:layout_constraintBottom_toTopOf="@+id/TVQuote"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IVCardShoppingList" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Bottom Section: Distributed Quote -->
+    <TextView
+        android:id="@+id/TVQuote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/quote"
+        android:textStyle="bold"
+        android:layout_marginHorizontal="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,10 +16,10 @@
         android:textColor="@android:color/black"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:accessibilityHeading="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.022"
-        tools:layout_editor_absoluteX="51dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="50dp"/>
@@ -46,16 +46,15 @@
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
                 android:text="@string/article_heading_6"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:accessibilityHeading="true"/>
 
             <ImageView
                 android:id="@+id/IVInsights"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginVertical="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:contentDescription="Illustration for the article"
                 app:srcCompat="@drawable/airtight_storage2" />
 
             <TextView
@@ -65,7 +64,8 @@
                 android:paddingTop="10dp"
                 android:text="@string/article_6"
                 android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:lineSpacingExtra="4sp" />
 
         </LinearLayout>
     </ScrollView>

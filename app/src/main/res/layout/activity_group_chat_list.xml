@@ -25,10 +25,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="115dp"
             android:layout_marginTop="60dp"
+            android:fontFamily="@font/angkor"
             android:text="Community"
-            android:textColor="@android:color/black"
+            android:textColor="@color/black"
             android:textSize="22sp"
-            android:textStyle="bold"
+            android:textStyle="normal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

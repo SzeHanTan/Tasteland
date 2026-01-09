@@ -32,11 +32,10 @@ public class Profile extends Fragment {
     // UI Variables
     private TextView TVUserName, TVContactNo, TVDescription;
     private TextView BtnSavedRecipes, BtnAboutUs, BtnInviteFriends, BtnGeneralFAQ;
-    private Button BtnLogOut;
-    private CardView ICProfile;
+    private Button BtnLogOut, BtnEditProfile;
 
     // Data Variables
-    private UserProfile currentUserProfile;
+    private UserProfile currentUserProfile; // We store the loaded profile here
     private SupabaseAPI supabaseService;
 
     @Nullable
@@ -45,7 +44,6 @@ public class Profile extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Initialize Views
-        ICProfile = view.findViewById(R.id.ic_profile);
         TVUserName = view.findViewById(R.id.TVUserName);
         TVContactNo = view.findViewById(R.id.TVContactNo);
         TVDescription = view.findViewById(R.id.TVDescription);
@@ -54,6 +52,7 @@ public class Profile extends Fragment {
         BtnInviteFriends = view.findViewById(R.id.BtnInviteFriends);
         BtnGeneralFAQ = view.findViewById(R.id.BtnGeneralFAQ);
         BtnLogOut = view.findViewById(R.id.BtnLogOut);
+        BtnEditProfile = view.findViewById(R.id.BtnEditProfile);
 
         // Initialize API
         supabaseService = RetrofitClient.getInstance(getContext()).getApi();
@@ -61,7 +60,11 @@ public class Profile extends Fragment {
         // 1. LOAD DATA ON STARTUP
         fetchProfileData();
 
-        ICProfile.setOnClickListener(v -> showEditProfileDialog());
+        // Set click listener on the new Edit Profile button instead of the avatar
+        if (BtnEditProfile != null) {
+            BtnEditProfile.setOnClickListener(v -> showEditProfileDialog());
+        }
+
         BtnAboutUs.setOnClickListener(v -> showInfoDialog("About Us", "We are a group of students passionate about cooking!"));
         BtnInviteFriends.setOnClickListener(v -> showInfoDialog("Invite Friends", "Share code: COOK123"));
         BtnGeneralFAQ.setOnClickListener(v -> showInfoDialog("General FAQ", "Q: Is it free?\nA: Yes!"));
@@ -111,7 +114,7 @@ public class Profile extends Fragment {
             @Override
             public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    // UserProfile found
+                    // We found the user's profile!
                     currentUserProfile = response.body().get(0);
                     updateUI(currentUserProfile);
                 } else {
@@ -143,18 +146,20 @@ public class Profile extends Fragment {
             return;
         }
 
+        // Create object with new data
         UserProfile updatedProfile = new UserProfile(name, contact, desc);
 
         // API Call: UPDATE specific row where id = current user id
-        String idFilter = "eq." + currentUserProfile.getId();
+        String idFilter = "eq." + currentUserProfile.getId(); // Supabase syntax: "id=eq.123"
 
-        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile).enqueue(new Callback<Void>() {
+        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile) .enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
 
-                    // 1. Update Session immediately
+                    // --- ADD THIS CODE ---
+                    // 1. Update Session immediately so other pages can access it fast
                     SessionManager session = new SessionManager(getContext());
                     session.saveSession(session.getToken(), session.getRefreshToken(), session.getUserId(), name);
 
@@ -166,6 +171,7 @@ public class Profile extends Fragment {
 
                     // 3. Refresh local profile UI
                     fetchProfileData();
+                    // ---------------------
                 } else {
                     Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
                 }
