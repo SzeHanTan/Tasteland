@@ -36,11 +36,12 @@ public class Header extends Fragment {
     private TextView tvGreet, tvDate;
     private SupabaseAPI supabaseService;
 
-    // 1. Receiver to update the name immediately if you edit the profile elsewhere
     private final BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateGreeting();
+            if ("com.example.tastelandv1.UPDATE_HEADER".equals(intent.getAction())) {
+                updateGreeting();
+            }
         }
     };
 
@@ -74,10 +75,7 @@ public class Header extends Fragment {
         setCurrentDate();
         supabaseService = RetrofitClient.getInstance(getContext()).getApi();
 
-        // Load data immediately from local session (fast)
         updateGreeting();
-
-        // Fetch fresh data from cloud (reliable)
         fetchUserName();
     }
 
@@ -102,7 +100,8 @@ public class Header extends Fragment {
             try {
                 getActivity().unregisterReceiver(updateReceiver);
             } catch (IllegalArgumentException e) {
-                // Ignore if receiver wasn't registered
+                // Can happen if the fragment is closed before the receiver is registered
+                Log.w("HeaderFragment", "Receiver not registered, skipping unregister.");
             }
         }
     }
@@ -113,10 +112,8 @@ public class Header extends Fragment {
         tvDate.setText(currentDate);
     }
 
-    // Pulls name from SessionManager and updates TextView
     private void updateGreeting() {
         if (getContext() == null) return;
-
         SessionManager session = new SessionManager(getContext());
         String username = session.getUsername();
 
@@ -129,30 +126,20 @@ public class Header extends Fragment {
 
     private void fetchUserName() {
         if (getContext() == null) return;
-
         SessionManager session = new SessionManager(getContext());
         String token = session.getToken();
         String userId = session.getUserId();
 
-        // If not logged in, stop here
         if (token == null || userId == null) return;
 
-        // FIXED: Used getMyProfile (matches SupabaseAPI) instead of getUsers (which didn't exist)
-        // FIXED: Used List<UserProfile> (matches API definition) instead of List<User>
         supabaseService.getMyProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token)
                 .enqueue(new Callback<List<UserProfile>>() {
                     @Override
                     public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             UserProfile user = response.body().get(0);
-
-                            // FIXED: Use saveSession (matches SessionManager)
-                            // We preserve the existing RefreshToken and UserID
                             session.saveSession(token, session.getRefreshToken(), session.getUserId(), user.getFullName());
-
-                            // 2. Update UI
                             if (tvGreet != null) {
-                                // FIXED: UserProfile has getFullName(), not getUsername()
                                 tvGreet.setText("Hi, " + user.getFullName());
                             }
                         }
