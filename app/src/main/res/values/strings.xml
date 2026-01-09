@@ -72,6 +72,9 @@
     <string name="leave_group">Leave group</string>
     <string name="send_message">Send message</string>
     <string name="pinned_message">Pinned Message</string>
+    <string name="join_community_text">Join Community</string>
+    <string name="new_community_text">New Community</string>
+    <string name="community">Community</string>
 
 
 </resources>
