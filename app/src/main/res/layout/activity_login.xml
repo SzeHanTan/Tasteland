@@ -82,6 +82,7 @@
         android:layout_marginEnd="44dp"
         android:backgroundTint="@color/mediumgreen"
         android:text="@string/login"
+        android:contentDescription="@string/login_button_description"
         android:textColor="@color/darkgreen"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"

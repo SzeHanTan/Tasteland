@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginVertical="10dp"
-                android:contentDescription="Illustration for the article"
+                android:contentDescription="@string/illustration_for_the_article"
                 app:srcCompat="@drawable/airtight_storage2" />
 
             <TextView
