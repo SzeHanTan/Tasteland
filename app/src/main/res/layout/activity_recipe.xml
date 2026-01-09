@@ -135,12 +135,12 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabFavorite"
+        android:id="@+id/fabFavourite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:contentDescription="Add To Favorite"
-        android:src="@drawable/ic_favorite_border"
+        android:contentDescription="Add To Favourite"
+        android:src="@drawable/ic_favourite_border"
         app:backgroundTint="@android:color/transparent"
         app:layout_anchor="@id/APAppBar"
         app:layout_anchorGravity="top|end"

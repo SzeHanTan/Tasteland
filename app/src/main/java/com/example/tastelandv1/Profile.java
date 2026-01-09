@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.example.tastelandv1.Backend.RetrofitClient;
 import com.example.tastelandv1.Backend.SessionManager;
 import com.example.tastelandv1.Backend.SupabaseAPI;
+import com.example.tastelandv1.Recipe.ui.RecipeFragment;
 
 import java.util.List;
 

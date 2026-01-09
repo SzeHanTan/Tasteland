@@ -57,7 +57,7 @@ public class RecipeFragment extends Fragment {
 
     public RecipeFragment() {
         // Define Categories
-        categories.add(new CategoryConfig("favourite", "My Favorites ❤️", Recipe::isFavorite));
+        categories.add(new CategoryConfig("favourite", "My favourite ❤️", Recipe::isFavourite));
         categories.add(new CategoryConfig("trending", "Trending Food 🔥", r -> "Trending Now".equalsIgnoreCase(r.getCategory())));
         categories.add(new CategoryConfig("local", "Local Food 🇲🇾", r -> "Local Food".equalsIgnoreCase(r.getCategory())));
         categories.add(new CategoryConfig("foreign", "Foreign Food 🌍", r -> "Foreign Food".equalsIgnoreCase(r.getCategory())));
@@ -95,6 +95,13 @@ public class RecipeFragment extends Fragment {
         progressBar = view.findViewById(R.id.PGRecipe);
 
         repository = new RecipeRepository(getContext());
+
+        if (getArguments() != null) {
+            String targetTab = getArguments().getString("TAB_ID");
+            if (targetTab != null) {
+                activeTabId = targetTab;
+            }
+        }
 
         setupSearchListener();
         setupTabs();
@@ -326,8 +333,8 @@ public class RecipeFragment extends Fragment {
             }
 
             @Override
-            public void onFavoriteClick(Recipe recipe, boolean isFavorite) {
-                updateFavoriteInDatabase(recipe, isFavorite);
+            public void onFavouriteClick(Recipe recipe, boolean isFavourite) {
+                updateFavouriteInDatabase(recipe, isFavourite);
             }
         });
 
@@ -340,11 +347,11 @@ public class RecipeFragment extends Fragment {
         contentContainer.addView(sectionView);
     }
 
-    private void updateFavoriteInDatabase(Recipe recipe, boolean isFavorite) {
-        repository.updateFavoriteStatus(recipe.getId(), isFavorite, new RecipeRepository.SimpleCallback() {
+    private void updateFavouriteInDatabase(Recipe recipe, boolean isFavourite) {
+        repository.updateFavouriteStatus(recipe.getId(), isFavourite, new RecipeRepository.SimpleCallback() {
             @Override
             public void onSuccess() {
-                if (activeTabId.equals("favourite") && !isFavorite) {
+                if (activeTabId.equals("favourite") && !isFavourite) {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> renderContent());
                     }
