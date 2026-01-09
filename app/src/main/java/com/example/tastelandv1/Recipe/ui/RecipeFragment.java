@@ -63,6 +63,15 @@ public class RecipeFragment extends Fragment {
         categories.add(new CategoryConfig("foreign", "Foreign Food 🌍", r -> "Foreign Food".equalsIgnoreCase(r.getCategory())));
     }
 
+    // Static Factory Method for Navigation
+    public static RecipeFragment newInstance(String activeTabId) {
+        RecipeFragment fragment = new RecipeFragment();
+        Bundle args = new Bundle();
+        args.putString("ACTIVE_TAB", activeTabId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_recipe, container, false);
@@ -71,6 +80,11 @@ public class RecipeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Check for navigation arguments
+        if (getArguments() != null) {
+            activeTabId = getArguments().getString("ACTIVE_TAB", "all");
+        }
 
         // Initialize Views
         contentContainer = view.findViewById(R.id.LLContentContainer);

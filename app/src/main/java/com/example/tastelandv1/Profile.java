@@ -71,20 +71,9 @@ public class Profile extends Fragment {
 
         // Saved Recipes Navigation
         BtnSavedRecipes.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Navigate to Saved Recipes...", Toast.LENGTH_SHORT).show();
-
-            // 1. Create the RecipeFragment
-            RecipeFragment fragment = new RecipeFragment();
-            // 2. Pass the "favorite" ID (Matches the ID in RecipeFragment's categories)
-            Bundle args = new Bundle();
-            args.putString("TAB_ID", "favorite");
-            fragment.setArguments(args);
-
-            // 3. Navigate (Replace the current container)
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.FCVMain, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).navigateToRecipesWithCategory("favourite");
+            }
         });
 
         // Logout Logic
