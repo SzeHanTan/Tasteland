@@ -71,7 +71,7 @@ public class Reply extends AppCompatActivity {
         threadMessages.add(originalPost);
 
         RecyclerView rv = findViewById(R.id.rvChatMessages);
-        adapter = new ChatAdapter(threadMessages, true, getIntent().getStringExtra("community_name"));
+        adapter = new ChatAdapter(threadMessages, true, getIntent().getStringExtra("community_name"), this);
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(adapter);
 

@@ -94,6 +94,7 @@ public class GroupChatList extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("TARGET_NAV_ID", id);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                 }
                 return true;

@@ -1,6 +1,7 @@
 package com.example.tastelandv1.Community;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ChatMessage> messageList;
     private boolean isReplyPage;
     private String communityName;
-
+    private OnMessageActionListener actionListener;
     private static final int TYPE_MAIN_POST = 0;
     private static final int TYPE_REPLY = 1;
     private static final int TYPE_RECIPE = 2;
@@ -38,10 +39,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_DATE_HEADER = 4;
     private static final int TYPE_SYSTEM = 5;
 
-    public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage, String communityName) {
+    public interface OnMessageActionListener {
+        void onPinUpdated(String text, boolean isPinned);
+    }
+    public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage, String communityName, Context context) {
         this.messageList = messageList;
         this.isReplyPage = isReplyPage;
         this.communityName = communityName;
+        if (context instanceof OnMessageActionListener) {
+            this.actionListener = (OnMessageActionListener) context;
+        }
     }
 
     @Override

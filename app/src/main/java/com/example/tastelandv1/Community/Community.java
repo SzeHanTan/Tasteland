@@ -32,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Community extends AppCompatActivity {
+public class Community extends AppCompatActivity implements ChatAdapter.OnMessageActionListener {
     private ChatAdapter adapter;
     private List<ChatMessage> messageList;
     private SupabaseAPI supabaseService;
@@ -51,7 +51,7 @@ public class Community extends AppCompatActivity {
         String communityName = getIntent().getStringExtra("community_name");
         String invitationCode = getIntent().getStringExtra("invitation_code");
 
-        if (currentGroupId == null) {
+        if (currentGroupId == null || currentGroupId.isEmpty()) {
             Toast.makeText(this, "Error: Community not found", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -67,12 +67,11 @@ public class Community extends AppCompatActivity {
         View btnLeave = findViewById(R.id.btnLeaveGroup);
         if (btnLeave != null) {
             btnLeave.setOnClickListener(v -> showLeaveConfirmation(communityName));
-            btnLeave.setOnClickListener(v -> showLeaveConfirmation(communityName));
         }
 
         messageList = new ArrayList<>();
         // Pass communityName to constructor
-        adapter = new ChatAdapter(messageList, false, communityName);
+        adapter = new ChatAdapter(messageList, false, communityName, this);
 
         RecyclerView rv = findViewById(R.id.rvChatMessages);
         if (rv != null) {
@@ -147,6 +146,14 @@ public class Community extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPinUpdated(String text, boolean isPinned) {
+        if (isPinned) {
+            showPinnedUI(text);
+        } else {
+            hidePinnedUI();
+        }
+    }
     private void startInstantRefresh() {
         realtimeRunnable = new Runnable() {
             @Override
