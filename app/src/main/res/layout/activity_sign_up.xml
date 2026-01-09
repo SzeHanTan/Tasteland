@@ -1,99 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/signup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/lightgreen">
+    android:background="@color/lightgreen"
+    tools:context=".SignUp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/signup"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/IVBubbles"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:context=".SignUp">
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bubble" />
 
-        <ImageView
-            android:id="@+id/IVBubbles"
-            android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/TVSignUpTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="200dp"
+        android:accessibilityHeading="true"
+        android:text="@string/signup"
+        android:textColor="@color/black"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TILSignUpEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="44dp"
+        android:hint="@string/email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TVSignUpTitle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ETSignUpEmail"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/bubble"
-            android:importantForAccessibility="no" />
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/TVSignUpTitle"
-            android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TIToggleSignUp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="44dp"
+        android:hint="@string/password"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TILSignUpEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/TISignUpPassword"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
-            android:layout_marginStart="44dp"
-            android:text="@string/signup"
-            android:textColor="@color/black"
-            android:textSize="50sp"
-            android:textStyle="bold"
-            android:accessibilityHeading="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:inputType="textPassword" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/TILSignUpEmail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:layout_marginEnd="44dp"
-            android:layout_marginTop="28dp"
-            android:hint="@string/email"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TVSignUpTitle">
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ETSignUpEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <Button
+        android:id="@+id/BtnSignUp"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="44dp"
+        android:backgroundTint="@color/mediumgreen"
+        android:text="@string/signup"
+        android:textColor="@color/darkgreen"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TIToggleSignUp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/TIToggleSignUp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:layout_marginEnd="44dp"
-            android:layout_marginTop="16dp"
-            app:endIconTint="@color/black"
-            android:hint="@string/password"
-            app:endIconMode="password_toggle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TILSignUpEmail">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/TISignUpPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/BtnSignUp"
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="44dp"
-            android:layout_marginEnd="44dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
-            android:backgroundTint="@color/mediumgreen"
-            android:text="@string/signup"
-            android:textSize="24sp"
-            android:textColor="@color/darkgreen"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TIToggleSignUp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
