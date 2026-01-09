@@ -45,7 +45,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_favourite_border"
             android:scaleType="fitCenter"
-            android:contentDescription="Add to Favourite"
+            android:contentDescription="@string/add_to_favourite_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

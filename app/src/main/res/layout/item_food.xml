@@ -12,7 +12,7 @@
         android:id="@+id/CBFinished"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Mark as finished"
+        android:contentDescription="@string/mark_as_finished"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

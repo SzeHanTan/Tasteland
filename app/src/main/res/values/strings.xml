@@ -113,5 +113,7 @@
     <string name="pin_the_message">pin the message</string>
     <string name="unlike_the_message">unlike the message</string>
     <string name="like_the_message">like the message</string>
+    <string name="mark_as_finished">Mark as finished</string>
+    <string name="add_to_favourite_description">Add to Favourite</string>
 
 </resources>
