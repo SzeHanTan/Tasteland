@@ -19,6 +19,12 @@ public class UserProfile {
     @SerializedName("description")
     private String description;
 
+    @SerializedName("referral_code")
+    private String referralCode;
+
+    @SerializedName("referred_by")
+    private String referredBy;
+
     // Constructor
     public UserProfile(String fullName, String contactNo, String description) {
         this.fullName = fullName;
@@ -26,10 +32,23 @@ public class UserProfile {
         this.description = description;
     }
 
-    // Getters
+    // Constructor with referral info
+    public UserProfile(String fullName, String contactNo, String description, String referralCode, String referredBy) {
+        this.fullName = fullName;
+        this.contactNo = contactNo;
+        this.description = description;
+        this.referralCode = referralCode;
+        this.referredBy = referredBy;
+    }
+
+    // Getters and Setters
     public String getId() { return id; }
     public String getFullName() { return fullName; }
     public String getEmail() { return email; }
     public String getContactNo() { return contactNo; }
     public String getDescription() { return description; }
+    public String getReferralCode() { return referralCode; }
+    public void setReferralCode(String referralCode) { this.referralCode = referralCode; }
+    public String getReferredBy() { return referredBy; }
+    public void setReferredBy(String referredBy) { this.referredBy = referredBy; }
 }

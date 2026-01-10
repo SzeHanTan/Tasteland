@@ -1,6 +1,9 @@
 package com.example.tastelandv1;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +24,7 @@ import com.example.tastelandv1.Backend.SessionManager;
 import com.example.tastelandv1.Backend.SupabaseAPI;
 
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,7 +66,7 @@ public class Profile extends Fragment {
 
         ICProfile.setOnClickListener(v -> showEditProfileDialog());
         BtnAboutUs.setOnClickListener(v -> showInfoDialog("About Us", "We are a group of students passionate about cooking!"));
-        BtnInviteFriends.setOnClickListener(v -> showInfoDialog("Invite Friends", "Share code: COOK123"));
+        BtnInviteFriends.setOnClickListener(v -> showInviteFriendsDialog());
         BtnGeneralFAQ.setOnClickListener(v -> showInfoDialog("General FAQ", "Q: Is it free?\nA: Yes!"));
 
         // Saved Recipes Navigation
@@ -84,8 +88,6 @@ public class Profile extends Fragment {
         });
 
         return view;
-
-
     }
 
     // --- API: FETCH DATA ---
@@ -99,11 +101,14 @@ public class Profile extends Fragment {
             @Override
             public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    // UserProfile found
                     currentUserProfile = response.body().get(0);
                     updateUI(currentUserProfile);
+
+                    // If user doesn't have a referral code, generate and save one
+                    if (currentUserProfile.getReferralCode() == null || currentUserProfile.getReferralCode().isEmpty()) {
+                        generateAndSaveReferralCode();
+                    }
                 } else {
-                    // Profile might not exist yet (first time login)
                     TVUserName.setText("Name: (Tap picture to edit)");
                 }
             }
@@ -121,6 +126,56 @@ public class Profile extends Fragment {
         if (profile.getDescription() != null) TVDescription.setText(profile.getDescription());
     }
 
+    private void generateAndSaveReferralCode() {
+        String newCode = generateRandomCode(6);
+        currentUserProfile.setReferralCode(newCode);
+
+        SessionManager session = new SessionManager(getContext());
+        String token = session.getToken();
+        String idFilter = "eq." + currentUserProfile.getId();
+
+        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, currentUserProfile).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                // Code saved silently
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {}
+        });
+    }
+
+    private String generateRandomCode(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
+    private void showInviteFriendsDialog() {
+        if (currentUserProfile == null || currentUserProfile.getReferralCode() == null) {
+            Toast.makeText(getContext(), "Loading profile, please wait...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String code = currentUserProfile.getReferralCode();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Invite Friends");
+        builder.setMessage("Share this referral code with your friends so you both get benefits!\n\nYour Code: " + code);
+
+        builder.setPositiveButton("Copy Code", (dialog, which) -> {
+            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Referral Code", code);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getContext(), "Code copied to clipboard!", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setNegativeButton("Close", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
     // --- API: SAVE DATA ---
     private void saveProfileToCloud(String name, String contact, String desc) {
         SessionManager session = new SessionManager(getContext());
@@ -131,28 +186,16 @@ public class Profile extends Fragment {
             return;
         }
 
-        UserProfile updatedProfile = new UserProfile(name, contact, desc);
+        currentUserProfile = new UserProfile(name, contact, desc, currentUserProfile.getReferralCode(), currentUserProfile.getReferredBy());
 
-        // API Call: UPDATE specific row where id = current user id
         String idFilter = "eq." + currentUserProfile.getId();
 
-        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, updatedProfile).enqueue(new Callback<Void>() {
+        supabaseService.updateProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token, idFilter, currentUserProfile).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Saved successfully!", Toast.LENGTH_SHORT).show();
-
-                    // 1. Update Session immediately
-                    SessionManager session = new SessionManager(getContext());
-                    session.saveSession(session.getToken(), session.getRefreshToken(), session.getUserId(), name);
-
-                    // 2. Send "Broadcast" to tell Header to refresh
-                    Intent intent = new Intent("com.example.tastelandv1.UPDATE_HEADER");
-                    if (getActivity() != null) {
-                        getActivity().sendBroadcast(intent);
-                    }
-
-                    // 3. Refresh local profile UI
+                    new SessionManager(getContext()).saveSession(session.getToken(), session.getRefreshToken(), session.getUserId(), name);
                     fetchProfileData();
                 } else {
                     Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
@@ -177,7 +220,6 @@ public class Profile extends Fragment {
         final EditText etContact = dialogView.findViewById(R.id.et_edit_contact);
         final EditText etDesc = dialogView.findViewById(R.id.et_edit_desc);
 
-        // Pre-fill fields if data exists
         if (currentUserProfile != null) {
             etName.setText(currentUserProfile.getFullName());
             etContact.setText(currentUserProfile.getContactNo());
@@ -185,12 +227,7 @@ public class Profile extends Fragment {
         }
 
         builder.setPositiveButton("Save", (dialog, which) -> {
-            String newName = etName.getText().toString();
-            String newContact = etContact.getText().toString();
-            String newDesc = etDesc.getText().toString();
-
-            // Call the API to save
-            saveProfileToCloud(newName, newContact, newDesc);
+            saveProfileToCloud(etName.getText().toString(), etContact.getText().toString(), etDesc.getText().toString());
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
