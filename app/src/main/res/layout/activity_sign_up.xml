@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="160dp"
         android:accessibilityHeading="true"
         android:text="@string/signup"
         android:textColor="@color/black"
@@ -32,38 +32,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/TILSignUpEmail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="44dp"
-        android:hint="@string/email"
+
+    <EditText
+        android:id="@+id/ETSignUpEmail"
+        android:layout_width="314dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TVSignUpTitle">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/ETSignUpEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/TVSignUpTitle"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/TIToggleSignUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="44dp"
-        android:hint="@string/password"
-        app:endIconMode="password_toggle"
         app:endIconTint="@color/black"
+        android:hint="Password"
+        app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/TILSignUpEmail">
+        app:layout_constraintTop_toBottomOf="@+id/ETSignUpEmail">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/TISignUpPassword"
@@ -71,22 +65,32 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword" />
 
+
     </com.google.android.material.textfield.TextInputLayout>
+
+    <EditText
+        android:id="@+id/ETSignUpReferral"
+        android:layout_width="314dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:hint="Referral Code (Optional)"
+        android:inputType="textCapCharacters"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.453"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TIToggleSignUp" />
 
     <Button
         android:id="@+id/BtnSignUp"
-        android:layout_width="0dp"
+        android:layout_width="313dp"
         android:layout_height="55dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="44dp"
+        android:layout_marginTop="25dp"
         android:backgroundTint="@color/mediumgreen"
         android:text="@string/signup"
-        android:contentDescription="@string/signup_button_description"
-        android:textColor="@color/darkgreen"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TIToggleSignUp" />
+        app:layout_constraintTop_toBottomOf="@+id/ETSignUpReferral" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
