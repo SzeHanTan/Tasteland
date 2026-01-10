@@ -40,7 +40,9 @@ public class Header extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("com.example.tastelandv1.UPDATE_HEADER".equals(intent.getAction())) {
+                // Refresh name from session first, then sync from DB
                 updateGreeting();
+                fetchUserName();
             }
         }
     };
@@ -138,6 +140,7 @@ public class Header extends Fragment {
                     public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             UserProfile user = response.body().get(0);
+                            // Update the session with the latest name from DB
                             session.saveSession(token, session.getRefreshToken(), session.getUserId(), user.getFullName());
                             if (tvGreet != null) {
                                 tvGreet.setText("Hi, " + user.getFullName());

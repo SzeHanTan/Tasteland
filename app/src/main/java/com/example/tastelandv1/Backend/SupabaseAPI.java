@@ -42,13 +42,15 @@ public interface SupabaseAPI {
     @POST("auth/v1/token?grant_type=refresh_token")
     Call<AuthResponse> refreshToken(
             @Header("apikey") String apiKey,
-            @Body Map<String, String> body // We will send {"refresh_token": "..."}
+            @Body Map<String, String> body
     );
 
+    // Changed to support Upsert (resolution=merge-duplicates)
     @POST("rest/v1/profiles")
     Call<Void> createProfile(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
+            @Header("Prefer") String prefer, // Use "resolution=merge-duplicates"
             @Body Map<String, Object> profileData
     );
 
@@ -93,9 +95,9 @@ public interface SupabaseAPI {
     @PATCH("rest/v1/profiles")
     Call<Void> updateProfile(
             @Header("apikey") String apiKey,
-            @Header("Authorization") String token,
-            @Query("id") String idQuery,
-            @Body UserProfile profile
+            @Header("Authorization") String auth,
+            @Query("id") String idFilter,
+            @Body Map<String, Object> updates
     );
 
     @GET("rest/v1/food_items")
@@ -259,7 +261,6 @@ public interface SupabaseAPI {
 
     // --- RECIPE ENDPOINTS ---
 
-    // Get All Recipes (Standard)
     @GET("rest/v1/recipes?select=*")
     Call<List<Recipe>> getAllRecipes(
             @Header("apikey") String apiKey,
@@ -268,39 +269,36 @@ public interface SupabaseAPI {
 
     // --- FavouriteS ENDPOINTS ---
 
-    // Get My Favourites (Returns a list of IDs for the logged-in user)
     @GET("rest/v1/favourites?select=recipe_id")
     Call<List<FavouriteEntry>> getMyFavourites(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("user_id") String userIdQuery // "eq.USER_UUID"
+            @Query("user_id") String userIdQuery
     );
 
-    // Add a Favourite (POST to favourites table)
     @POST("rest/v1/favourites")
     Call<Void> addFavourite(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Body FavouriteRequest body // Needs a simple object with recipe_id and user_id
+            @Body FavouriteRequest body
     );
 
-    // Remove a Favourite (DELETE from favourites table)
     @DELETE("rest/v1/favourites")
     Call<Void> removeFavourite(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("user_id") String userIdQuery,   // "eq.USER_UUID"
-            @Query("recipe_id") String recipeIdQuery // "eq.123"
+            @Query("user_id") String userIdQuery,
+            @Query("recipe_id") String recipeIdQuery
     );
 
     // --- NOTIFICATION ENDPOINTS ---
-    @GET("rest/v1/notification") // Matches your 'notification' table
+    @GET("rest/v1/notification")
     Call<List<NotificationItem>> getNotifications(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Query("select") String select,       // Added for standard Supabase query
-            @Query("user_id") String userIdFilter, // e.g. "eq.UUID"
-            @Query("order") String order          // e.g. "created_at.desc"
+            @Query("select") String select,
+            @Query("user_id") String userIdFilter,
+            @Query("order") String order
     );
 
     @PATCH("rest/v1/notification")
