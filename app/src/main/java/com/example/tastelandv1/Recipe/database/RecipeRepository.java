@@ -49,7 +49,7 @@ public class RecipeRepository {
         // 2. PARALLEL EXECUTION: Run both requests simultaneously
         // Wrappers to hold results
         final List<Recipe>[] recipesHolder = new List[]{null};
-        final Set<Integer>[] favoritesHolder = new Set[]{null};
+        final Set<Integer>[] favouritesHolder = new Set[]{null};
         final int[] completedCount = {0};
         final boolean[] hasError = {false};
 
@@ -57,14 +57,14 @@ public class RecipeRepository {
         Runnable checkAndMerge = () -> {
             synchronized (completedCount) {
                 completedCount[0]++;
-                // Only proceed if both calls (Recipes + Favorites) are done
+                // Only proceed if both calls (Recipes + Favourites) are done
                 if (completedCount[0] == 2) {
                     if (recipesHolder[0] != null) {
                         List<Recipe> result = recipesHolder[0];
-                        // Merge Favorites if available
-                        if (favoritesHolder[0] != null) {
+                        // Merge Favourites if available
+                        if (favouritesHolder[0] != null) {
                             for (Recipe r : result) {
-                                r.setFavorite(favoritesHolder[0].contains(r.getId()));
+                                r.setFavourite(favouritesHolder[0].contains(r.getId()));
                             }
                         }
                         updateCacheAndNotify(result, callback);
@@ -90,24 +90,24 @@ public class RecipeRepository {
             }
         });
 
-        // Call B: Fetch Favorites (Parallel)
+        // Call B: Fetch Favourites (Parallel)
         if (currentUserId.isEmpty()) {
-            favoritesHolder[0] = new HashSet<>(); // No user = no favorites
+            favouritesHolder[0] = new HashSet<>(); // No user = no favourites
             checkAndMerge.run();
         } else {
-            api.getMyFavorites(API_KEY, token, "eq." + currentUserId).enqueue(new Callback<List<FavoriteEntry>>() {
+            api.getMyFavourites(API_KEY, token, "eq." + currentUserId).enqueue(new Callback<List<FavouriteEntry>>() {
                 @Override
-                public void onResponse(Call<List<FavoriteEntry>> call, Response<List<FavoriteEntry>> response) {
+                public void onResponse(Call<List<FavouriteEntry>> call, Response<List<FavouriteEntry>> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         Set<Integer> ids = new HashSet<>();
-                        for (FavoriteEntry entry : response.body()) ids.add(entry.getRecipeId());
-                        favoritesHolder[0] = ids;
+                        for (FavouriteEntry entry : response.body()) ids.add(entry.getRecipeId());
+                        favouritesHolder[0] = ids;
                     }
                     checkAndMerge.run();
                 }
                 @Override
-                public void onFailure(Call<List<FavoriteEntry>> call, Throwable t) {
-                    // Fail silently for favorites, just show recipes without hearts
+                public void onFailure(Call<List<FavouriteEntry>> call, Throwable t) {
+                    // Fail silently for favourites, just show recipes without hearts
                     checkAndMerge.run();
                 }
             });
@@ -120,7 +120,7 @@ public class RecipeRepository {
         new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(freshData));
     }
 
-    public void updateFavoriteStatus(int recipeId, boolean isFavorite, SimpleCallback callback) {
+    public void updateFavouriteStatus(int recipeId, boolean isFavourite, SimpleCallback callback) {
         String token = getAuthToken();
         if (currentUserId.isEmpty()) {
             callback.onError("User not logged in");
@@ -131,15 +131,15 @@ public class RecipeRepository {
         if (memoryCache != null) {
             for (Recipe r : memoryCache) {
                 if (r.getId() == recipeId) {
-                    r.setFavorite(isFavorite);
+                    r.setFavourite(isFavourite);
                     break;
                 }
             }
         }
 
-        if (isFavorite) {
-            FavoriteRequest body = new FavoriteRequest(currentUserId, recipeId);
-            api.addFavorite(API_KEY, token, body).enqueue(new Callback<>() {
+        if (isFavourite) {
+            FavouriteRequest body = new FavouriteRequest(currentUserId, recipeId);
+            api.addFavourite(API_KEY, token, body).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) callback.onSuccess();
@@ -149,7 +149,7 @@ public class RecipeRepository {
                 public void onFailure(Call<Void> call, Throwable t) { callback.onError(t.getMessage()); }
             });
         } else {
-            api.removeFavorite(API_KEY, token, "eq." + currentUserId, "eq." + recipeId).enqueue(new Callback<Void>() {
+            api.removeFavourite(API_KEY, token, "eq." + currentUserId, "eq." + recipeId).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) callback.onSuccess();

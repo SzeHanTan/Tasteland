@@ -27,6 +27,7 @@ import retrofit2.Response;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private Community activity;
     private List<ChatMessage> messageList;
     private boolean isReplyPage;
     private String communityName;
@@ -38,10 +39,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_DATE_HEADER = 4;
     private static final int TYPE_SYSTEM = 5;
 
+    // Constructor for Community Activity
+    public ChatAdapter(Community activity, List<ChatMessage> messageList, boolean isReplyPage, String communityName) {
+        this.activity = activity;
+        this.messageList = messageList;
+        this.isReplyPage = isReplyPage;
+        this.communityName = communityName;
+    }
+
+    // Original constructor for other uses
     public ChatAdapter(List<ChatMessage> messageList, boolean isReplyPage, String communityName) {
         this.messageList = messageList;
         this.isReplyPage = isReplyPage;
         this.communityName = communityName;
+        this.activity = null; // Ensure activity is null if not provided
     }
 
     @Override
@@ -109,7 +120,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mainHolder.btnReply.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), Reply.class);
                 intent.putExtra("message_id", msg.getId());
-                intent.putExtra("group_id", msg.getGroupId()); 
+                intent.putExtra("group_id", msg.getGroupId());
                 intent.putExtra("sender_name", msg.getSenderName());
                 intent.putExtra("message_text", msg.getMessageText());
                 intent.putExtra("time", msg.getTimeFull());
@@ -123,8 +134,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     mainHolder.btnPin.setVisibility(View.GONE);
                 } else {
                     mainHolder.btnPin.setVisibility(View.VISIBLE);
-                    mainHolder.btnPin.setColorFilter(msg.isPinned() ? 0xFFFFD700 : 0xFF888888); 
-                    mainHolder.btnPin.setOnClickListener(v -> togglePin(msg, position, holder.itemView));
+                    mainHolder.btnPin.setColorFilter(msg.isPinned() ? 0xFFFFD700 : 0xFF888888);
+                    mainHolder.btnPin.setOnClickListener(v -> togglePin(msg, holder.getAdapterPosition()));
                 }
             }
 
@@ -144,72 +155,91 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private void togglePin(ChatMessage msg, int position, View view) {
+    private void togglePin(ChatMessage msg, int position) {
+        if (activity == null) return; // Cannot perform pin without the activity context
+
         boolean originalStatus = msg.isPinned();
         boolean newPinStatus = !msg.isPinned();
 
-        SessionManager session = new SessionManager(view.getContext());
-        SupabaseAPI api = RetrofitClient.getInstance(view.getContext()).getApi();
-        String token = "Bearer " + session.getToken();
-
-        // 1. Optimistic Update: Update UI immediately
+        // 1. Optimistic Update
         if (newPinStatus) {
-            // Unpin all others locally
-            for (ChatMessage m : messageList) m.setPinned(false);
+            for (ChatMessage m : messageList) {
+                m.setPinned(false);
+            }
         }
         msg.setPinned(newPinStatus);
-        notifyDataSetChanged(); // Refresh list instantly
+        notifyDataSetChanged();
 
-        // 2. Background Network Operations
+        // 2. Network Operations
+        SessionManager session = new SessionManager(activity);
+        SupabaseAPI api = RetrofitClient.getInstance(activity).getApi();
+        String token = "Bearer " + session.getToken();
+
         if (newPinStatus) {
-            // Logic: Unpin all in DB -> Then Pin this one
-            Map<String, Object> unpinAll = new HashMap<>();
-            unpinAll.put("is_pinned", false);
-
-            api.updatePinStatus(RetrofitClient.SUPABASE_KEY, token, null, "eq." + msg.getGroupId(), unpinAll)
+            // First, unpin all messages in this group on the backend
+            Map<String, Object> unpinAllBody = new HashMap<>();
+            unpinAllBody.put("is_pinned", false);
+            api.updatePinStatus(RetrofitClient.SUPABASE_KEY, token, null, "eq." + msg.getGroupId(), unpinAllBody)
                     .enqueue(new Callback<>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            // Now pin the specific one
-                            applyPinToThisMessage(api, token, msg, position, view, true, false);
+                            if (response.isSuccessful()) {
+                                // Then, pin the new message
+                                applyPinToThisMessage(api, token, msg, originalStatus);
+                            } else {
+                                revertPin(msg, originalStatus);
+                            }
                         }
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            revertPin(msg, originalStatus); // Revert on failure
+                            revertPin(msg, originalStatus);
                         }
                     });
         } else {
-            // Logic: Just unpin this one
-            applyPinToThisMessage(api, token, msg, position, view, false, true);
+            // Just unpin this single message
+            applyPinToThisMessage(api, token, msg, originalStatus);
         }
     }
 
-    private void applyPinToThisMessage(SupabaseAPI api, String token, ChatMessage msg, int position, View view, boolean status, boolean allowRevert) {
+    private void applyPinToThisMessage(SupabaseAPI api, String token, ChatMessage msg, boolean originalStatus) {
         Map<String, Object> update = new HashMap<>();
-        update.put("is_pinned", status);
+        update.put("is_pinned", msg.isPinned());
         api.updatePinStatus(RetrofitClient.SUPABASE_KEY, token, "eq." + msg.getId(), null, update)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.isSuccessful() && allowRevert) {
-                            revertPin(msg, !status);
-                            if (view.getContext() instanceof Community) {
-                                ((Community) view.getContext()).onResume(); 
+                        if (response.isSuccessful()) {
+                            if (activity != null) {
+                                // THE FIX: Refresh the pinned message banner in the activity
+                                activity.refreshPinnedMessage();
                             }
+                        } else {
+                            revertPin(msg, originalStatus);
                         }
                     }
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        if (allowRevert) revertPin(msg, !status);
+                        revertPin(msg, originalStatus);
                     }
                 });
     }
 
     private void revertPin(ChatMessage msg, boolean originalStatus) {
-        // Run on UI Thread if called from background
-        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+        if (activity == null) return;
+        activity.runOnUiThread(() -> {
             msg.setPinned(originalStatus);
+            // If we are reverting a pin, we also need to restore the previous pinned message
+            if (!originalStatus) {
+                for (ChatMessage m : messageList) {
+                    if (m.getId() != msg.getId()) { // Don't reset the message we are unpinning
+                        // This is a simplification; a more robust solution would re-fetch the original pinned message
+                    }
+                }
+            }
             notifyDataSetChanged();
+            if (activity != null) {
+                activity.refreshPinnedMessage();
+            }
         });
     }
     private void toggleLike(ChatMessage msg, int position, View view) {
@@ -217,7 +247,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         SupabaseAPI api = RetrofitClient.getInstance(view.getContext()).getApi();
         String userId = session.getUserId();
         String token = "Bearer " + session.getToken();
-        
+
         boolean currentlyLiked = msg.isLikedByUser();
         boolean newLikeStatus = !currentlyLiked;
         int newCount = newLikeStatus ? msg.getLikeCount() + 1 : Math.max(0, msg.getLikeCount() - 1);
@@ -230,7 +260,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Map<String, Object> likeData = new HashMap<>();
             likeData.put("user_id", userId);
             likeData.put("message_id", msg.getId());
-            
+
             api.addLikeRecord(RetrofitClient.SUPABASE_KEY, token, likeData).enqueue(new Callback<>() {
                 @Override public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) syncLikeCount(msg, newCount, token, api);

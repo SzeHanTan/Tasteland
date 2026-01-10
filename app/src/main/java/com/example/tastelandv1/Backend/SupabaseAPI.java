@@ -6,8 +6,8 @@ import com.example.tastelandv1.Community.CommunityModel;
 import com.example.tastelandv1.Community.ChatMessage;
 import com.example.tastelandv1.Food.database.FoodItem;
 import com.example.tastelandv1.Notification.NotificationItem;
-import com.example.tastelandv1.Recipe.database.FavoriteEntry;
-import com.example.tastelandv1.Recipe.database.FavoriteRequest;
+import com.example.tastelandv1.Recipe.database.FavouriteEntry;
+import com.example.tastelandv1.Recipe.database.FavouriteRequest;
 import com.example.tastelandv1.Recipe.database.Recipe;
 import com.example.tastelandv1.Shopping.database.ShoppingItem;
 import com.example.tastelandv1.UserProfile;
@@ -266,27 +266,27 @@ public interface SupabaseAPI {
             @Header("Authorization") String token
     );
 
-    // --- FAVORITES ENDPOINTS ---
+    // --- FavouriteS ENDPOINTS ---
 
-    // Get My Favorites (Returns a list of IDs for the logged-in user)
-    @GET("rest/v1/favorites?select=recipe_id")
-    Call<List<FavoriteEntry>> getMyFavorites(
+    // Get My Favourites (Returns a list of IDs for the logged-in user)
+    @GET("rest/v1/favourites?select=recipe_id")
+    Call<List<FavouriteEntry>> getMyFavourites(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("user_id") String userIdQuery // "eq.USER_UUID"
     );
 
-    // Add a Favorite (POST to favorites table)
-    @POST("rest/v1/favorites")
-    Call<Void> addFavorite(
+    // Add a Favourite (POST to favourites table)
+    @POST("rest/v1/favourites")
+    Call<Void> addFavourite(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
-            @Body FavoriteRequest body // Needs a simple object with recipe_id and user_id
+            @Body FavouriteRequest body // Needs a simple object with recipe_id and user_id
     );
 
-    // Remove a Favorite (DELETE from favorites table)
-    @DELETE("rest/v1/favorites")
-    Call<Void> removeFavorite(
+    // Remove a Favourite (DELETE from favourites table)
+    @DELETE("rest/v1/favourites")
+    Call<Void> removeFavourite(
             @Header("apikey") String apiKey,
             @Header("Authorization") String token,
             @Query("user_id") String userIdQuery,   // "eq.USER_UUID"

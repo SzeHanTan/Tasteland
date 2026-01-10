@@ -8,7 +8,10 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    android:focusable="true"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="image"
+            android:importantForAccessibility="no"
             android:src="@color/cardview_dark_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -30,18 +33,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/recipe_square_bg"
+            android:importantForAccessibility="no"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp" />
 
         <ImageButton
-            android:id="@+id/BtnFavorite"
+            android:id="@+id/BtnFavourite"
             android:layout_width="32dp"
             android:layout_height="33dp"
             android:layout_margin="8dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_favorite_border"
+            android:src="@drawable/ic_favourite_border"
             android:scaleType="fitCenter"
-            android:contentDescription="Add to Favorite"
+            android:contentDescription="@string/add_to_favourite_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,6 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="44dp"
+            android:contentDescription="Ingredients"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/TVFoodName" />
 

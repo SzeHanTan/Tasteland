@@ -23,7 +23,7 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
 
     public interface OnRecipeClickListener {
         void onRecipeClick(Recipe recipe);
-        void onFavoriteClick(Recipe recipe, boolean isFavorite);
+        void onFavouriteClick(Recipe recipe, boolean isFavourite);
     }
 
     public RecipeSquareAdapter(Context context, List<Recipe> recipeList, OnRecipeClickListener listener) {
@@ -56,15 +56,15 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
         // 2. Set Text
         holder.TVFoodName.setText(recipe.getTitle());
 
-        // 3. Favorite Button Logic
-        holder.BtnFavorite.setImageResource(
-                recipe.isFavorite() ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_border
+        // 3. Favourite Button Logic
+        holder.BtnFavourite.setImageResource(
+                recipe.isFavourite() ? R.drawable.ic_favourite_filled : R.drawable.ic_favourite_border
         );
-        holder.BtnFavorite.setOnClickListener(v -> {
-            boolean newState = !recipe.isFavorite();
-            recipe.setFavorite(newState);
+        holder.BtnFavourite.setOnClickListener(v -> {
+            boolean newState = !recipe.isFavourite();
+            recipe.setFavourite(newState);
             notifyItemChanged(position);
-            listener.onFavoriteClick(recipe, newState);
+            listener.onFavouriteClick(recipe, newState);
         });
 
         // 4. Ingredients Chips
@@ -110,7 +110,7 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView IVBackground; // New Image View
         TextView TVFoodName, TVMoreIngredients;
-        ImageButton BtnFavorite;
+        ImageButton BtnFavourite;
         ChipGroup chipGroupIngredients;
 
         public ViewHolder(@NonNull View itemView) {
@@ -118,7 +118,7 @@ public class RecipeSquareAdapter extends RecyclerView.Adapter<RecipeSquareAdapte
             // Bind the new ImageView ID
             IVBackground = itemView.findViewById(R.id.IVRecipeBackground);
             TVFoodName = itemView.findViewById(R.id.TVFoodName);
-            BtnFavorite = itemView.findViewById(R.id.BtnFavorite);
+            BtnFavourite = itemView.findViewById(R.id.BtnFavourite);
             chipGroupIngredients = itemView.findViewById(R.id.chipGroupIngredients);
         }
     }

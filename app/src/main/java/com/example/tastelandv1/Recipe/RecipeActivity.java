@@ -24,7 +24,7 @@ public class RecipeActivity extends AppCompatActivity {
     private ImageView IVImage;
     private TextView TVTitle, TVCategory, TVOverview, TVInstructions;
     private ChipGroup CGIngredients;
-    private FloatingActionButton fabFavorite;
+    private FloatingActionButton fabFavourite;
 
     private Recipe recipe;
     private RecipeRepository repository;
@@ -64,7 +64,7 @@ public class RecipeActivity extends AppCompatActivity {
         TVOverview = findViewById(R.id.TVDetailOverview);
         TVInstructions = findViewById(R.id.TVDetailInstructions);
         CGIngredients = findViewById(R.id.CGDetailIngredients);
-        fabFavorite = findViewById(R.id.fabFavorite);
+        fabFavourite = findViewById(R.id.fabFavourite);
 
         repository = new RecipeRepository(this);
 
@@ -88,6 +88,7 @@ public class RecipeActivity extends AppCompatActivity {
     private void setupUI() {
         // Text Fields
         TVTitle.setText(recipe.getTitle());
+        IVImage.setContentDescription(recipe.getTitle());
         TVCategory.setText(recipe.getCategory());
         TVOverview.setText(recipe.getOverview());
 
@@ -120,17 +121,17 @@ public class RecipeActivity extends AppCompatActivity {
             }
         }
 
-        // Setup Favorite Button State
-        updateFavoriteIcon(recipe.isFavorite());
+        // Setup Favourite Button State
+        updateFavouriteIcon(recipe.isFavourite());
 
-        // Favorite Click Listener
-        fabFavorite.setOnClickListener(v -> {
-            boolean newState = !recipe.isFavorite();
-            recipe.setFavorite(newState); // Update local object
-            updateFavoriteIcon(newState); // Update UI immediately
+        // Favourite Click Listener
+        fabFavourite.setOnClickListener(v -> {
+            boolean newState = !recipe.isFavourite();
+            recipe.setFavourite(newState); // Update local object
+            updateFavouriteIcon(newState); // Update UI immediately
 
             // Update Database
-            repository.updateFavoriteStatus(recipe.getId(), newState, new RecipeRepository.SimpleCallback() {
+            repository.updateFavouriteStatus(recipe.getId(), newState, new RecipeRepository.SimpleCallback() {
                 @Override
                 public void onSuccess() {
                     // Success (Silent)
@@ -138,20 +139,20 @@ public class RecipeActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(String error) {
-                    Toast.makeText(RecipeActivity.this, "Failed to update favorite", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RecipeActivity.this, "Failed to update favourite", Toast.LENGTH_SHORT).show();
                     // Revert UI if failed
-                    recipe.setFavorite(!newState);
-                    updateFavoriteIcon(!newState);
+                    recipe.setFavourite(!newState);
+                    updateFavouriteIcon(!newState);
                 }
             });
         });
     }
 
-    private void updateFavoriteIcon(boolean isFavorite) {
-        if (isFavorite) {
-            fabFavorite.setImageResource(R.drawable.ic_favorite_filled); // Filled Heart
+    private void updateFavouriteIcon(boolean isFavourite) {
+        if (isFavourite) {
+            fabFavourite.setImageResource(R.drawable.ic_favourite_filled); // Filled Heart
         } else {
-            fabFavorite.setImageResource(R.drawable.ic_favorite_border); // Outline Heart
+            fabFavourite.setImageResource(R.drawable.ic_favourite_border); // Outline Heart
         }
     }
 }

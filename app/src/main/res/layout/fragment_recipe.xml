@@ -76,8 +76,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingStart="8dp"
-                android:paddingEnd="8dp">
-            </LinearLayout>
+                android:paddingEnd="8dp" />
 
         </HorizontalScrollView>
 
@@ -97,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="20dp" />
+                android:paddingBottom="80dp" />
 
         </androidx.core.widget.NestedScrollView>
 
