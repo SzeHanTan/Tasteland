@@ -114,7 +114,8 @@ public class Header extends Fragment {
         tvDate.setText(currentDate);
     }
 
-    private void updateGreeting() {
+    // Changed to public so MainActivity can refresh it
+    public void updateGreeting() {
         if (getContext() == null) return;
         SessionManager session = new SessionManager(getContext());
         String username = session.getUsername();
@@ -126,7 +127,8 @@ public class Header extends Fragment {
         }
     }
 
-    private void fetchUserName() {
+    // Changed to public so MainActivity can trigger a sync
+    public void fetchUserName() {
         if (getContext() == null) return;
         SessionManager session = new SessionManager(getContext());
         String token = session.getToken();

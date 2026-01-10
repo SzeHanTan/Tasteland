@@ -84,7 +84,7 @@ public class Profile extends Fragment {
             } else {
                 String errorMsg = (currentUserProfile == null) ? "Profile not loaded. Retrying..." : "Code not found. Generating...";
                 Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                fetchProfileData(); // Trigger reload
+                fetchProfileData();
             }
         });
 
@@ -127,21 +127,15 @@ public class Profile extends Fragment {
                             generateAndSaveReferralCode();
                         }
                     } else {
-                        Log.e("ProfileFetch", "Response successful but list is empty. userId: " + session.getUserId());
-                        Toast.makeText(getContext(), "Error: Profile entry not found in database.", Toast.LENGTH_LONG).show();
-                        TVUserName.setText("Profile not found");
+                        Log.e("ProfileFetch", "Empty profile list");
                     }
-                } else {
-                    Log.e("ProfileFetch", "Error code: " + response.code());
-                    Toast.makeText(getContext(), "Failed to fetch profile: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UserProfile>> call, Throwable t) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Log.e("ProfileFetch", "Network Failure", t);
-                Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -170,14 +164,11 @@ public class Profile extends Fragment {
                 isGeneratingCode = false;
                 if (response.isSuccessful()) {
                     currentUserProfile.setReferralCode(newCode);
-                } else {
-                    Log.e("ReferralGen", "Failed to save code. Code: " + response.code());
                 }
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 isGeneratingCode = false;
-                Log.e("ReferralGen", "Network failure while saving code", t);
             }
         });
     }
@@ -228,8 +219,10 @@ public class Profile extends Fragment {
                     Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT).show();
                     session.saveSession(token, session.getRefreshToken(), session.getUserId(), name);
                     
-                    Intent intent = new Intent("com.example.tastelandv1.UPDATE_HEADER");
-                    if (getActivity() != null) getActivity().sendBroadcast(intent);
+                    // --- REFRESH HEADER IMMEDIATELY ---
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).refreshHeader();
+                    }
                     
                     fetchProfileData();
                 } else {
