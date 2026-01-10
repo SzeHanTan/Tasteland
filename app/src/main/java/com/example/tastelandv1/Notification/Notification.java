@@ -106,8 +106,6 @@ public class Notification extends AppCompatActivity {
         }
     }
 
-
-
     /**
      * Fetches combined notifications (Community, Likes, Expiry) from the
      * unified notification table in Supabase.
@@ -177,48 +175,6 @@ public class Notification extends AppCompatActivity {
         // 3. Display the notification using a unique ID (timestamp)
         notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
-
-//    private NotificationItem checkFoodExpiry(FoodItem food) {
-//        if (food.dueDate == null) return null; // cite: FoodItem.java
-//
-//        Calendar now = Calendar.getInstance();
-//        Calendar due = Calendar.getInstance();
-//        due.setTime(food.dueDate); // cite: FoodItem.java
-//
-//        // Logic: If reminderDate is set, check if today is the reminder day
-//        if (food.reminderDate != null) { // cite: FoodItem.java
-//            Calendar reminder = Calendar.getInstance();
-//            reminder.setTime(food.reminderDate); // cite: FoodItem.java
-//
-//            if (isSameDay(now, reminder)) {
-//                return new NotificationItem(null, session.getUserId(), "EXPIRY", "Food Reminder",
-//                        food.name + " is due soon!", false, null, new Date(), new Date());
-//            }
-//        } else {
-//            // Fallback: Check for 3 days before expiry
-//            long diff = food.dueDate.getTime() - System.currentTimeMillis();
-//            long days = diff / (24 * 60 * 60 * 1000);
-//
-//            if (days == 3) {
-//                return new NotificationItem(null, session.getUserId(), "EXPIRY", "Expiring Soon",
-//                        food.name + " will expire in 3 days.", false, null, new Date(), new Date());
-//            }
-//        }
-//
-//        // Always check for the actual expiry day
-//        if (isSameDay(now, due)) {
-//            return new NotificationItem(null, session.getUserId(), "EXPIRY", "Expired Today!",
-//                    food.name + " expires today. Use it now!", false, null, new Date(), new Date());
-//        }
-//
-//        return null;
-//    }
-
-    // Helper method to check if two dates are the same day
-//    private boolean isSameDay(Calendar cal1, Calendar cal2) {
-//        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-//                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-//    }
 
     private void updateUI(List<NotificationItem> notifications) {
         // Grouping logic remains in your static utility class
