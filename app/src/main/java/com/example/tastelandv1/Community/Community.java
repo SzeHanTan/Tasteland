@@ -32,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Community extends AppCompatActivity implements ChatAdapter.OnMessageActionListener {
+public class Community extends AppCompatActivity {
     private ChatAdapter adapter;
     private List<ChatMessage> messageList;
     private SupabaseAPI supabaseService;
@@ -51,7 +51,7 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
         String communityName = getIntent().getStringExtra("community_name");
         String invitationCode = getIntent().getStringExtra("invitation_code");
 
-        if (currentGroupId == null || currentGroupId.isEmpty()) {
+        if (currentGroupId == null) {
             Toast.makeText(this, "Error: Community not found", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -70,8 +70,8 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
         }
 
         messageList = new ArrayList<>();
-        // Pass communityName to constructor
-        adapter = new ChatAdapter(messageList, false, communityName, this);
+        // Pass the activity context to the adapter for callbacks
+        adapter = new ChatAdapter(this, messageList, false, communityName);
 
         RecyclerView rv = findViewById(R.id.rvChatMessages);
         if (rv != null) {
@@ -100,10 +100,8 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
                         Toast.makeText(this, "Error: Group ID must be a number", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    /*testing*/
                     String senderName = session.getUsername();
                     if (senderName == null || senderName.isEmpty()) senderName = "Member";
-//                    long groupIdLong = Long.parseLong(currentGroupId);
                     ChatMessage newMessage = new ChatMessage(
                             groupIdLong,
                             session.getUserId(),
@@ -113,19 +111,15 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
                     );
                     newMessage.setIsMainPost(true);
                     String authHeader = "Bearer " + session.getToken();
-                    Log.d("SupabaseDebug", "Attempting to send: " + text);
-                    Log.d("SupabaseDebug", "Group ID: " + groupIdLong);
-                    Log.d("SupabaseDebug", "User ID: " + session.getUserId());
                     supabaseService.postMessage(RetrofitClient.SUPABASE_KEY, authHeader, "return=minimal", newMessage)
                             .enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     if (response.isSuccessful()) {
-                                        updateCommunityTimestamp(); // Update community activity timestamp
+                                        updateCommunityTimestamp();
                                         fetchMessagesWithLikes();
                                         if (etMessage != null) etMessage.setText("");
-                                    }else {
-                                        // Log the error to see why it's failing
+                                    } else {
                                         try {
                                             String errorBody = response.errorBody().string();
                                             Log.e("SupabaseDebug", "FAILED! Code: " + response.code());
@@ -146,19 +140,10 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
         }
     }
 
-    @Override
-    public void onPinUpdated(String text, boolean isPinned) {
-        if (isPinned) {
-            showPinnedUI(text);
-        } else {
-            hidePinnedUI();
-        }
-    }
     private void startInstantRefresh() {
         realtimeRunnable = new Runnable() {
             @Override
             public void run() {
-                // Fetch messages every 2 seconds for an "instant" feel
                 fetchMessagesWithLikes();
                 realtimeHandler.postDelayed(this, 2000);
             }
@@ -169,10 +154,7 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
     @Override
     protected void onResume() {
         super.onResume();
-        // 1. Start the instant refresh timer
         startInstantRefresh();
-
-        // 2. Initial manual fetch for immediate data
         fetchMessagesWithLikes();
         fetchPinnedMessage();
     }
@@ -180,19 +162,14 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
     @Override
     protected void onPause() {
         super.onPause();
-        // CRITICAL: Stop the timer when the user leaves to save battery and data
         if (realtimeHandler != null && realtimeRunnable != null) {
             realtimeHandler.removeCallbacks(realtimeRunnable);
         }
     }
 
-
-
     private void updateCommunityTimestamp() {
         String authHeader = "Bearer " + session.getToken();
         Map<String, Object> update = new HashMap<>();
-        // Touching the record updates its 'updated_at' column in Supabase automatically
-        // if the column is set up correctly. We send an existing value like 'name' to trigger the update.
         update.put("name", getIntent().getStringExtra("community_name"));
 
         supabaseService.updateCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + currentGroupId, update)
@@ -215,23 +192,19 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
         String authHeader = "Bearer " + session.getToken();
         String userId = session.getUserId();
 
-        supabaseService.leaveCommunity(
-                RetrofitClient.SUPABASE_KEY,
-                authHeader,
-                "eq." + userId,
-                "eq." + currentGroupId
-        ).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(Community.this, "You have left the group", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            }
-            @Override public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(Community.this, "Error leaving group", Toast.LENGTH_SHORT).show();
-            }
-        });
+        supabaseService.leaveCommunity(RetrofitClient.SUPABASE_KEY, authHeader, "eq." + userId, "eq." + currentGroupId)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(Community.this, "You have left the group", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                    @Override public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(Community.this, "Error leaving group", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void fetchMessagesWithLikes() {
@@ -346,36 +319,27 @@ public class Community extends AppCompatActivity implements ChatAdapter.OnMessag
                     @Override
                     public void onResponse(Call<List<ChatMessage>> call, Response<List<ChatMessage>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            for (ChatMessage msg : response.body()) {
-                                if (msg.isPinned()) {
-                                    showPinnedUI(msg.getMessageText());
-                                    return;
-                                }
-                            }
+                            ChatMessage pinnedMessage = response.body().get(0);
+                            TextView tvPinnedMessage = findViewById(R.id.tvPinnedText);
+                            tvPinnedMessage.setText(pinnedMessage.getMessageText());
+                            findViewById(R.id.cvPinnedMessage).setVisibility(View.VISIBLE);
+                        } else {
+                            findViewById(R.id.cvPinnedMessage).setVisibility(View.GONE);
                         }
-                        hidePinnedUI();
                     }
+
                     @Override
                     public void onFailure(Call<List<ChatMessage>> call, Throwable t) {
-                        hidePinnedUI();
+                        findViewById(R.id.cvPinnedMessage).setVisibility(View.GONE);
                     }
                 });
     }
 
-    private void showPinnedUI(String text) {
-        View pinnedBox = findViewById(R.id.cvPinnedMessage);
-        TextView tvPinned = findViewById(R.id.tvPinnedText);
-
-        if (pinnedBox != null) {
-            pinnedBox.setVisibility(View.VISIBLE);
-            if (tvPinned != null) {
-                tvPinned.setText(text);
-            }
-        }
-    }
-
-    private void hidePinnedUI() {
-        View pinnedBox = findViewById(R.id.cvPinnedMessage);
-        if (pinnedBox != null) pinnedBox.setVisibility(View.GONE);
+    /**
+     * Public method to allow the ChatAdapter to trigger a refresh of the pinned message banner.
+     */
+    public void refreshPinnedMessage() {
+        // Use a short delay to allow the database transaction to complete before fetching.
+        new android.os.Handler().postDelayed(() -> fetchPinnedMessage(), 500);
     }
 }

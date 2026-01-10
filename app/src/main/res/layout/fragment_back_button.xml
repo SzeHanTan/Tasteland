@@ -11,6 +11,6 @@
         android:scaleType="fitCenter"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_back_arrow"
-        android:contentDescription="Back" />
+        android:contentDescription="@string/back_button_description" />
 
 </FrameLayout>

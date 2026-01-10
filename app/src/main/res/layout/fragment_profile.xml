@@ -44,7 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="User Profile"
+                    android:text="@string/user_profile"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="Name: John Doe"
+                    android:text="@string/name_john_doe"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="Contact no.: 012-3456789"
+                    android:text="@string/contact_no_012_3456789"
                     android:textColor="@android:color/black" />
 
                 <View
@@ -78,7 +78,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="I'm a housewife who enjoys cooking delicious food. Feel free to drop by!"
+                    android:text="@string/i_m_a_housewife_who_enjoys_cooking_delicious_food_feel_free_to_drop_by"
                     android:textSize="14sp" />
 
             </LinearLayout>
@@ -122,7 +122,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:padding="15dp"
-                    android:text="Saved recipes"
+                    android:text="@string/saved_recipes"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -141,7 +141,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:padding="15dp"
-                    android:text="About us"
+                    android:text="@string/about_us"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -160,7 +160,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:padding="15dp"
-                    android:text="Invite friends"
+                    android:text="@string/invite_friends"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -179,7 +179,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:padding="15dp"
-                    android:text="General FAQ"
+                    android:text="@string/general_faq"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -207,7 +207,7 @@
                     android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_profile"
-                android:contentDescription="Avatar Picture" />
+                android:contentDescription="@string/avatar_picture" />
         </androidx.cardview.widget.CardView>
 
         <Button
@@ -217,12 +217,22 @@
             android:minHeight="48dp"
             android:layout_marginTop="20dp"
             android:backgroundTint="#A5D6A7"
-            android:text="Log Out"
+            android:text="@string/log_out"
             android:textColor="@color/darkgreen"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/options_card"
             app:layout_constraintStart_toStartOf="@+id/options_card"
             app:layout_constraintTop_toBottomOf="@+id/options_card"/>
+
+        <ProgressBar
+            android:id="@+id/progressBarProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

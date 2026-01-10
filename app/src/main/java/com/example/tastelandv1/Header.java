@@ -34,12 +34,16 @@ import retrofit2.Response;
 public class Header extends Fragment {
 
     private TextView tvGreet, tvDate;
+    private SupabaseAPI supabaseService;
 
-    // 1. Receiver to update the name immediately if you edit the profile elsewhere
     private final BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateGreeting();
+            if ("com.example.tastelandv1.UPDATE_HEADER".equals(intent.getAction())) {
+                // Refresh name from session first, then sync from DB
+                updateGreeting();
+                fetchUserName();
+            }
         }
     };
 
@@ -71,9 +75,10 @@ public class Header extends Fragment {
 
         // Set Date and Initial Greeting
         setCurrentDate();
+        supabaseService = RetrofitClient.getInstance(getContext()).getApi();
 
-        // Load data immediately from local session (fast)
         updateGreeting();
+        fetchUserName();
     }
 
     @Override
@@ -97,7 +102,8 @@ public class Header extends Fragment {
             try {
                 getActivity().unregisterReceiver(updateReceiver);
             } catch (IllegalArgumentException e) {
-                // Ignore if receiver wasn't registered
+                // Can happen if the fragment is closed before the receiver is registered
+                Log.w("HeaderFragment", "Receiver not registered, skipping unregister.");
             }
         }
     }
@@ -108,10 +114,9 @@ public class Header extends Fragment {
         tvDate.setText(currentDate);
     }
 
-    // Pulls name from SessionManager and updates TextView
-    private void updateGreeting() {
+    // Changed to public so MainActivity can refresh it
+    public void updateGreeting() {
         if (getContext() == null) return;
-
         SessionManager session = new SessionManager(getContext());
         String username = session.getUsername();
 
@@ -120,5 +125,35 @@ public class Header extends Fragment {
         } else {
             tvGreet.setText("Hi, Guest");
         }
+    }
+
+    // Changed to public so MainActivity can trigger a sync
+    public void fetchUserName() {
+        if (getContext() == null) return;
+        SessionManager session = new SessionManager(getContext());
+        String token = session.getToken();
+        String userId = session.getUserId();
+
+        if (token == null || userId == null) return;
+
+        supabaseService.getMyProfile(RetrofitClient.SUPABASE_KEY, "Bearer " + token)
+                .enqueue(new Callback<List<UserProfile>>() {
+                    @Override
+                    public void onResponse(Call<List<UserProfile>> call, Response<List<UserProfile>> response) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                            UserProfile user = response.body().get(0);
+                            // Update the session with the latest name from DB
+                            session.saveSession(token, session.getRefreshToken(), session.getUserId(), user.getFullName());
+                            if (tvGreet != null) {
+                                tvGreet.setText("Hi, " + user.getFullName());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<UserProfile>> call, Throwable t) {
+                        Log.e("Header", "Failed to sync user: " + t.getMessage());
+                    }
+                });
     }
 }

@@ -24,7 +24,8 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:src="@color/cardview_dark_background"
-                app:layout_collapseMode="parallax" />
+                app:layout_collapseMode="parallax"
+                android:contentDescription="@string/recipe_image_description" />
 
             <View
                 android:layout_width="match_parent"
@@ -81,7 +82,7 @@
                 android:id="@+id/TVOverview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Overview"
+                android:text="@string/overview"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
@@ -100,7 +101,7 @@
                 android:id="@+id/TVIngredients"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ingredients"
+                android:text="@string/ingredients"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
@@ -117,7 +118,7 @@
                 android:id="@+id/TVInstructions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Instructions"
+                android:text="@string/instructions"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
@@ -139,7 +140,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:contentDescription="Add To Favourite"
+        android:contentDescription="@string/add_to_favourite"
         android:src="@drawable/ic_favourite_border"
         app:backgroundTint="@android:color/transparent"
         app:layout_anchor="@id/APAppBar"

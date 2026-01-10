@@ -10,7 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tastelandv1.Backend.RetrofitClient;
 import com.example.tastelandv1.Backend.SessionManager;
+import com.example.tastelandv1.Backend.SupabaseAPI;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +24,9 @@ import retrofit2.Response;
 
 public class SignUp extends AppCompatActivity {
 
+    private EditText etReferral;
+    private SupabaseAPI supabaseService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,88 +34,110 @@ public class SignUp extends AppCompatActivity {
 
         EditText etEmail = findViewById(R.id.ETSignUpEmail);
         TextInputLayout tiPassword = findViewById(R.id.TIToggleSignUp);
+        etReferral = findViewById(R.id.ETSignUpReferral);
         Button btnSignUp = findViewById(R.id.BtnSignUp);
 
+        supabaseService = RetrofitClient.getInstance(this).getApi();
+
         btnSignUp.setOnClickListener(v -> {
-            String email = etEmail.getText().toString();
-            // Get text from TextInputEditText inside the Layout
-            String password = tiPassword.getEditText().getText().toString();
+            String email = etEmail.getText().toString().trim();
+            if (tiPassword.getEditText() == null) return;
+            String password = tiPassword.getEditText().getText().toString().trim();
+            String referralCode = etReferral.getText().toString().trim();
 
             if (!email.isEmpty() && !password.isEmpty()) {
-                performSignUp(email, password);
+                performSignUp(email, password, referralCode);
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void performSignUp(String email, String password) {
+    private void performSignUp(String email, String password, String referralCode) {
         AuthRequest request = new AuthRequest(email, password);
 
-
-        RetrofitClient.getInstance(this).getApi().signUp(RetrofitClient.SUPABASE_KEY, request)
+        supabaseService.signUp(RetrofitClient.SUPABASE_KEY, request)
                 .enqueue(new Callback<AuthResponse>() {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             String token = response.body().access_token;
-                            String refreshToken = response.body().refresh_token; // Get Refresh Token
                             String userId = response.body().user.id;
 
-                            // Initialize SessionManager with tokens
+                            // Temporarily save session to create profile
                             SessionManager session = new SessionManager(SignUp.this);
-                            session.saveSession(token, refreshToken, userId, "New User");
+                            session.saveSession(token, response.body().refresh_token, userId, "New User");
 
-                            createProfileEntry(token, userId, email);
-                            Toast.makeText(SignUp.this, "Sign Up Successful!", Toast.LENGTH_SHORT).show();
+                            createProfileEntry(token, userId, email, referralCode);
                         } else {
-                            // Log the error body to see exactly what Supabase said
+                            String errorMessage = "Sign Up Failed";
                             try {
                                 if (response.errorBody() != null) {
-                                    Log.e("SignUpError", response.errorBody().string());
+                                    String errorStr = response.errorBody().string();
+                                    Log.e("SignUpError", errorStr);
+                                    JSONObject json = new JSONObject(errorStr);
+                                    if (json.has("msg")) {
+                                        errorMessage = json.getString("msg");
+                                    }
                                 }
                             } catch (Exception e) { e.printStackTrace(); }
-                            Toast.makeText(SignUp.this, "Sign Up Failed: " + response.code(), Toast.LENGTH_SHORT).show();
+                            
+                            if (response.code() == 422 || errorMessage.toLowerCase().contains("already")) {
+                                errorMessage = "Email address is already in use.";
+                            }
+                            
+                            Toast.makeText(SignUp.this, errorMessage, Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AuthResponse> call, Throwable t) {
-                        Toast.makeText(SignUp.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUp.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void createProfileEntry(String token, String userId, String email) {
-        // Prepare the data matching your SQL schema
+    private void createProfileEntry(String token, String userId, String email, String referralCode) {
         Map<String, Object> profileData = new HashMap<>();
         profileData.put("id", userId);
         profileData.put("full_name", "New User");
-        profileData.put("email", email);// Default value
+        profileData.put("email", email);
+        
+        if (!referralCode.isEmpty()) {
+            profileData.put("referred_by", referralCode);
+        }
 
         String authHeader = "Bearer " + token;
 
-        RetrofitClient.getInstance(this).getApi().createProfile(RetrofitClient.SUPABASE_KEY, token, profileData)
+        // "resolution=merge-duplicates" allows overwriting the trigger-created row
+        supabaseService.createProfile(RetrofitClient.SUPABASE_KEY, authHeader, "resolution=merge-duplicates", profileData)
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(SignUp.this, "Account Created!", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(SignUp.this, MainActivity.class);
+                            Toast.makeText(SignUp.this, "Sign up successful! Please log in.", Toast.LENGTH_LONG).show();
+                            new SessionManager(SignUp.this).logout();
+                            Intent intent = new Intent(SignUp.this, Login.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
+                            finish();
                         } else {
-                            android.util.Log.e("ProfileError", "Code: " + response.code());
-                            Toast.makeText(SignUp.this, "Failed to initialize profile", Toast.LENGTH_SHORT).show();
+                            new SessionManager(SignUp.this).logout();
+                            String dbError = "Failed to initialize profile. Please contact support.";
+                            try {
+                                if (response.errorBody() != null) {
+                                    Log.e("ProfileError", response.errorBody().string());
+                                }
+                            } catch (Exception e) { e.printStackTrace(); }
+                            
+                            Toast.makeText(SignUp.this, dbError, Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Toast.makeText(SignUp.this, "Profile Network Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUp.this, "Database Network Error", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
-
-
 }

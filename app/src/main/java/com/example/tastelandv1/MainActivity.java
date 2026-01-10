@@ -41,18 +41,15 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // If there are fragments in the back stack, pop them
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getSupportFragmentManager().popBackStack();
                 } else {
-                    // If nothing to pop, disable this callback and let system handle the exit
                     setEnabled(false);
                     getOnBackPressedDispatcher().onBackPressed();
                 }
             }
         });
 
-        // --- 1. VISIBILITY CONTROLLER ---
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
             @Override
             public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -68,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             bottomNav.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.nav_home) {
-                    // Home clears the entire Activity and Fragment stack back to root
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("TARGET_NAV_ID", R.id.nav_home);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -84,6 +80,20 @@ public class MainActivity extends AppCompatActivity {
                 navigateToTab(targetNavId);
             }
         }
+    }
+
+    // --- ADDED: Method to refresh Header fragment immediately ---
+    public void refreshHeader() {
+        Fragment headerFragment = getSupportFragmentManager().findFragmentById(R.id.header_container);
+        if (headerFragment instanceof Header) {
+            // Option A: Call its update method directly
+            ((Header) headerFragment).updateGreeting();
+            // Option B: Sync with DB too
+            ((Header) headerFragment).fetchUserName();
+        }
+        
+        // Also send broadcast for any other listeners
+        sendBroadcast(new Intent("com.example.tastelandv1.UPDATE_HEADER"));
     }
 
     @Override
@@ -114,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void navigateToRecipesWithCategory(String categoryId) {
-        // This switches to the Recipe tab but with a specific initial tab
         RecipeFragment selectedFragment = RecipeFragment.newInstance(categoryId);
         String tag = String.valueOf(R.id.nav_recipe);
 
@@ -123,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         ft.addToBackStack(null);
         ft.commit();
 
-        // Also sync bottom nav selection
         if (bottomNav != null) {
             bottomNav.getMenu().findItem(R.id.nav_recipe).setChecked(true);
         }
@@ -132,13 +140,11 @@ public class MainActivity extends AppCompatActivity {
     private void navigateToTab(int itemId) {
         if (itemId == R.id.nav_community) {
             Intent intent = new Intent(this, GroupChatList.class);
-            // Push Community Activity onto the stack
             startActivity(intent);
             return; 
         }
 
         if (itemId == R.id.nav_home) {
-            // Reset local fragment stack
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.FCVMain, new HomeFragment(), String.valueOf(R.id.nav_home))
@@ -149,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
         Fragment selectedFragment = null;
         String tag = String.valueOf(itemId);
 
-        // Check if we are already displaying this tab
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.FCVMain);
         if (current != null && tag.equals(current.getTag())) return;
 
@@ -160,9 +165,6 @@ public class MainActivity extends AppCompatActivity {
         if (selectedFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.FCVMain, selectedFragment, tag);
-            
-            // Only add to back stack if this isn't the first fragment in this Activity instance.
-            // This ensures the back button correctly pops fragments first, then finishes the Activity.
             if (current != null) {
                 ft.addToBackStack(null);
             }

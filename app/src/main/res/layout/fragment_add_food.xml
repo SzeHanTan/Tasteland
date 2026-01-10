@@ -21,6 +21,7 @@
         android:hint="@string/typefood"
         android:importantForAutofill="no"
         android:inputType="text"
+        android:minHeight="48dp"
         android:padding="8dp"
         android:textColorHint="#998F8F"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +34,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="24dp"
-        android:contentDescription="Due Date"
+        android:contentDescription="@string/due_date"
         android:src="@drawable/ic_calendar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ETFoodName" />
@@ -72,7 +73,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="16dp"
-        android:contentDescription="Reminder"
+        android:contentDescription="@string/reminder_icon_description"
         android:src="@drawable/ic_reminder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/IVDueDateIcon" />
