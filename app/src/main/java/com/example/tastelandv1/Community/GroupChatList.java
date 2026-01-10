@@ -217,7 +217,7 @@ public class GroupChatList extends AppCompatActivity {
         if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
 
         confirm.setOnClickListener(v -> {
-            String value = input.getText().toString().trim().toLowerCase();
+            String value = input.getText().toString().trim();
             if (!value.isEmpty()) {
                 if (isNewTeam) createNewCommunity(value); else joinByCode(value);
                 dialog.dismiss();
@@ -235,7 +235,8 @@ public class GroupChatList extends AppCompatActivity {
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             String newId = String.valueOf(response.body().get(0).getId());
-                            addUserToCommunity(newId, true, "You created the community");
+                            String creatorMsg = session.getUsername() + " created the community";
+                            addUserToCommunity(newId, true, creatorMsg);
                         }
                     }
                     @Override public void onFailure(Call<List<CommunityModel>> call, Throwable t) {
@@ -251,7 +252,8 @@ public class GroupChatList extends AppCompatActivity {
                     public void onResponse(Call<List<CommunityModel>> call, Response<List<CommunityModel>> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             String communityId = String.valueOf(response.body().get(0).getId());
-                            addUserToCommunity(communityId, false, "You joined the community");
+                            String joinMessage = session.getUsername() + " joined the community";
+                            addUserToCommunity(communityId, false, joinMessage);
                         } else {
                             Toast.makeText(GroupChatList.this, "Invalid Invitation Code", Toast.LENGTH_SHORT).show();
                         }
